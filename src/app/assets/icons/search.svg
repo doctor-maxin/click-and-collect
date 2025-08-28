@@ -1,0 +1,6 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24.000000" height="24.000000" fill="none">
+	<rect id="Search" width="24.000000" height="24.000000" x="0.000000" y="0.000000" />
+	<path id="path" d="M19 10.5C19 5.8056 15.1944 2 10.5 2C5.8056 2 2 5.8056 2 10.5C2 15.1944 5.8056 19 10.5 19C15.1944 19 19 15.1944 19 10.5Z" fill-rule="nonzero" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5" />
+	<path id="path" d="M13.3287 7.17155C12.6049 6.4477 11.6049 6 10.5003 6C9.39573 6 8.39573 6.4477 7.67188 7.17155" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+	<path id="path" d="M0 0L6.00005 0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" transform="matrix(0.707107,0.707107,-0.707107,0.707107,16.6113,16.6108)" />
+</svg>

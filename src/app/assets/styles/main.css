@@ -1,0 +1,120 @@
+@import "tailwindcss";
+@import "./fonts.css";
+
+@theme {
+    --font-sans: Euclid;
+    --font-serif: Euclid;
+    --color-orange: hsl(29, 84%, 55%);
+    --color-blue: hsl(197, 100%, 45%);
+    --color-white: hsl(0, 0%, 100%);
+    --color-gray: hsl(0, 0%, 75%);
+    --color-red: hsl(0, 75%, 45%);
+}
+
+body {
+    font-family: var(--font-sans);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.dialog-overlay[data-state="open"],
+.dialog-content[data-state="open"],
+.navigation-menu-viewport[data-state="open"] {
+    animation: fadeIn 150ms ease-out;
+}
+
+.dialog-overlay[data-state="closed"],
+.dialog-content[data-state="closed"],
+.navigation-menu-viewport[data-state="closed"] {
+    animation: fadeOut 100ms ease-in;
+}
+
+.navigation-menu-content {
+    @apply absolute left-0 top-0;
+    animation-duration: 250ms;
+    animation-timing-function: ease;
+}
+
+.navigation-menu-content[data-motion="from-start"] {
+    animation-name: enterFromTop;
+}
+.navigation-menu-content[data-motion="from-end"] {
+    animation-name: enterFromBottom;
+}
+.navigation-menu-content[data-motion="to-start"] {
+    animation-name: exitToTop;
+}
+.navigation-menu-content[data-motion="to-end"] {
+    animation-name: exitToBottom;
+}
+
+.navigation-menu-viewport {
+    position: relative;
+    overflow: hidden;
+    width: var(--reka-navigation-menu-viewport-width);
+    height: var(--reka-navigation-menu-viewport-height);
+    transition:
+        width,
+        height,
+        250ms ease;
+}
+
+@keyframes enterFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(200px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes enterFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-200px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes exitToBottom {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(200px);
+    }
+}
+
+@keyframes exitToTop {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-200px);
+    }
+}
