@@ -1,0 +1,30 @@
+  <svg
+                        viewBox="0 0 48 48"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="48.000000"
+                        height="48.000000"
+                        fill="none"
+                    >
+                        <rect
+                            id="common/arrow-left"
+                            width="48.000000"
+                            height="48.000000"
+                            x="0.000000"
+                            y="0.000000"
+                            fill="currentColor"
+                            fill-opacity="0"
+                            transform="matrix(-1,0,0,-1,48,48)"
+                        />
+                        <g id="Group">
+                            <g id="Group">
+                                <path
+                                    id="Vector (Stroke)"
+                                    d="M0.43934 0.43934C1.02513 -0.146447 1.97487 -0.146447 2.56066 0.43934L13.5 11.3787L24.4393 0.43934C25.0251 -0.146447 25.9749 -0.146447 26.5607 0.43934C27.1464 1.02513 27.1464 1.97487 26.5607 2.56066L14.5607 14.5607C13.9749 15.1464 13.0251 15.1464 12.4393 14.5607L0.43934 2.56066C-0.146447 1.97487 -0.146447 1.02513 0.43934 0.43934Z"
+                                    fill="currentColor"
+                                    fill-rule="evenodd"
+                                    transform="matrix(0,-1,1,0,16.4995,37.5)"
+                                />
+                            </g>
+                        </g>
+                    </svg>

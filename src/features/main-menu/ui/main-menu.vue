@@ -28,7 +28,7 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
                 class="fixed dialog-overlay z-10 inset-0 bg-black/30"
             />
             <DialogContent
-                class="bg-white transition-all dialog-content top-0 left-0 fixed z-20 h-screen p-[4.5rem] w-[25rem]"
+                class="bg-white transition-all dialog-content top-0 left-0 fixed z-40 h-screen p-[4.5rem] w-[25rem]"
                 :class="{
                     'w-[33rem]': isExpanded,
                 }"

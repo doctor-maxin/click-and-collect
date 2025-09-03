@@ -7,7 +7,7 @@ await useAsyncData(
     () =>
         client
             .single("navigation/render/main-menu?type=TREE")
-            .find() as Promise<NavigationMenu>,
+            .find() as unknown as Promise<NavigationMenu>,
     {
         transform: (r) => {
             console.log("r, r", r);
@@ -18,7 +18,7 @@ await useAsyncData(
 </script>
 <template>
     <div
-        class="absolute left-0 top-0 z-20 bg-transparent w-full flex justify-center"
+        class="absolute left-0 top-0 z-30 bg-transparent w-full flex justify-center"
     >
         <div
             class="container py-5 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"

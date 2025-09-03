@@ -6,9 +6,9 @@ const { data: homePage, error } = await useAsyncData("home-page", () =>
 );
 </script>
 <template>
-    <div class="pt-[8.125rem]">
+    <div class="">
         <h1 class="hidden">{{ homePage?.data.H1 }}</h1>
-        <WidgetRenderBlocks :content="homePage?.data.content" />
+        <WidgetRenderBlocks v-if="homePage" :content="homePage?.data.content" />
         <pre>
             {{ homePage }}
         </pre>
