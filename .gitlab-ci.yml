@@ -54,6 +54,6 @@ deploy:
 
     echo "Build uploaded to $DEPLOY_HOST:$DEPLOY_PATH"
 
-    ssh -i ~/.ssh/id_rsa $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && deploy.sh"
+    ssh -i ~/.ssh/id_rsa $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && bash deploy.sh"
   environment:
     name: production
