@@ -32,7 +32,7 @@ deploy:
   image: alpine:3.20
   needs: ["build"]
   rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
   before_script:
     - apk add --no-cache openssh-client rsync
     - mkdir -p ~/.ssh
@@ -42,24 +42,17 @@ deploy:
   script: |
     set -euo pipefail
 
-    # 0) Сгенерим простой .env ИЗ GitLab variables
-    #    Забираем только те ключи, что обычно нужны приложению.
-    #    Добавь свои в регулярку при необходимости.
     printenv | grep -E '^(NUXT_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sort > .env
 
-    # 1) Создадим папку на сервере, если её нет
     ssh -i ~/.ssh/id_rsa $DEPLOY_USER@$DEPLOY_HOST "mkdir -p '$DEPLOY_PATH'"
 
-    # 2) Зальём сборку, ecosystem и .env в одну папку
     rsync -az --delete -e "ssh -i ~/.ssh/id_rsa" .output/ $DEPLOY_USER@$DEPLOY_HOST:"$DEPLOY_PATH/.output/"
     rsync -az -e "ssh -i ~/.ssh/id_rsa" ecosystem.config.js $DEPLOY_USER@$DEPLOY_HOST:"$DEPLOY_PATH/ecosystem.config.js"
     rsync -az -e "ssh -i ~/.ssh/id_rsa" .env $DEPLOY_USER@$DEPLOY_HOST:"$DEPLOY_PATH/.env"
 
-    # 3) Перезапуск через PM2
     ssh -i ~/.ssh/id_rsa $DEPLOY_USER@$DEPLOY_HOST "
       export PATH=\$HOME/.bun/bin:\$PATH
       cd '$DEPLOY_PATH'
-      # подмешаем .env в окружение текущей сессии на всякий случай
       set -a; . ./.env; set +a
       pm2 startOrReload ecosystem.config.js --update-env
       pm2 save
