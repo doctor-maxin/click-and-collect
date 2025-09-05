@@ -12,6 +12,8 @@ export type NavigationItem = API.Document & {
   collapsed: boolean;
   additionalFields: {
     color?: string;
+    icon?: string;
+    isSocialMenu?: boolean;
   };
   audience: string[];
   autoSync: boolean;

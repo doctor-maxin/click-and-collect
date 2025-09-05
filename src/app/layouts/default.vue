@@ -4,9 +4,7 @@ import { WidgetFooter } from "@/widgets/footer";
 
 const client = useStrapiClient();
 
-const { data: config } = await useAsyncData("config", () =>
-    client.single("config").find({}),
-);
+await useAsyncData("config", () => client.single("config").find({}));
 </script>
 
 <template>

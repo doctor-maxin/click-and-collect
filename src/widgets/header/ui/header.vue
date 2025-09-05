@@ -8,12 +8,6 @@ await useAsyncData(
         client
             .single("navigation/render/main-menu?type=TREE")
             .find() as unknown as Promise<NavigationMenu>,
-    {
-        transform: (r) => {
-            console.log("r, r", r);
-            return r;
-        },
-    },
 );
 </script>
 <template>
