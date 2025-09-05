@@ -34,7 +34,7 @@ deploy:
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
   before_script:
-    - apk add --no-cache openssh-client rsync
+    - apk update && apk add openssh-client rsync
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
