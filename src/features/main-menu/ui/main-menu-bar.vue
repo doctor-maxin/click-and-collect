@@ -76,7 +76,7 @@ defineProps<{
                                                 'inherit',
                                         }"
                                     >
-                                        {{ item.title }}
+                                        {{ subItem.title }}
                                     </NuxtLink>
                                 </NavigationMenuLink>
                             </NavigationMenuItem>
