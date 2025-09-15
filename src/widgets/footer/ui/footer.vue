@@ -9,8 +9,6 @@ const { data: footerMenu } = await useAsyncData(
             .single("navigation/render/footer-menu?type=TREE")
             .find() as unknown as Promise<NavigationMenu>,
 );
-
-console.log("footerMenu", footerMenu.value);
 </script>
 <template>
     <footer class="pb-8 pt-14">

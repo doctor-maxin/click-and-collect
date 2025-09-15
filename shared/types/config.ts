@@ -5,5 +5,6 @@ export interface IGlobalConfig {
     address: string;
     email: string;
     phone: string;
+    yandexMapKey: string;
   };
 }

@@ -6,12 +6,14 @@ import ThematicsBlock from "./blocks/thematics";
 import DepartmentsBlock from "./blocks/departments";
 import BannersBlock from "./blocks/banners";
 import SubscriptionForm from "./blocks/subscription-form";
+import MapBlock from "./blocks/map";
 
 defineProps<{
     content: IUiBlocks;
 }>();
 
 function getBlock(componentName: string): any {
+    console.log(componentName);
     switch (componentName) {
         case "blocks.carousel":
             return CarouselBlock;
@@ -25,6 +27,8 @@ function getBlock(componentName: string): any {
             return BannersBlock;
         case "blocks.subscription-form":
             return SubscriptionForm;
+        case "shared.map":
+            return MapBlock;
         default:
             null;
     }

@@ -4,6 +4,7 @@ import { WidgetRenderBlocks } from "@/widgets/render-blocks";
 const { data: homePage, error } = await useAsyncData("home-page", () =>
     getHomePage(),
 );
+console.log(homePage.value);
 </script>
 <template>
     <div class="">

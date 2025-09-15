@@ -150,6 +150,20 @@ export const getHomePage = async () => {
               },
             },
           },
+          "shared.map": {
+            populate: {
+              defaultMedia: {
+                fields: [
+                  "alternativeText",
+                  "caption",
+                  "url",
+                  "mime",
+                  "provider",
+                  "ext",
+                ],
+              },
+            },
+          },
         },
       },
     },

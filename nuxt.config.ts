@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["nuxt-svgo", "nuxt-swiper", "@nuxt/image"],
+  modules: ["nuxt-svgo", "nuxt-swiper", "@nuxt/image", "nuxt-graphql-client"],
   alias: {
     "@": "../src",
     "@assets": "../src/app/assets",
@@ -39,10 +39,14 @@ export default defineNuxtConfig({
   svgo: {
     autoImportPath: "app/assets/icons",
   },
+  "graphql-client": {
+    codegen: false,
+  },
   runtimeConfig: {
     public: {
       strapiUrl: process.env.STRAPI_URL,
       strapiToken: process.env.STRAPI_TOKEN,
+      GQL_HOST: process.env.STRAPI_URL + "/graphql",
     },
   },
   vite: {
