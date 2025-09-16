@@ -1,6 +1,6 @@
 import { Client } from "basic-ftp";
-import { readFile, stat } from "fs/promises";
-import { createWriteStream } from "fs";
+import { readFile } from "fs/promises";
+import { createWriteStream, statSync } from "fs";
 import { XMLParser, XMLBuilder, XMLValidator } from "fast-xml-parser";
 
 export default defineEventHandler(async (event) => {
@@ -9,7 +9,9 @@ export default defineEventHandler(async (event) => {
   const fileLink = "localfile.xml";
 
   try {
-    const isHaveFile = await stat(fileLink);
+    const isHaveFile = statSync(fileLink, {
+      throwIfNoEntry: false,
+    });
 
     if (!isHaveFile) {
       await client.access({
