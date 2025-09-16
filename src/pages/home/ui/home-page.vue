@@ -7,7 +7,7 @@ const { data: homePage, error } = await useAsyncData("home-page", () =>
 </script>
 <template>
     <div class="">
-        <h1 class="hidden">{{ homePage?.data.H1 }}</h1>
-        <WidgetRenderBlocks v-if="homePage" :content="homePage?.data.content" />
+        <h1 class="hidden">{{ homePage?.H1 }}</h1>
+        <WidgetRenderBlocks v-if="homePage" :content="homePage?.content" />
     </div>
 </template>

@@ -4,10 +4,19 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["nuxt-svgo", "nuxt-swiper", "@nuxt/image"],
+  modules: [
+    "nuxt-svgo",
+    "nuxt-swiper",
+    "vue-yandex-maps/nuxt",
+    "@nuxt/image",
+    "nuxt-graphql-client",
+  ],
   alias: {
     "@": "../src",
     "@assets": "../src/app/assets",
+  },
+  yandexMaps: {
+    apikey: process.env.NUXT_YANDEX_API_KEY,
   },
   rootDir: ".",
   srcDir: "src",
@@ -39,10 +48,28 @@ export default defineNuxtConfig({
   svgo: {
     autoImportPath: "app/assets/icons",
   },
+  "graphql-client": {
+    watch: true,
+    autoImport: true,
+    functionPrefix: "Gql",
+    documentPaths: ["src/app/queries"],
+    preferGETQueries: false,
+    clients: {
+      default: {
+        host: process.env.STRAPI_URL + "/graphql",
+        token: {
+          type: "Bearer",
+          name: "Authorization",
+          value: process.env.STRAPI_TOKEN,
+        },
+      },
+    },
+  },
   runtimeConfig: {
     public: {
       strapiUrl: process.env.STRAPI_URL,
       strapiToken: process.env.STRAPI_TOKEN,
+      GQL_HOST: process.env.STRAPI_URL + "/graphql",
     },
   },
   vite: {

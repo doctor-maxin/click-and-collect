@@ -32,7 +32,7 @@ export interface IBannerItem {
 
 export interface IDepartmentItem {
   id: number;
-  title: string;
+  name: string;
   link: string;
   image: IMedia;
 }
@@ -49,7 +49,7 @@ export interface ICarouselBlock {
   id: number;
   autoplay: boolean;
   autoplayDelay: number;
-  __component: "blocks.carousel";
+  __typename: "ComponentBlocksCarousel";
   slides: ICarouselSlide[];
 }
 
@@ -60,41 +60,51 @@ export interface IAnnouncementBarBlock {
   textColor?: string;
   link?: string;
   bgColor?: string;
-  __component: "blocks.announcement-bar";
+  __typename: "ComponentBlocksAnnouncementBar";
 }
 
 export interface IThematicsBlocks {
   id: number;
-  __component: "blocks.temy";
+  __typename: "ComponentBlocksTemy";
   items: IThematicItem[];
 }
 
 export interface IDepartmentsBlocks {
   id: number;
-  __component: "blocks.departments";
+  __typename: "ComponentBlocksDepartments";
   items: IDepartmentItem[];
 }
 
 export interface IBannersBlock {
   id: number;
-  __component: "blocks.banners";
+  __typename: "ComponentBlocksBanners";
   items: IBannerItem[];
   detailedItems: IBannerDetailedItem[];
 }
 
 export interface ISubscriptionBlock {
   id: number;
-  __component: "blocks.subscription-form";
+  __typename: "ComponentBlocksSubscriptionForm";
   text: string;
   header: string;
   bg: IMedia;
   mobileBg: IMedia;
 }
 
-export type IUiBlocks = Array<
+export interface ISharedMap {
+  id: number;
+  __typename: "ComponentSharedMap";
+  header: string;
+  defaultMedia: IMedia;
+  defaultMobileMedia: IMedia;
+}
+
+export type IUiBlock =
   | ICarouselBlock
   | IAnnouncementBarBlock
   | IThematicsBlocks
   | IDepartmentsBlocks
   | IBannersBlock
->;
+  | ISubscriptionBlock
+  | ISharedMap;
+export type IUiBlocks = Array<IUiBlock>;

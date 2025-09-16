@@ -43,7 +43,7 @@ deploy:
   script: |
     set -euo pipefail
 
-    printenv | grep -E '^(NUXT_|STRAPI_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sort > .env
+    printenv | grep -E '^(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sort > .env
 
     ssh -i ~/.ssh/id_rsa $DEPLOY_USER@$DEPLOY_HOST "mkdir -p '$DEPLOY_PATH'"
 

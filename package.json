@@ -14,13 +14,17 @@
     "@nuxt/image": "npm:@nuxt/image-nightly@latest",
     "@strapi/client": "^1.5.0",
     "@tailwindcss/vite": "^4.1.12",
+    "basic-ftp": "^5.0.5",
+    "fast-xml-parser": "^5.2.5",
     "nuxt": "^4.0.3",
+    "nuxt-graphql-client": "0.2.46",
     "nuxt-svgo": "^4.2.6",
     "nuxt-swiper": "2.0.1",
     "reka-ui": "^2.4.1",
     "tailwindcss": "^4.1.12",
     "vue": "^3.5.18",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vue-yandex-maps": "^2.2.2"
   },
   "trustedDependencies": [
     "@parcel/watcher",

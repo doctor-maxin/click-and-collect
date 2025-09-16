@@ -2,9 +2,7 @@
 import { WidgetHeader } from "@/widgets/header";
 import { WidgetFooter } from "@/widgets/footer";
 
-const client = useStrapiClient();
-
-await useAsyncData("config", () => client.single("config").find({}));
+await useAsyncData("config", () => GqlGetConfig());
 </script>
 
 <template>
