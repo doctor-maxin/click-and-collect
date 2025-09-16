@@ -23,7 +23,7 @@ defineProps<{
                 <h3
                     class="absolute uppercase font-bold z-10 text-[1.75rem] leading-9 text-white"
                 >
-                    {{ item.title }}
+                    {{ item.name }}
                 </h3>
                 <FeatureRenderMedia
                     :media="item.image"

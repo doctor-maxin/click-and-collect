@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IUiBlocks } from "../model/render-blocks.model";
+import type { IUiBlocks, IUiBlock } from "../model/render-blocks.model";
 import CarouselBlock from "./blocks/carousel";
 import AnnouncementBarBlock from "./blocks/announcement-bar";
 import ThematicsBlock from "./blocks/thematics";
@@ -12,22 +12,21 @@ defineProps<{
     content: IUiBlocks;
 }>();
 
-function getBlock(componentName: string): any {
-    console.log(componentName);
+function getBlock(componentName: IUiBlock["__typename"]): any {
     switch (componentName) {
-        case "blocks.carousel":
+        case "ComponentBlocksCarousel":
             return CarouselBlock;
-        case "blocks.announcement-bar":
+        case "ComponentBlocksAnnouncementBar":
             return AnnouncementBarBlock;
-        case "blocks.temy":
+        case "ComponentBlocksTemy":
             return ThematicsBlock;
-        case "blocks.departments":
+        case "ComponentBlocksDepartments":
             return DepartmentsBlock;
-        case "blocks.banners":
+        case "ComponentBlocksBanners":
             return BannersBlock;
-        case "blocks.subscription-form":
+        case "ComponentBlocksSubscriptionForm":
             return SubscriptionForm;
-        case "shared.map":
+        case "ComponentSharedMap":
             return MapBlock;
         default:
             null;
@@ -35,7 +34,7 @@ function getBlock(componentName: string): any {
 }
 </script>
 <template>
-    <template v-for="block in content" :key="block.id">
-        <component :is="getBlock(block.__component)" :data="block" />
+    <template v-for="block in content" :key="block.id + block.__typename">
+        <component :is="getBlock(block.__typename)" :data="block" />
     </template>
 </template>

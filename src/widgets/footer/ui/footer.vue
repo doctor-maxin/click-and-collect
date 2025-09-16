@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const client = useStrapiClient();
 
-const { data: config } = useNuxtData<IGlobalConfig>("config");
+const { data: config } = useNuxtData("config");
 const { data: footerMenu } = await useAsyncData(
     "footer-menu",
     () =>
@@ -54,16 +54,16 @@ const { data: footerMenu } = await useAsyncData(
                 </NuxtLink>
                 <div class="flex gap-3 flex-col leading-5 text-base">
                     <address class="not-italic">
-                        {{ config?.data?.address }}
+                        {{ config?.config?.address }}
                     </address>
                     <span
                         >E-mail:
-                        <NuxtLink :to="`mailto:${config?.data?.email}`">
-                            {{ config?.data?.email }}
+                        <NuxtLink :to="`mailto:${config?.config?.email}`">
+                            {{ config?.config?.email }}
                         </NuxtLink>
                     </span>
-                    <NuxtLink :to="`tel:${config?.data?.phone}`">
-                        {{ config?.data?.phone }}
+                    <NuxtLink :to="`tel:${config?.config?.phone}`">
+                        {{ config?.config?.phone }}
                     </NuxtLink>
                 </div>
             </section>

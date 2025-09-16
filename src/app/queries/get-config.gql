@@ -1,0 +1,9 @@
+query GetConfig {
+  config {
+    address
+    documentId
+    email
+    phone
+    yandexMapKey
+  }
+}

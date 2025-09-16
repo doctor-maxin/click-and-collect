@@ -1,0 +1,189 @@
+query GetHomePage {
+    homePage {
+        H1
+        content {
+            ... on ComponentBlocksAnnouncementBar {
+                __typename
+                id
+                text
+                isRunning
+                textColor
+                bgColor
+                link
+            }
+            ... on ComponentBlocksTemy {
+                id
+                __typename
+                items {
+                    link
+                    text
+                    textColor
+                    image {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                    id
+                }
+            }
+            ... on ComponentBlocksSubscriptionForm {
+                id
+                header
+                __typename
+                text
+                bg {
+                    alternativeText
+                    caption
+                    ext
+                    mime
+                    name
+                    provider
+                    url
+                }
+                mobileBg {
+                    alternativeText
+                    caption
+                    ext
+                    mime
+                    name
+                    provider
+                    url
+                }
+            }
+            ... on ComponentBlocksDepartments {
+                id
+                __typename
+                items {
+                    id
+                    name: title
+                    image {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                    link
+                }
+            }
+            ... on ComponentBlocksCarousel {
+                id
+                __typename
+                slides {
+                    id
+                    media {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                    mobileMedia {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                    text
+                    textHPosition
+                    textVPosition
+                    showText
+                    textColor
+                }
+                autoplay
+                autoplayDelay
+            }
+            ... on ComponentBlocksBanners {
+                id
+                __typename
+                items {
+                    id
+                    title
+                    showLinkButton
+                    link
+                    media {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                    mobileMedia {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                }
+                detailedItems {
+                    id
+                    media {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                    mobileMedia {
+                        alternativeText
+                        caption
+                        ext
+                        mime
+                        name
+                        provider
+                        url
+                    }
+                    showLinkButton
+                    linkButtonText
+                    description
+                    link
+                }
+            }
+            ... on ComponentSharedMap {
+                id
+                header
+                __typename
+                defaultMedia {
+                    alternativeText
+                    caption
+                    ext
+                    mime
+                    name
+                    provider
+                    url
+                }
+                defaultMobileMedia {
+                    alternativeText
+                    caption
+                    ext
+                    mime
+                    name
+                    provider
+                    url
+                }
+            }
+            ... on Error {
+                code
+                message
+            }
+        }
+    }
+}

@@ -5,6 +5,7 @@ export type {
   IThematicsBlocks,
   IDepartmentsBlocks,
   IBannersBlock,
+  ISharedMap,
   ISubscriptionBlock,
 } from "./model/render-blocks.model";
 export { default as WidgetRenderBlocks } from "./ui/render-blocks.vue";
