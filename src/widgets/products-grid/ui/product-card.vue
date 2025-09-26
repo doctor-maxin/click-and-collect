@@ -15,7 +15,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <article class="flex flex-col gap-4 w-full">
+  <article class="flex flex-col gap-4 w-full" :data-id="product.id">
     <div class="relative">
       <NuxtLink class="contents" :to="`/products/${product.handle}`">
         <template v-if="product.images?.length">
@@ -38,9 +38,11 @@ onMounted(() => {
                   :src="image.url"
                 />
               </swiper-slide>
-              <div
-                class="product-card-pagination absolute w-full gap-1 bottom-2 px-2 flex"
-              ></div>
+              <div slot="container-end">
+                <div
+                  class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
+                ></div>
+              </div>
             </swiper-container>
           </ClientOnly>
         </template>

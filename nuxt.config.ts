@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "vue-yandex-maps/nuxt",
     "@nuxt/image",
     "nuxt-graphql-client",
+    "@pinia/nuxt",
   ],
   alias: {
     "@": "../src",

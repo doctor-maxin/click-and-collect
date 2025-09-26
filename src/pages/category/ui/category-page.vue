@@ -89,7 +89,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="mt-[8.125rem]">
+  <div class="mt-16 lg:mt-[8.125rem]">
     <div v-if="category" class="container mx-auto">
       <CategoryBreadCrumbs :category="category" />
       <h1 class="font-serif font-medium my-9 text-[1.75rem] uppercase">
