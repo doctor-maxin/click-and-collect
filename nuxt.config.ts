@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "vue-yandex-maps/nuxt",
     "@nuxt/image",
     "nuxt-graphql-client",
+    "@pinia/nuxt",
   ],
   alias: {
     "@": "../src",
@@ -69,7 +70,8 @@ export default defineNuxtConfig({
     public: {
       strapiUrl: process.env.STRAPI_URL,
       strapiToken: process.env.STRAPI_TOKEN,
-      GQL_HOST: process.env.STRAPI_URL + "/graphql",
+      medusaUrl: process.env.NUXT_MEDUSA_URL,
+      medusaToken: process.env.NUXT_MEDUSA_TOKEN,
     },
   },
   vite: {
