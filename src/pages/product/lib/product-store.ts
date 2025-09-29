@@ -1,17 +1,47 @@
 import { defineStore } from "pinia";
 import type { IProductState } from "../model/product-store.model";
+import type { StoreProductVariant } from "@medusajs/types";
 
 export const useProductStore = defineStore("_product", {
   state: (): IProductState => ({
     product: null,
-    variant: null,
+    color: null,
+    size: null,
   }),
+  getters: {
+    variant: (state) => {
+      return state.product?.variants?.find(
+        (variant) =>
+          variant.options?.some(
+            (o) =>
+              o.option_id === state.color?.option_id &&
+              o.value === state.color?.value,
+          ) &&
+          variant.options?.some(
+            (o) =>
+              o.option_id === state.size?.option_id &&
+              o.value === state.size?.value,
+          ),
+      );
+    },
+  },
   actions: {
     setProduct(product: IProductState["product"]) {
       this.product = product;
     },
-    setVariant(variant: IProductState["variant"]) {
-      this.variant = variant;
+    setVariant(variant: StoreProductVariant) {
+      const color =
+        variant.options?.find((o) => o.option?.title === "color") ?? null;
+      const size =
+        variant.options?.find((o) => o.option?.title === "size") ?? null;
+      this.color = color;
+      this.size = size;
+    },
+    selectColor(color: IProductState["color"]) {
+      this.color = color;
+    },
+    selectSize(size: IProductState["size"]) {
+      this.size = size;
     },
   },
 });

@@ -5,7 +5,26 @@ import ProductColorPicker from "./product-color-picker.vue";
 import ProductSizePicker from "./product-size-picker.vue";
 
 const productStore = useProductStore();
-const { variant, product } = storeToRefs(productStore);
+const { product, variant } = storeToRefs(productStore);
+const router = useRouter();
+const sku = computed(() =>
+  product?.value?.variants?.[0]?.sku?.split("-").splice(0, 3).join("-"),
+);
+
+watch(
+  variant,
+  (v) => {
+    if (!v) return;
+    router.push({
+      query: {
+        variant: v.id,
+      },
+    });
+  },
+  {
+    deep: true,
+  },
+);
 </script>
 <template>
   <div class="w-full">
@@ -16,12 +35,13 @@ const { variant, product } = storeToRefs(productStore);
     </h1>
     <span
       class="text-base block mb-3 lg:mb-6 leading-5 text-[hsl(216,64%,15%)]/50"
-      >{{ variant?.sku }}</span
+      >Арт. {{ sku }}</span
     >
 
-    <span class="text-base block my-3 lg:my-9 leading-5 uppercase">{{
-      product?.metadata?.composition
-    }}</span>
+    <span class="text-base block my-3 lg:my-9 leading-5"
+      >Состав:
+      <span class="uppercase"> {{ product?.metadata?.composition }}</span></span
+    >
     <ProductColorPicker />
     <ProductSizePicker />
   </div>

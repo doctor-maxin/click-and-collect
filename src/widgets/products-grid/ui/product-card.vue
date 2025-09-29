@@ -15,7 +15,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <article class="flex flex-col gap-4 w-full" :data-id="product.id">
+  <article class="flex group flex-col gap-4 w-full" :data-id="product.id">
     <div class="relative">
       <NuxtLink class="contents" :to="`/products/${product.handle}`">
         <template v-if="product.images?.length">
@@ -46,10 +46,18 @@ onMounted(() => {
             </swiper-container>
           </ClientOnly>
         </template>
-        <div v-else class="bg-gray-200 aspect-[15/18]" />
+        <div v-else class="aspect-[15/18]">
+          <NuxtImg
+            class="object-cover object-center size-full"
+            src="/not_found.png"
+          />
+        </div>
       </NuxtLink>
 
-      <ProductCardOptions :product="product" />
+      <ProductCardOptions
+        class="group-hover:translate-y-0 transition-all translate-y-4 opacity-0 group-hover:opacity-100"
+        :product="product"
+      />
     </div>
     <div class="flex flex-col gap-2">
       <div class="text-base leading-4 uppercase font-medium">

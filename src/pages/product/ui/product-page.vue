@@ -21,7 +21,7 @@ const { data: product } = await useAsyncData(
     client.store.product.list({
       handle: route.params.handle as string,
       fields:
-        "title,variants.*,images.url,external_id,categories.*,metadata,options.title,variants.options.*",
+        "title,variants.*,images.url,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*",
     }),
   {
     transform: (r) => r.products?.[0],
@@ -37,9 +37,23 @@ if (!product.value)
   });
 
 productStore.setProduct(product.value);
-if (product.value.variants?.[0]) {
-  productStore.setVariant(product.value.variants[0]);
-}
+
+watch(
+  () => route.query?.variant,
+  () => {
+    if (route.query.variant && product.value?.variants) {
+      const id = route.query.variant as string;
+      const variant = product.value.variants.find((v) => v.id === id);
+      if (variant) productStore.setVariant(variant);
+    } else if (product.value?.variants?.[0]) {
+      productStore.setVariant(product.value.variants[0]);
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 </script>
 <template>
   <div v-if="product" class="mt-[4rem] lg:mt-[8.125rem]">

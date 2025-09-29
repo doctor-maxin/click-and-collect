@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { StoreProduct } from "@medusajs/types";
+import type { StoreProduct, StoreProductOptionValue } from "@medusajs/types";
 
 const { product } = defineProps<{
   product: StoreProduct;
 }>();
+const router = useRouter();
 const sizeValues = computed(
   () => product?.options?.find((o) => o.title === "size")?.values ?? [],
 );
@@ -13,19 +14,20 @@ const showToRight = ref(false);
 
 const optionsContainer = useTemplateRef("optionsContainer");
 const optionsScrollbar = useTemplateRef("optionsScrollbar");
+const trashHold = shallowRef(20);
 
 function onScroll() {
   if (!optionsScrollbar.value) return;
 
   if (
     optionsScrollbar.value.scrollLeft + optionsScrollbar.value.clientWidth >=
-    optionsScrollbar.value.scrollWidth - 40
+    optionsScrollbar.value.scrollWidth - trashHold.value
   ) {
     showToRight.value = false;
     showToLeft.value = true;
   }
 
-  if (optionsScrollbar.value.scrollLeft < 40) {
+  if (optionsScrollbar.value.scrollLeft < trashHold.value) {
     showToLeft.value = false;
     showToRight.value = true;
   }
@@ -65,6 +67,17 @@ function scrollRight() {
     behavior: "smooth",
   });
 }
+
+function routeTo(option: StoreProductOptionValue) {
+  const variant = product.variants?.find((v) =>
+    v?.options?.some(
+      (o) => o.option_id === option.option_id && o.value === option.value,
+    ),
+  );
+  console.log(variant);
+
+  router.push(`/products/${product.handle}?variant=${variant?.id}`);
+}
 </script>
 <template>
   <div
@@ -78,7 +91,7 @@ function scrollRight() {
         <button
           v-if="showToLeft && haveScrollbar"
           type="button"
-          class="left-5 absolute bottom-1.5"
+          class="left-5 absolute bottom-1.5 bg-white"
           @click="scrollLeft"
         >
           <SvgoChevron
@@ -94,11 +107,12 @@ function scrollRight() {
         <span
           v-for="(v, i) of sizeValues"
           :key="v.id"
-          class="text-black whitespace-nowrap text-base leading-5"
+          class="text-black whitespace-nowrap text-base leading-5 cursor-pointer"
           :class="{
             'snap-start': i === 0,
             'snap-end': i !== 0,
           }"
+          @click="routeTo(v)"
         >
           {{ v.value }}
         </span>
@@ -107,7 +121,7 @@ function scrollRight() {
         <button
           v-if="showToRight && haveScrollbar"
           type="button"
-          class="absolute right-5 bottom-1.5"
+          class="absolute right-5 bottom-1.5 bg-white"
           @click="scrollRight"
         >
           <SvgoChevron class="text-2xl cursor-pointer !mb-0" filled />
