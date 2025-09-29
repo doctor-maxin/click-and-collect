@@ -27,6 +27,9 @@ const categoriesTree = computed(
 defineProps<{
   menu: NavigationMenu;
 }>();
+defineEmits<{
+  (e: "close"): void;
+}>();
 </script>
 
 <template>
@@ -42,7 +45,11 @@ defineProps<{
           class="uppercase py-2 text-left font-semibold text-base leading-5 w-full"
         >
           <NavigationMenuLink as-child>
-            <NuxtLink :to="'/catalog/' + category.handle" class="w-full block">
+            <NuxtLink
+              :to="'/catalog/' + category.handle"
+              class="w-full block"
+              @click="$emit('close')"
+            >
               {{ category.name }}
             </NuxtLink>
           </NavigationMenuLink>
@@ -52,7 +59,7 @@ defineProps<{
           v-else
           class="uppercase block text-left py-2 gap-4 font-semibold text-base leading-5 w-full"
         >
-          <NuxtLink :to="'/catalog/' + category.handle">
+          <NuxtLink :to="'/catalog/' + category.handle" @click="$emit('close')">
             {{ category.name }}
           </NuxtLink>
         </NavigationMenuLink>
@@ -69,7 +76,10 @@ defineProps<{
                 class="uppercase py-2 items-center gap-4 font-medium text-base leading-5 flex justify-between w-full"
               >
                 <NavigationMenuLink>
-                  <NuxtLink :to="`/catalog/${subCategory.handle}`">
+                  <NuxtLink
+                    :to="`/catalog/${subCategory.handle}`"
+                    @click="$emit('close')"
+                  >
                     {{ subCategory.name }}
                   </NuxtLink>
                 </NavigationMenuLink>
@@ -96,6 +106,7 @@ defineProps<{
                 color: item.additionalFields?.color ?? 'inherit',
               }"
               class="w-full block"
+              @click="$emit('close')"
             >
               {{ item.title }}
             </NuxtLink>
@@ -111,6 +122,7 @@ defineProps<{
             :style="{
               color: item.additionalFields?.color ?? 'inherit',
             }"
+            @click="$emit('close')"
           >
             {{ item.title }}
           </NuxtLink>
@@ -133,6 +145,7 @@ defineProps<{
                     :style="{
                       color: item.additionalFields?.color ?? 'inherit',
                     }"
+                    @click="$emit('close')"
                   >
                     {{ subItem.title }}
                   </NuxtLink>

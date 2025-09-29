@@ -10,6 +10,7 @@ const breadcrumbs = computed(() => {
   console.log(category);
   let c: StoreProductCategory | null = category;
   while (c) {
+    if (!c.parent_category) break;
     list.push({
       path: `/catalog/` + c.handle,
       label: `${c.name[0]?.toUpperCase()}${c.name.slice(1).toLowerCase()}`,
