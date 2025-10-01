@@ -2,6 +2,7 @@
 import { WidgetHeader } from "@/widgets/header";
 import { WidgetFooter } from "@/widgets/footer";
 import { WidgetScrollUp } from "@/widgets/scroll-up";
+import { WidgetCookieBanner } from "@/widgets/cookie-banner";
 import { useAsyncData } from "#app";
 
 const client = useMedusaClient();
@@ -36,5 +37,6 @@ await useAsyncData("categories", () =>
     <NuxtPage class="flex-1" />
     <WidgetFooter />
     <WidgetScrollUp />
+    <WidgetCookieBanner />
   </div>
 </template>

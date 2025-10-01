@@ -31,6 +31,7 @@
     "vee-validate": "^4.15.1",
     "vue": "^3.5.21",
     "vue-router": "^4.5.1",
+    "vue-strapi-blocks-renderer": "^0.2.2",
     "vue-yandex-maps": "^2.2.2",
     "yup": "^1.7.1"
   },

@@ -13,8 +13,6 @@ import {
 import { useMedusaClient } from "#imports";
 import type { StoreProductCategory } from "@medusajs/types";
 
-const client = useMedusaClient();
-
 const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
 const { data: availableCategories } = useNuxtData<string[]>(
@@ -49,7 +47,7 @@ defineEmits<{
       >
         <NavigationMenuTrigger
           v-if="category.category_children?.length"
-          class="uppercase py-2 text-left font-semibold text-base leading-5 w-full"
+          class="uppercase main-menu-bar-link relative py-2 text-left font-semibold text-base leading-5 w-full"
         >
           <NavigationMenuLink as-child>
             <NuxtLink
@@ -67,7 +65,7 @@ defineEmits<{
           class="uppercase block text-left py-2 gap-4 font-semibold text-base leading-5 w-full"
         >
           <NuxtLink :to="'/catalog/' + category.handle" @click="$emit('close')">
-            {{ category.name }}
+            {{ category.name }} s
           </NuxtLink>
         </NavigationMenuLink>
         <NavigationMenuContent
@@ -179,3 +177,5 @@ defineEmits<{
     </div>
   </NavigationMenuRoot>
 </template>
+
+<style></style>
