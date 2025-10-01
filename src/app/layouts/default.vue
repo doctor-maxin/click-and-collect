@@ -2,10 +2,24 @@
 import { WidgetHeader } from "@/widgets/header";
 import { WidgetFooter } from "@/widgets/footer";
 import { WidgetScrollUp } from "@/widgets/scroll-up";
+import { useAsyncData } from "#app";
 
 const client = useMedusaClient();
+const searchClient = useSearchClient();
 
 await useAsyncData("config", () => GqlGetConfig());
+await useAsyncData(
+  "available-categories",
+  () =>
+    searchClient.index("categories").search(null, {
+      filter: "products > 0",
+      attributesToRetrieve: ["id"],
+    }),
+  {
+    transform: (r) => r.hits?.map((c) => c.id),
+  },
+);
+
 await useAsyncData("categories", () =>
   client.store.category
     .list({

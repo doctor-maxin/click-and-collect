@@ -72,6 +72,8 @@ export default defineNuxtConfig({
       strapiToken: process.env.STRAPI_TOKEN,
       medusaUrl: process.env.NUXT_MEDUSA_URL,
       medusaToken: process.env.NUXT_MEDUSA_TOKEN,
+      searchApiKey: process.env.NUXT_SEARCH_API_KEY,
+      searchUrl: process.env.NUXT_SEARCH_URL,
     },
   },
   vite: {
