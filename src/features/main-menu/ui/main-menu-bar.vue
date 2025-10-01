@@ -17,12 +17,19 @@ const client = useMedusaClient();
 
 const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
+const { data: availableCategories } = useNuxtData<string[]>(
+  "available-categories",
+);
 
 const categoriesTree = computed(
   () =>
     product_categories.value?.find((c) => c.handle === "sinsay")
       ?.category_children || [],
 );
+
+function clearedCategories(list: StoreProductCategory[]) {
+  return list.filter((c) => availableCategories.value?.includes(c.id));
+}
 
 defineProps<{
   menu: NavigationMenu;
@@ -36,7 +43,7 @@ defineEmits<{
   <NavigationMenuRoot orientation="vertical" class="flex w-full">
     <NavigationMenuList class="flex flex-col min-w-[9rem]">
       <NavigationMenuItem
-        v-for="category of categoriesTree"
+        v-for="category of clearedCategories(categoriesTree)"
         :key="category.id"
         class="group"
       >
@@ -70,7 +77,9 @@ defineEmits<{
           <NavigationMenuSub>
             <NavigationMenuList class="flex flex-col min-w-[9rem]">
               <NavigationMenuItem
-                v-for="subCategory of category.category_children"
+                v-for="subCategory of clearedCategories(
+                  category.category_children,
+                )"
                 :value="subCategory.handle"
                 :key="subCategory.id"
                 class="uppercase py-2 items-center gap-4 font-medium text-base leading-5 flex justify-between w-full"
