@@ -10,6 +10,7 @@ const containerRef = ref(null);
 const _swiper = useSwiper(containerRef, {
   effect: "slide",
   navigation: {
+    enabled: data.slides.length > 1,
     nextEl: ".next-el",
     prevEl: ".prev-el",
   },
@@ -58,6 +59,7 @@ const _swiper = useSwiper(containerRef, {
         </swiper-slide>
       </swiper-container>
       <div
+        v-if="data.slides.length > 1"
         class="container z-20 hidden lg:flex items-center justify-between h-full absolute left-1/2 top-0 -translate-x-1/2"
       >
         <button
