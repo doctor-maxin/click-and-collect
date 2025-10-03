@@ -165,3 +165,22 @@ body {
   transform: translateX(-1rem);
   opacity: 0;
 }
+
+.content {
+  font-size: 16px;
+  line-height: 24px;
+}
+.content :is(h2, h3, h4, h5, h6) {
+  margin-block: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+.content ul {
+  list-style: disc;
+  list-style-position: inside;
+}
+
+.content ol {
+  list-style: decimal;
+  list-style-position: inside;
+}

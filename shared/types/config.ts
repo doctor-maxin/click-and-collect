@@ -1,3 +1,5 @@
+import { type BlocksContent } from "vue-strapi-blocks-renderer";
+
 export interface IGlobalConfig {
   config: {
     id: number;
@@ -8,7 +10,7 @@ export interface IGlobalConfig {
     yandexMapKey: string;
     cookieBanner: {
       header: string;
-      content: string;
+      content: BlocksContent;
     };
   };
 }
