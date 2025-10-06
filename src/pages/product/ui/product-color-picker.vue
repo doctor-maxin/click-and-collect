@@ -3,6 +3,14 @@ import { useProductStore } from "../lib/product-store";
 
 const productStore = useProductStore();
 const { product, color } = storeToRefs(productStore);
+
+const colorImage = (color: string) => {
+  const image = product.value?.images?.find(
+    (i) => i.metadata?.color?.toLowerCase() === color?.toLowerCase(),
+  );
+  console.log(image);
+  return image?.url ?? "/not_found.png";
+};
 </script>
 <template>
   <div class="flex my-4 lg:my-9 flex-col gap-5 lg:gap-4">
@@ -14,16 +22,16 @@ const { product, color } = storeToRefs(productStore);
         v-for="item of product?.options?.find((o) => o.title === 'color')
           ?.values"
         :key="item.id"
-        class="cursor-pointer border"
+        class="cursor-pointer border-2"
         @click="productStore.selectColor(item)"
         :class="{
-          ' border-black': color?.id === item?.id,
+          ' border-blue': color?.id === item?.id,
           ' border-gray': color?.id !== item?.id,
         }"
       >
         <img
           class="aspect-[23/28] object-cover max-w-[5.75rem]"
-          :src="(item.metadata?.thumbnail as string) || '/not_found.png'"
+          :src="colorImage(item.value)"
           :alt="`Изображение товара ${item.value}`"
         />
       </article>

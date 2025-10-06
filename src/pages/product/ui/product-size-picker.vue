@@ -8,15 +8,17 @@ const { size, product } = storeToRefs(productStore);
 <template>
   <section class="flex flex-col gap-4 my-4 lg:my-9">
     <span>Размеры</span>
-    <div class="flex text-base leading-5 gap-8 w-full">
+    <div
+      class="flex text-base leading-5 gap-y-4 gap-8 w-full max-w-full flex-wrap"
+    >
       <label
         v-for="item of product?.options?.find((o) => o.title === 'size')
           ?.values"
         :key="item.id"
-        class="cursor-pointer px-3 py-1 border"
+        class="cursor-pointer border relative py-1 px-2"
         :class="{
-          ' border-black': size?.id === item?.id,
-          ' border-gray': size?.id !== item?.id,
+          '  border-blue ': size?.id === item?.id,
+          ' border-transparent': size?.id !== item?.id,
         }"
         @click="productStore.selectSize(item)"
       >

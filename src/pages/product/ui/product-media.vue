@@ -3,7 +3,7 @@ import type { StoreProductImage } from "@medusajs/types";
 import { useProductStore } from "../lib/product-store";
 
 const productStore = useProductStore();
-const { product } = storeToRefs(productStore);
+const { product, color } = storeToRefs(productStore);
 
 function getThumbnailUrl(image?: StoreProductImage) {
   if (!image?.url?.trim()) return "/not_found.png";
@@ -17,13 +17,33 @@ function getDefaultUrl(image?: StoreProductImage) {
 }
 
 const mainImage = ref(product?.value?.images?.[0]);
+
+const colorImages = computed(() =>
+  product.value?.images?.filter(
+    (i) =>
+      //@ts-ignore
+      i.metadata?.color?.toLowerCase() === color.value?.value?.toLowerCase(),
+  ),
+);
+
+watch(
+  () => color.value?.value,
+  (colorString) => {
+    if (mainImage.value?.metadata?.color !== colorString) {
+      mainImage.value = colorImages.value?.[0];
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 </script>
 <template>
   <div>
     <div class="lg:flex hidden gap-4 w-full">
       <div class="flex flex-col gap-3">
         <img
-          v-for="image of product?.images"
+          v-for="image of colorImages"
           :src="getThumbnailUrl(image)"
           alt="Product Image"
           class="max-w-[5.75rem] cursor-pointer aspect-[23/28] object-cover"

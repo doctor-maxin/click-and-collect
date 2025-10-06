@@ -6,12 +6,14 @@ import CategoryProducts from "./category-products.vue";
 import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
 import { useRoute } from "#app";
+import { useFiltersStore } from "../lib/filters.store";
 
 const route = useRoute();
 const client = useMedusaClient();
-const limit = ref(8);
-const page = ref(1);
-const count = ref(0);
+const filtersStore = useFiltersStore();
+const searchClient = useSearchClient();
+
+const { limit, page, count } = storeToRefs(filtersStore);
 
 if (!route.params.handle || route.params.handle === "undefined")
   throw createError({
@@ -63,27 +65,33 @@ if (!category.value)
 
 const products = ref<StoreProduct[]>([]);
 const { data: productsResponse, status } = useAsyncData(
-  category.value.id,
+  () => category.value?.id as string,
   () =>
-    client.store.product.list({
-      category_id: category.value?.id,
-      limit: limit.value,
-      offset: (page.value - 1) * limit.value,
+    searchClient.index("products").search<StoreProduct>(null, {
+      filter: [`category_ids IN ['${category.value?.id}']`],
+      hitsPerPage: limit.value,
+      page: page.value,
+      facets: ["color", "size"],
     }),
   {
     watch: [page],
   },
 );
+console.log("productsResponse", productsResponse.value?.facetDistribution);
 
 watchEffect(() => {
   if (status.value === "success") {
     if (page.value === 1) {
-      products.value = productsResponse.value?.products ?? [];
+      products.value = productsResponse.value?.hits ?? [];
     } else {
-      products.value.push(...(productsResponse.value?.products ?? []));
+      products.value.push(...(productsResponse.value?.hits ?? []));
     }
 
-    count.value = productsResponse.value?.count ?? 0;
+    //@ts-ignore
+    filtersStore.setCount(productsResponse.value?.totalHits ?? 0);
+
+    filtersStore.setAvailableFilters(productsResponse.value?.facetDistribution);
+    filtersStore.setFiltersList(productsResponse.value?.facetDistribution);
   }
 });
 </script>
@@ -101,7 +109,7 @@ watchEffect(() => {
         :products="products"
         :has-more="count > products.length"
         :is-loading="status === 'pending'"
-        @load-more="page++"
+        @load-more="filtersStore.setPage(page + 1)"
       />
     </div>
   </div>
