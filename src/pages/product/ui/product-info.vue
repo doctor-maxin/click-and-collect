@@ -44,5 +44,8 @@ watch(
     >
     <ProductColorPicker />
     <ProductSizePicker />
+    <span class="text-[1.25rem] leading-6 my-0"
+      >Товар доступен только в розничном магазине</span
+    >
   </div>
 </template>

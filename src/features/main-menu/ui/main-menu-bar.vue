@@ -10,7 +10,6 @@ import {
   NavigationMenuTrigger,
   NavigationMenuViewport,
 } from "reka-ui";
-import { useMedusaClient } from "#imports";
 import type { StoreProductCategory } from "@medusajs/types";
 
 const { data: product_categories } =
@@ -18,7 +17,6 @@ const { data: product_categories } =
 const { data: availableCategories } = useNuxtData<string[]>(
   "available-categories",
 );
-
 const categoriesTree = computed(
   () =>
     product_categories.value?.find((c) => c.handle === "sinsay")

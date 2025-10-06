@@ -91,7 +91,7 @@ function routeTo(option: StoreProductOptionValue) {
         <button
           v-if="showToLeft && haveScrollbar"
           type="button"
-          class="left-5 absolute bottom-1.5 bg-white"
+          class="left-5 absolute bottom-1.5"
           @click="scrollLeft"
         >
           <SvgoChevron
@@ -121,7 +121,7 @@ function routeTo(option: StoreProductOptionValue) {
         <button
           v-if="showToRight && haveScrollbar"
           type="button"
-          class="absolute right-5 bottom-1.5 bg-white"
+          class="absolute right-5 bottom-1.5"
           @click="scrollRight"
         >
           <SvgoChevron class="text-2xl cursor-pointer !mb-0" filled />

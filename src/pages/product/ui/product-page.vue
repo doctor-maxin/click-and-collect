@@ -21,7 +21,7 @@ const { data: product } = await useAsyncData(
     client.store.product.list({
       handle: route.params.handle as string,
       fields:
-        "title,variants.*,images.url,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*",
+        "title,variants.*,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*",
     }),
   {
     transform: (r) => r.products?.[0],

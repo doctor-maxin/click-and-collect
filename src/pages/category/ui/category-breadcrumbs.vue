@@ -7,7 +7,6 @@ const { category } = defineProps<{
 
 const breadcrumbs = computed(() => {
   const list = [];
-  console.log(category);
   let c: StoreProductCategory | null = category;
   while (c) {
     if (!c.parent_category) break;
