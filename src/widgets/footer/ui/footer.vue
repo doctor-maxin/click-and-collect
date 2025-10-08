@@ -9,6 +9,14 @@ const { data: footerMenu } = await useAsyncData(
       .single("navigation/render/footer-menu?type=TREE")
       .find() as unknown as Promise<NavigationMenu>,
 );
+
+const { data: footerDocuments } = await useAsyncData(
+  "footer-documents",
+  () =>
+    client
+      .single("navigation/render/footer-documents?type=TREE&menu=true")
+      .find() as unknown as Promise<NavigationMenu>,
+);
 </script>
 <template>
   <footer class="hidden lg:block pb-8 pt-14">
@@ -63,6 +71,12 @@ const { data: footerMenu } = await useAsyncData(
           </NuxtLink>
         </div>
       </section>
+    </div>
+    <div class="container my-9 mx-auto lg:flex flex-col hidden">
+      <pre>
+            {{ footerDocuments }}
+        </pre
+      >
     </div>
   </footer>
 </template>

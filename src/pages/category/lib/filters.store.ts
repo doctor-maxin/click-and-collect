@@ -7,17 +7,27 @@ export const useFiltersStore = defineStore("filters", {
       color: null,
       size: null,
     },
-    appliedFilters: [],
+    appliedFilters: {
+      color: [],
+      size: [],
+    },
     availableFilters: {
       color: null,
       size: null,
     },
 
+    isOpen: false,
     limit: 8,
     page: 1,
     count: 0,
   }),
   actions: {
+    close() {
+      this.isOpen = false;
+    },
+    open() {
+      this.isOpen = true;
+    },
     setFiltersList(values?: FacetDistribution) {
       if (!values) return;
 
@@ -28,7 +38,7 @@ export const useFiltersStore = defineStore("filters", {
         }));
       }
     },
-    setAppliedFilters(appliedFilters: any[]) {
+    setAppliedFilters(appliedFilters: IFiltersStore["appliedFilters"]) {
       this.appliedFilters = appliedFilters;
     },
     setAvailableFilters(values?: FacetDistribution) {
