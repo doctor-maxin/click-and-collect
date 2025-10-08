@@ -12,6 +12,7 @@ import {
 } from "reka-ui";
 import type { StoreProductCategory } from "@medusajs/types";
 
+const appConfig = useAppConfig();
 const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
 const { data: availableCategories } = useNuxtData<string[]>(
@@ -19,9 +20,10 @@ const { data: availableCategories } = useNuxtData<string[]>(
 );
 const categoriesTree = computed(
   () =>
-    product_categories.value?.find((c) => c.handle === "sinsay")
+    product_categories.value?.find((c) => c.handle === appConfig.brand)
       ?.category_children || [],
 );
+console.log("process.env.NUXT_BRAND_NAME", availableCategories.value);
 
 function clearedCategories(list: StoreProductCategory[]) {
   return list.filter((c) => availableCategories.value?.includes(c.id));
@@ -171,7 +173,7 @@ defineEmits<{
     </NavigationMenuList>
 
     <div class="perspective-[2000px]">
-      <NavigationMenuViewport class="navigation-menu-viewport" />
+      <NavigationMenuViewport align="start" class="navigation-menu-viewport" />
     </div>
   </NavigationMenuRoot>
 </template>

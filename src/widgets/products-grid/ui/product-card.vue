@@ -15,14 +15,17 @@ onMounted(() => {
 });
 </script>
 <template>
-  <article class="flex group flex-col gap-4 w-full" :data-id="product.id">
-    <div class="relative">
+  <article
+    class="product-card flex group flex-col gap-4 w-full"
+    :data-id="product.id"
+  >
+    <div class="relative" data-length="product.images">
       <NuxtLink class="contents" :to="`/products/${product.handle}`">
         <template v-if="product.images?.length">
           <ClientOnly>
             <swiper-container
               :pagination="{
-                el: '.product-card-pagination',
+                el: `.product-card[data-id='${product.id}'] .product-card-pagination`,
                 type: 'bullets',
               }"
               ref="containerRef"
@@ -38,13 +41,11 @@ onMounted(() => {
                   :src="image.url"
                 />
               </swiper-slide>
-              <div slot="container-end">
-                <div
-                  class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
-                ></div>
-              </div>
             </swiper-container>
           </ClientOnly>
+          <div
+            class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
+          ></div>
         </template>
         <div v-else class="aspect-[15/18]">
           <NuxtImg
