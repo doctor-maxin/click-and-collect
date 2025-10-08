@@ -14,6 +14,7 @@ await useAsyncData(
   () =>
     searchClient.index("categories").search(null, {
       filter: "products > 0",
+      limit: 1000,
       attributesToRetrieve: ["id"],
     }),
   {
