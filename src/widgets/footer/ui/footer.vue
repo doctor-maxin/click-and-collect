@@ -1,52 +1,80 @@
 <script setup lang="ts">
-const client = useStrapiClient();
+import { NavigationRenderType, NavigationItemType } from "#gql/default";
 
 const { data: config } = useNuxtData("config");
 const { data: footerMenu } = await useAsyncData(
   "footer-menu",
   () =>
-    client
-      .single("navigation/render/footer-menu?type=TREE")
-      .find() as unknown as Promise<NavigationMenu>,
+    GqlRenderNavigation({
+      type: NavigationRenderType.TREE,
+      navigationIdOrSlug: "footer-menu",
+    }),
+  {
+    transform: (r) => r.renderNavigation?.filter((c) => !!c) ?? [],
+  },
 );
 
-const { data: footerDocuments } = await useAsyncData(
-  "footer-documents",
-  () =>
-    client
-      .single("navigation/render/footer-documents?type=TREE&menu=true")
-      .find() as unknown as Promise<NavigationMenu>,
-);
+const getItemUrl = (
+  type: NavigationItemType | undefined,
+  path: string | undefined | null,
+  typename: string | undefined,
+) => {
+  if (type === NavigationItemType.EXTERNAL) {
+    return `${path}`;
+  }
+  if (type === NavigationItemType.INTERNAL) {
+    if (typename === "Page") {
+      return `/pages/${path?.startsWith("/") ? path.slice(1) : path}`;
+    }
+  }
+  return `/${path?.startsWith("/") ? path.slice(1) : path}`;
+};
 </script>
 <template>
   <footer class="hidden lg:block pb-8 pt-14">
-    <div class="container mx-auto grid additionalFields grid-cols-12 gap-4">
-      <section v-for="menu of footerMenu" :key="menu.id" class="col-span-2">
+    <div
+      class="container px-4 mx-auto grid additionalFields grid-cols-12 gap-4"
+    >
+      <section
+        v-for="(menu, index) of footerMenu ?? []"
+        :key="menu?.id"
+        :class="{
+          'col-span-4': index === 1,
+          'col-span-2': index !== 1,
+        }"
+      >
         <span class="text-base block mb-5 font-semibold leading-5">{{
-          menu.title
+          menu?.title
         }}</span>
         <nav>
           <ul
-            v-if="menu.additionalFields.isSocialMenu"
+            v-if="menu?.additionalFields?.isSocialMenu"
             class="flex gap-3 flex-wrap"
           >
-            <li v-for="item of menu.items" :key="item.id">
-              <NuxtLink :to="item.path" class="cursor-pointer">
+            <li v-for="item of menu.items" :key="item?.id">
+              <NuxtLink
+                :to="
+                  getItemUrl(item?.type, item?.path, item?.related?.__typename)
+                "
+                class="cursor-pointer"
+              >
                 <figure class="w-12 aspect-square">
-                  <img :src="item.additionalFields.icon" />
+                  <img :src="item?.additionalFields?.icon" />
                   <figcaption class="hidden">
-                    {{ item.title }}
+                    {{ item?.title }}
                   </figcaption>
                 </figure>
               </NuxtLink>
             </li>
           </ul>
           <ul v-else class="flex flex-col gap-3">
-            <li v-for="item of menu.items" :key="item.id">
+            <li v-for="item of menu?.items" :key="item?.id">
               <NuxtLink
                 class="text-base cursor-pointer leading-5"
-                :to="item.url"
-                >{{ item.title }}</NuxtLink
+                :to="
+                  getItemUrl(item?.type, item?.path, item?.related?.__typename)
+                "
+                >{{ item?.title }}</NuxtLink
               >
             </li>
           </ul>

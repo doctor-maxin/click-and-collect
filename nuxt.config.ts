@@ -58,6 +58,10 @@ export default defineNuxtConfig({
     clients: {
       default: {
         host: process.env.STRAPI_URL + "/graphql",
+        codegenHeaders: {
+          Authorization: "Bearer " + process.env.STRAPI_TOKEN,
+        },
+        retainToken: true,
         token: {
           type: "Bearer",
           name: "Authorization",
