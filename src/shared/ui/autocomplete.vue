@@ -34,11 +34,11 @@ const { handleBlur, handleChange, value, resetField } = useField<
 const isOpen = ref(false);
 const query = ref("");
 const model = ref<IFilterValue["value"][]>(value.value);
-const isSelectAll = computed(() => model.value.length === options.length);
+const isSelectAll = computed(() => model.value?.length === options?.length);
 
-const onSelectItem = (event: SelectItemSelectEvent<IFilterValue["value"]>) => {
-  console.log("on select", event.detail.value, model.value);
-};
+const onSelectItem = (
+  event: SelectItemSelectEvent<IFilterValue["value"]>,
+) => {};
 
 const selectAll = () => {
   if (isSelectAll.value) {
@@ -61,9 +61,7 @@ watch(isOpen, (open) => {
 });
 
 watch(value, (val, oldval) => {
-  console.log("VALue changed", val, oldval);
-  if (val.length === 0 && oldval.length >= 0) {
-    console.log("emptyu watch");
+  if (val?.length === 0 && oldval?.length >= 0) {
     model.value = [];
   }
 });
@@ -100,7 +98,7 @@ const reset = () => {
         </span>
         <SvgoArrowDown
           filled
-          v-if="open || value?.length === 0"
+          v-if="open || value?.length === 0 || !value"
           class="text-[1.5rem] !mb-0"
           :class="{
             'rotate-180': !open,
@@ -117,7 +115,7 @@ const reset = () => {
 
     <ComboboxContent
       @focus-outside.prevent
-      @interact-outside.prevent
+      @interact-outside.prevent="isOpen = false"
       class="absolute py-2 px-4 z-10 w-full bg-white rounded-b-lg border-x border-b top-full"
     >
       <ComboboxViewport class="flex flex-col w-full">

@@ -8,10 +8,7 @@ export const useFiltersStore = defineStore("filters", {
       color: null,
       size: null,
     },
-    appliedFilters: {
-      color: [],
-      size: [],
-    },
+    appliedFilters: {},
     availableFilters: {
       color: null,
       size: null,
@@ -43,7 +40,11 @@ export const useFiltersStore = defineStore("filters", {
       }
     },
     setAppliedFilters(appliedFilters: IFiltersStore["appliedFilters"]) {
-      this.appliedFilters = appliedFilters;
+      this.appliedFilters = Object.fromEntries(
+        Object.entries(appliedFilters).filter(
+          ([key, value]) => value?.length > 0,
+        ),
+      );
     },
     setAppliedFiltersFromQuery(appliedFilters: LocationQuery) {
       for (const [key, value] of Object.entries(appliedFilters)) {
@@ -66,7 +67,7 @@ export const useFiltersStore = defineStore("filters", {
 
       this.appliedFilters = Object.fromEntries(
         Object.entries(this.appliedFilters).filter(
-          ([key, value]) => value.length > 0,
+          ([key, value]) => value?.length > 0,
         ),
       );
     },
