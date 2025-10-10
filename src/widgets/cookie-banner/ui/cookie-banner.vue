@@ -17,7 +17,7 @@ const acceptAction = () => {
     class="fixed z-20 bottom-0 left-0 w-full bg-white/90"
   >
     <div
-      class="container flex-col lg:flex-row w-full flex items-end justify-between mx-auto p-4 lg:p-8 gap-3 lg:gap-6"
+      class="container flex-col lg:flex-row w-full flex items-start justify-between mx-auto p-4 lg:p-8 gap-3 lg:gap-6"
     >
       <div class="flex flex-col gap-3 sm:gap-4 text-sm sm:text-base leading-6">
         <h4 class="font-medium uppercase">
