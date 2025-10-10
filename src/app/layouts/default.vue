@@ -33,7 +33,7 @@ await useAsyncData("categories", () =>
 </script>
 
 <template>
-  <div class="flex flex-col min-h-page w-full pb-12 lg:pb-0">
+  <div class="flex layout flex-col min-h-screen w-full pb-12 lg:pb-0">
     <WidgetHeader />
     <NuxtPage class="flex-1" />
     <WidgetFooter />

@@ -11,16 +11,31 @@ import {
   DialogTrigger,
 } from "reka-ui";
 import FiltersForm from "./filters-form.vue";
+import { useFiltersStore } from "~/shared/lib/filters.store";
 
-const isOpen = ref(false);
+const filtersStore = useFiltersStore();
+const { isOpen, appliedFilters } = storeToRefs(filtersStore);
+
+const filterCount = computed(() => {
+  return Object.keys(appliedFilters.value).length;
+});
 </script>
 <template>
-  <DialogRoot v-model:open="isOpen" class="relative z-20">
+  <DialogRoot
+    :open="isOpen"
+    class="relative z-20"
+    @update:open="filtersStore.setIsOpen"
+  >
     <DialogTrigger as-child>
       <button
         class="flex cursor-pointer gap-2 items-center text-[1.25rem] font-medium leading-6"
       >
         <SvgoFilter filled class="!mb-0" /> Фильтры
+        <span
+          class="bg-blue text-white flex items-center justify-center size-6 text-sm font-medium rounded-full"
+          v-if="filterCount"
+          >{{ filterCount }}</span
+        >
       </button>
     </DialogTrigger>
     <DialogPortal>

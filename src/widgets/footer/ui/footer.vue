@@ -9,10 +9,18 @@ const { data: footerMenu } = await useAsyncData(
       .single("navigation/render/footer-menu?type=TREE")
       .find() as unknown as Promise<NavigationMenu>,
 );
+
+const { data: footerDocuments } = await useAsyncData(
+  "footer-documents",
+  () =>
+    client
+      .single("navigation/render/footer-documents?type=TREE&menu=true")
+      .find() as unknown as Promise<NavigationMenu>,
+);
 </script>
 <template>
   <footer class="hidden lg:block pb-8 pt-14">
-    <div class="container mx-auto grid additionalFields grid-cols-12">
+    <div class="container mx-auto grid additionalFields grid-cols-12 gap-4">
       <section v-for="menu of footerMenu" :key="menu.id" class="col-span-2">
         <span class="text-base block mb-5 font-semibold leading-5">{{
           menu.title

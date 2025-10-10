@@ -89,7 +89,7 @@ const openMarker = ref<number | null>(null);
         </template>
       </yandex-map>
     </div>
-    <div v-if="viewMode === 'list'" class="container mx-auto">
+    <div v-if="viewMode === 'list'" class="px-4 container mx-auto">
       <table class="text-base text-left">
         <thead>
           <tr>

@@ -23,7 +23,6 @@ const categoriesTree = computed(
     product_categories.value?.find((c) => c.handle === appConfig.brand)
       ?.category_children || [],
 );
-console.log("process.env.NUXT_BRAND_NAME", availableCategories.value);
 
 function clearedCategories(list: StoreProductCategory[]) {
   return list.filter((c) => availableCategories.value?.includes(c.id));

@@ -8,6 +8,7 @@
   --color-blue: hsl(197, 100%, 45%);
   --color-white: hsl(0, 0%, 100%);
   --color-gray: hsl(0, 0%, 75%);
+  --color-light-gray: hsl(0, 0%, 85%);
   --color-red: hsl(0, 75%, 45%);
 }
 
@@ -183,4 +184,31 @@ body {
 .content ol {
   list-style: decimal;
   list-style-position: inside;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgb(175, 177, 182);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.layout:has(.home-page > section.carousel:first-of-type) .ui-header {
+  color: white;
+  background: linear-gradient(
+    0deg,
+    rgba(194, 195, 197, 0),
+    rgba(0, 0, 0, 0.7) 100%
+  );
+
+  a,
+  button {
+    color: white;
+  }
 }
