@@ -9,7 +9,6 @@ import {
   ComboboxItem,
   ComboboxItemIndicator,
   ComboboxLabel,
-  ComboboxPortal,
   ComboboxRoot,
   ComboboxSeparator,
   ComboboxTrigger,
@@ -26,14 +25,11 @@ const { name, form, options } = defineProps<{
   options: IFilterValue[];
 }>();
 
-const { handleBlur, handleChange, value } = useField<IFilterValue["value"][]>(
-  name,
-  undefined,
-  {
-    form,
-    initialValue: [],
-  },
-);
+const { handleBlur, handleChange, value, resetField } = useField<
+  IFilterValue["value"][]
+>(name, undefined, {
+  form,
+});
 
 const isOpen = ref(false);
 const query = ref("");
@@ -63,12 +59,26 @@ watch(isOpen, (open) => {
     model.value = value.value;
   }
 });
+
+watch(value, (val, oldval) => {
+  console.log("VALue changed", val, oldval);
+  if (val.length === 0 && oldval.length >= 0) {
+    console.log("emptyu watch");
+    model.value = [];
+  }
+});
+
+const reset = () => {
+  model.value = [];
+  handleChange([]);
+};
 </script>
 <template>
   <ComboboxRoot
     multiple
     v-model="model"
     class="relative"
+    open-on-click
     v-model:open="isOpen"
     v-slot="{ open }"
   >
@@ -100,11 +110,14 @@ watch(isOpen, (open) => {
           v-if="!open && value?.length > 0"
           filled
           class="text-[1.5rem] !mb-0"
+          @click="reset"
         />
       </ComboboxTrigger>
     </ComboboxAnchor>
 
     <ComboboxContent
+      @focus-outside.prevent
+      @interact-outside.prevent
       class="absolute py-2 px-4 z-10 w-full bg-white rounded-b-lg border-x border-b top-full"
     >
       <ComboboxViewport class="flex flex-col w-full">
@@ -147,8 +160,9 @@ watch(isOpen, (open) => {
             v-for="option of options"
             :value="option.value"
             :key="option.value"
+            :disabled="option.disabled"
             :textValue="option.label"
-            class="flex gap-3 items-center cursor-pointer"
+            class="flex gap-3 group items-center cursor-pointer"
             @select="onSelectItem"
           >
             <svg
@@ -156,6 +170,7 @@ watch(isOpen, (open) => {
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
               width="24"
+              class="group-[[data-disabled]]:opacity-40"
               height="24"
             >
               <path
@@ -166,7 +181,9 @@ watch(isOpen, (open) => {
               />
             </svg>
 
-            <span class="text-base leading-5">
+            <span
+              class="text-base leading-5 group-[[data-disabled]]:text-light-gray"
+            >
               {{ option.label }}
             </span>
           </ComboboxItem>

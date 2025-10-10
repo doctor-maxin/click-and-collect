@@ -20,7 +20,7 @@ const { data: footerDocuments } = await useAsyncData(
 </script>
 <template>
   <footer class="hidden lg:block pb-8 pt-14">
-    <div class="container mx-auto grid additionalFields grid-cols-12">
+    <div class="container mx-auto grid additionalFields grid-cols-12 gap-4">
       <section v-for="menu of footerMenu" :key="menu.id" class="col-span-2">
         <span class="text-base block mb-5 font-semibold leading-5">{{
           menu.title
@@ -71,12 +71,6 @@ const { data: footerDocuments } = await useAsyncData(
           </NuxtLink>
         </div>
       </section>
-    </div>
-    <div class="container my-9 mx-auto lg:flex flex-col hidden">
-      <pre>
-            {{ footerDocuments }}
-        </pre
-      >
     </div>
   </footer>
 </template>

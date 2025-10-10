@@ -6,14 +6,15 @@ import CategoryProducts from "./category-products.vue";
 import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
 import { useRoute } from "#app";
-import { useFiltersStore } from "../lib/filters.store";
+import { useFiltersStore } from "~/shared/lib/filters.store";
+import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 
 const route = useRoute();
 const client = useMedusaClient();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
 
-const { limit, page, count } = storeToRefs(filtersStore);
+const { limit, page, count, appliedFilters } = storeToRefs(filtersStore);
 
 if (!route.params.handle || route.params.handle === "undefined")
   throw createError({
@@ -64,20 +65,34 @@ if (!category.value)
   });
 
 const products = ref<StoreProduct[]>([]);
-const { data: productsResponse, status } = useAsyncData(
-  () => category.value?.id as string,
-  () =>
-    searchClient.index("products").search<StoreProduct>(null, {
+filtersStore.setAppliedFiltersFromQuery(route.query);
+
+const { data: filtersResponse } = await useAsyncData(
+  () => `filters-${category.value?.id}`,
+  () => {
+    return searchClient.index("products").search<StoreProduct>(null, {
       filter: [`category_ids IN ['${category.value?.id}']`],
+      hitsPerPage: 0,
+      facets: ["color", "size"],
+    });
+  },
+);
+const { data: productsResponse, status } = await useAsyncData(
+  () => category.value?.id as string,
+  () => {
+    let filter = [`category_ids IN ['${category.value?.id}']`];
+    filter = prepareFilterQuery(filter, appliedFilters.value);
+    return searchClient.index("products").search<StoreProduct>(null, {
+      filter,
       hitsPerPage: limit.value,
       page: page.value,
       facets: ["color", "size"],
-    }),
+    });
+  },
   {
-    watch: [page],
+    watch: [page, appliedFilters],
   },
 );
-console.log("productsResponse", productsResponse.value?.facetDistribution);
 
 watchEffect(() => {
   if (status.value === "success") {
@@ -89,16 +104,18 @@ watchEffect(() => {
 
     //@ts-ignore
     filtersStore.setCount(productsResponse.value?.totalHits ?? 0);
-
     filtersStore.setAvailableFilters(productsResponse.value?.facetDistribution);
-    filtersStore.setFiltersList(productsResponse.value?.facetDistribution);
   }
+});
+
+watchEffect(() => {
+  filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
 });
 </script>
 
 <template>
   <div class="mt-16 lg:mt-[8.125rem]">
-    <div v-if="category" class="container mx-auto">
+    <div v-if="category" class="px-4 container mx-auto">
       <CategoryBreadCrumbs :category="category" />
       <h1 class="font-serif font-medium my-9 text-[1.75rem] uppercase">
         {{ category.name }}
