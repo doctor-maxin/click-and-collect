@@ -16,7 +16,7 @@ defineEmits<{ (e: "select", query: string): void }>();
     <ul class="flex flex-col gap-3">
       <li
         class="flex items-center gap-2"
-        v-for="query in history"
+        v-for="query in history.slice(0, 3)"
         :key="query"
         @click="$emit('select', query)"
       >

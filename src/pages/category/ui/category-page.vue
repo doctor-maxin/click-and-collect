@@ -91,6 +91,7 @@ const { data: productsResponse, status } = await useAsyncData(
   },
   {
     watch: [page, appliedFilters],
+    deep: true,
   },
 );
 
