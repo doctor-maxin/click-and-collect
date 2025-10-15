@@ -32,7 +32,6 @@ const { data: productsResponse, status } = await useAsyncData(
   () => {
     let filter: string[] = [];
     filter = prepareFilterQuery(filter, appliedFilters.value);
-    console.log(filter);
     return searchClient
       .index("products")
       .search<StoreProduct>(query.value?.toString(), {

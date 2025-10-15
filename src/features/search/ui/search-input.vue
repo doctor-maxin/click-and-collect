@@ -65,12 +65,12 @@ const handleForm = () => {
 
 <template>
   <form class="flex flex-col w-full gap-9" @submit.prevent="handleForm">
-    <label class="flex items-center relative max-w-[18.75rem] w-full">
+    <label class="flex items-center relative w-full">
       <input
         placeholder="ХОЧУ КУПИТЬ"
         type="search"
         v-model="query"
-        class="h-8 outline-0 placeholder:text-[hsla(0,0%,62%,1)] appearance-none text-2xl placeholder:font-medium"
+        class="h-8 pr-[3.5rem] w-full outline-0 placeholder:text-[hsla(0,0%,62%,1)] appearance-none text-2xl placeholder:font-medium"
       />
 
       <button type="submit" class="absolute right-0">
