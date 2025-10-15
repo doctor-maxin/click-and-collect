@@ -3,21 +3,24 @@ import SearchBreadCrumbs from "./search-bread-crumbs.vue";
 import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
+import SearchFilters from "./search-filters.vue";
 
 const route = useRoute();
 const searchClient = useSearchClient();
 const filtersStore = useFiltersStore();
+
+const query = computed(() => route.query.q?.toString() ?? "");
 
 const { limit, page, count, appliedFilters } = storeToRefs(filtersStore);
 const products = ref<StoreProduct[]>([]);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 
 const { data: filtersResponse } = await useAsyncData(
-  () => `search-${route.query.q}`,
+  () => `search-${query.value}`,
   () => {
     return searchClient
       .index("products")
-      .search<StoreProduct>(route.query.q?.toString(), {
+      .search<StoreProduct>(query.value?.toString(), {
         hitsPerPage: 0,
         facets: ["color", "size"],
       });
@@ -25,13 +28,14 @@ const { data: filtersResponse } = await useAsyncData(
 );
 
 const { data: productsResponse, status } = await useAsyncData(
-  () => route.query.q as string,
+  () => query.value as string,
   () => {
     let filter: string[] = [];
     filter = prepareFilterQuery(filter, appliedFilters.value);
+    console.log(filter);
     return searchClient
       .index("products")
-      .search<StoreProduct>(route.query.q?.toString(), {
+      .search<StoreProduct>(query.value?.toString(), {
         filter,
         hitsPerPage: limit.value,
         page: page.value,
@@ -39,6 +43,7 @@ const { data: productsResponse, status } = await useAsyncData(
       });
   },
   {
+    deep: true,
     watch: [page, appliedFilters],
   },
 );
@@ -66,10 +71,10 @@ watchEffect(() => {
     <div class="px-4 container mx-auto">
       <SearchBreadCrumbs />
       <h1 class="font-serif font-medium my-9 text-[1.75rem]">
-        Товары по запросу "{{ route.query.q ?? "" }}"
+        Товары по запросу "{{ query?.toString() ?? "" }}"
       </h1>
-      <!-- <CategoryLinks :category="category" />
-      <CategoryFilters :category="category" />-->
+      <!-- <CategoryLinks :category="category" />-->
+      <SearchFilters />
       <WidgetProductsGrid
         :products="products"
         :has-more="count > products.length"

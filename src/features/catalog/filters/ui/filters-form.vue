@@ -7,6 +7,8 @@ import type { IFiltersForm } from "../model/filters.form";
 
 const filtersStore = useFiltersStore();
 const router = useRouter();
+const route = useRoute();
+
 const { filtersList, appliedFilters, availableFilters } =
   storeToRefs(filtersStore);
 
@@ -34,8 +36,15 @@ const form = useForm<IFiltersForm>({
 
 const handleForm = form.handleSubmit(async (values) => {
   filtersStore.setAppliedFilters(values);
+
+  const query: Record<string, string | string[]> = {
+    ...values,
+  };
+  if (route.query.q) {
+    query.q = route.query.q.toString();
+  }
   router.push({
-    query: values,
+    query,
   });
   filtersStore.close();
 });
@@ -54,7 +63,7 @@ const resetForm = () => {
     },
   );
   router.push({
-    query: {},
+    query: route.query.q ? { q: route.query.q.toString() } : {},
   });
   filtersStore.close();
 };

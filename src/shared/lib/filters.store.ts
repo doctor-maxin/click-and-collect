@@ -1,6 +1,7 @@
 import type { FacetDistribution } from "meilisearch";
 import type { IFiltersStore } from "../model/filters-store.model";
 import type { LocationQuery } from "vue-router";
+import { allowedFacets } from "./utils/prepare-filter-query";
 
 export const useFiltersStore = defineStore("filters", {
   state: (): IFiltersStore => ({
@@ -48,7 +49,7 @@ export const useFiltersStore = defineStore("filters", {
     },
     setAppliedFiltersFromQuery(appliedFilters: LocationQuery) {
       for (const [key, value] of Object.entries(appliedFilters)) {
-        if (value?.length === 0) continue;
+        if (value?.length === 0 || !allowedFacets.includes(key)) continue;
 
         if (Array.isArray(value)) {
           this.appliedFilters[key] =

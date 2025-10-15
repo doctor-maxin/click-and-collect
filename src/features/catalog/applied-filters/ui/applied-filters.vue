@@ -2,19 +2,29 @@
 const filtersStore = useFiltersStore();
 const { appliedFilters } = storeToRefs(filtersStore);
 const router = useRouter();
+const route = useRoute();
 const count = computed(() => Object.values(appliedFilters.value).length || 0);
 
 const removeFilterValue = (filter: string, value: string) => {
   filtersStore.removeFilterValue(filter, value);
+
+  const query: Record<string, string | string[]> = {
+    ...appliedFilters.value,
+  };
+
+  if (route.query.q) {
+    query.q = route.query.q.toString();
+  }
   router.push({
-    query: appliedFilters.value,
+    query,
   });
 };
 
 const resetFilters = () => {
   filtersStore.resetFilters();
+
   router.push({
-    query: {},
+    query: route.query.q ? { q: route.query.q.toString() } : {},
   });
 };
 </script>
