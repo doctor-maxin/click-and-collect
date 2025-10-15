@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { PopoverRoot, PopoverTrigger, PopoverContent } from "reka-ui";
+import PopularProducts from "./popular-products.vue";
+import SearchInput from "./search-input.vue";
 
-const isOpen = ref(true);
+const isOpen = ref(false);
 </script>
 <template>
   <PopoverRoot modal v-model:open="isOpen" class="relative z-20">
@@ -12,17 +14,14 @@ const isOpen = ref(true);
     <PopoverContent
       disableOutsidePointerEvents
       disableUpdateOnLayoutShift
+      :side-offset="52"
       positionStrategy="fixed"
-      class="bg-white py-9 mt-[3.25rem] block w-[var(--reka-popper-available-width)] min-h-[var(--reka-popper-available-height)]"
+      class="bg-white py-9 block overflow-y-auto box-border w-[var(--reka-popper-available-width)] h-[var(--reka-popper-available-height)]"
     >
-      <div class="container px-4 flex gap-4 lg:gap-[7.75rem] mx-auto">
-        <div>
-          <h3 class="text-[1.75rem] mb-9 font-medium leading-9 uppercase">
-            Популярные товары
-          </h3>
-        </div>
-        <div class="pt-[5.5rem]">
-            <>
+      <div class="container px-4 grid grid-cols-2 gap-4 mx-auto">
+        <PopularProducts />
+        <div class="lg:pl-[7.75rem] pt-[4.5rem]">
+          <SearchInput @close="isOpen = false" />
         </div>
       </div>
     </PopoverContent>
