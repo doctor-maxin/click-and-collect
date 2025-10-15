@@ -11,11 +11,13 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "nuxt-graphql-client",
     "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
   ],
   alias: {
     "@": "../src",
     "@assets": "../src/app/assets",
   },
+
   yandexMaps: {
     apikey: process.env.NUXT_YANDEX_API_KEY,
   },
