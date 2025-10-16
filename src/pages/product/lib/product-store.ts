@@ -7,6 +7,7 @@ export const useProductStore = defineStore("_product", {
     product: null,
     color: null,
     size: null,
+    price: null,
   }),
   getters: {
     variant: (state) => {
@@ -26,6 +27,9 @@ export const useProductStore = defineStore("_product", {
     },
   },
   actions: {
+    setPrice(price: number) {
+      this.price = price;
+    },
     setProduct(product: IProductState["product"]) {
       this.product = product;
     },
