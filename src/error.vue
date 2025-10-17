@@ -17,13 +17,15 @@ const errorName = computed(() => {
 </script>
 <template>
   <div class="flex flex-col min-h-screen w-full pb-12 lg:pb-0">
-    <WidgetHeader />
-    <div class="flex flex-col flex-1 justify-center items-center">
-      <div class="text-[8.25rem] mb-9 font-medium italic">
+    <WidgetHeader class="static" />
+    <div
+      class="flex bg-[url(/error-page.jpg)] bg-cover bg-center flex-col text-white flex-1 justify-center items-center"
+    >
+      <div class="text-[8.25rem] text-center mb-9 font-semibold italic">
         {{ error.statusCode }}
       </div>
-      <div class="font-medium mb-12 text-2xl">{{ errorName }}</div>
-      <UiButton is-link to="/">Перейти на главную</UiButton>
+      <div class="font-medium mb-12 text-center text-2xl">{{ errorName }}</div>
+      <UiButton variant="secondary" is-link to="/">Перейти на главную</UiButton>
     </div>
     <WidgetFooter />
     <WidgetScrollUp />

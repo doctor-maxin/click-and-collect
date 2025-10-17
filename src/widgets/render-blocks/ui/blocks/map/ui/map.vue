@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { FeatureRenderMedia } from "~/features/render-media";
-import type { YMap } from "@yandex/ymaps3-types";
+import type { YMap, LngLat } from "@yandex/ymaps3-types";
 import {
   YandexMap,
   YandexMapDefaultSchemeLayer,
   YandexMapDefaultFeaturesLayer,
   YandexMapDefaultMarker,
   YandexMapMarker,
+  getLocationFromBounds,
+  getCenterFromCoords,
+  getBoundsFromCoords,
 } from "vue-yandex-maps";
 import type { ISharedMap } from "~/widgets/render-blocks";
 import { useAsyncData } from "#app";
@@ -35,7 +38,65 @@ const options = markRaw([
 ]);
 
 const viewMode = ref("map");
+const city = ref();
+const cities = computed(
+  () =>
+    points.value?.map((point) => ({
+      label: point.city,
+      value: point.city,
+    })) ?? [],
+);
 const openMarker = ref<number | null>(null);
+
+const cityPoints = computed(
+  () =>
+    points.value?.filter((point) =>
+      city.value ? point.city === city.value : point,
+    ) ?? [],
+);
+
+const centerToCity = async () => {
+  if (!cityPoints.value.length || !map.value) return;
+
+  if (cityPoints.value.length < 4) {
+    const coords = cityPoints.value.map(
+      (point) => [+point.coordinates.lon, +point.coordinates.lat] as LngLat,
+    );
+    const center = getCenterFromCoords(coords);
+    map.value.setLocation({
+      duration: 300,
+      center,
+    });
+    console.log("changed center");
+  } else {
+    const coords = cityPoints.value.map(
+      (point) => [+point.coordinates.lon, +point.coordinates.lat] as LngLat,
+    );
+
+    const bounds = getBoundsFromCoords(coords);
+    const { center, zoom } = await getLocationFromBounds({
+      bounds,
+      map: map.value,
+      comfortZoomLevel: true,
+      roundZoom: true,
+    });
+
+    map.value.setLocation({
+      center,
+      zoom,
+      duration: 300,
+    });
+  }
+};
+watch(city, centerToCity);
+
+watch(viewMode, (mode) => {
+  if (mode === "map" && city.value) {
+    setTimeout(() => {
+      centerToCity();
+    }, 300);
+  }
+});
 </script>
 <template>
   <section class="pt-6 lg:pt-9 container lg:max-w-none mx-auto">
@@ -43,6 +104,15 @@ const openMarker = ref<number | null>(null);
       {{ data.header }}
     </h2>
     <header class="flex mb-3 lg:mb-9 lg:mx-auto lg:container justify-end py-2">
+      <div class="mr-auto">
+        <UiSelect
+          placeholder="Москва"
+          label="Город"
+          :options="cities"
+          v-model="city"
+          class="mr-auto ml-0"
+        />
+      </div>
       <UiToggle :options="options" v-model="viewMode" />
     </header>
     <div
@@ -101,17 +171,17 @@ const openMarker = ref<number | null>(null);
             <th
               class="text-[1.25rem] border-b border-gray w-1/3 py-6 text-[hsla(216,64%,15%,0.5)] font-normal"
             >
-              Режим работы
+              Режим работы магазина
             </th>
             <th
               class="text-[1.25rem] border-b border-gray w-1/3 py-6 text-[hsla(216,64%,15%,0.5)] font-normal"
             >
-              Служба поддержки
+              Телефон магазина
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(marker, index) of points" :key="index">
+          <tr v-for="(marker, index) of cityPoints" :key="index">
             <td class="py-7 pr-7">
               <div>
                 <span class="font-medium block mb-3"> {{ marker.name }}</span>

@@ -29,6 +29,13 @@ const getItemUrl = (
   }
   return `/${path?.startsWith("/") ? path.slice(1) : path}`;
 };
+
+const socialLinks = computed(() =>
+  footerMenu.value?.find((item) => item?.additionalFields?.isSocialMenu),
+);
+const defaultLinks = computed(() =>
+  footerMenu.value?.filter((item) => !item?.additionalFields?.isSocialMenu),
+);
 </script>
 <template>
   <footer class="hidden lg:block pb-8 pt-14">
@@ -36,7 +43,7 @@ const getItemUrl = (
       class="container px-4 mx-auto grid additionalFields grid-cols-12 gap-4"
     >
       <section
-        v-for="(menu, index) of footerMenu ?? []"
+        v-for="(menu, index) of defaultLinks ?? []"
         :key="menu?.id"
         :class="{
           'col-span-4': index === 1,
@@ -47,27 +54,7 @@ const getItemUrl = (
           menu?.title
         }}</span>
         <nav>
-          <ul
-            v-if="menu?.additionalFields?.isSocialMenu"
-            class="flex gap-3 flex-wrap"
-          >
-            <li v-for="item of menu.items" :key="item?.id">
-              <NuxtLink
-                :to="
-                  getItemUrl(item?.type, item?.path, item?.related?.__typename)
-                "
-                class="cursor-pointer"
-              >
-                <figure class="w-12 aspect-square">
-                  <img :src="item?.additionalFields?.icon" />
-                  <figcaption class="hidden">
-                    {{ item?.title }}
-                  </figcaption>
-                </figure>
-              </NuxtLink>
-            </li>
-          </ul>
-          <ul v-else class="flex flex-col gap-3">
+          <ul class="flex flex-col gap-3">
             <li v-for="item of menu?.items" :key="item?.id">
               <NuxtLink
                 class="text-base cursor-pointer leading-5"
@@ -100,5 +87,25 @@ const getItemUrl = (
         </div>
       </section>
     </div>
+    <nav
+      v-if="socialLinks"
+      class="grid mt-14 mb-9 container mx-auto px-4 gap-4"
+    >
+      <ul class="flex gap-3 flex-wrap">
+        <li v-for="item of socialLinks.items" :key="item?.id">
+          <NuxtLink
+            :to="getItemUrl(item?.type, item?.path, item?.related?.__typename)"
+            class="cursor-pointer"
+          >
+            <figure class="w-12 aspect-square">
+              <img :src="item?.additionalFields?.icon!" />
+              <figcaption class="hidden">
+                {{ item?.title }}
+              </figcaption>
+            </figure>
+          </NuxtLink>
+        </li>
+      </ul>
+    </nav>
   </footer>
 </template>
