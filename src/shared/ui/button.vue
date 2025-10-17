@@ -3,10 +3,22 @@ const { type = "button", variant = "primary" } = defineProps<{
   type?: HTMLButtonElement["type"];
   variant?: "primary" | "secondary" | "outline";
   disabled?: boolean;
+  isLink?: boolean;
+  to?: string;
 }>();
 </script>
 <template>
+  <nuxt-link
+    :data-variant="variant"
+    :type="type"
+    class="ui-button"
+    v-if="isLink"
+    :to="to"
+  >
+    <slot />
+  </nuxt-link>
   <button
+    v-else
     :disabled="disabled"
     :data-variant="variant"
     :type="type"
@@ -63,5 +75,8 @@ const { type = "button", variant = "primary" } = defineProps<{
     color: var(--color-white);
     cursor: not-allowed;
   }
+}
+
+@media screen and () {
 }
 </style>

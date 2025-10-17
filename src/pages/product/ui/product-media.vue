@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { StoreProductImage } from "@medusajs/types";
+import { FeatureZoomImage } from "~/features/zoom-image";
 import { useProductStore } from "../lib/product-store";
+import { ClientOnly } from "#components";
+import { ZoomImg, Magnifier } from "vue3-zoomer";
 
 const productStore = useProductStore();
 const { product, color } = storeToRefs(productStore);
@@ -28,7 +31,7 @@ const colorImages = computed(() =>
 
 watch(
   () => color.value?.value,
-  (colorString) => {
+  (colorString: string) => {
     if (mainImage.value?.metadata?.color !== colorString) {
       mainImage.value = colorImages.value?.[0];
     }
@@ -40,22 +43,31 @@ watch(
 </script>
 <template>
   <div>
-    <div class="lg:flex hidden gap-4 w-full">
-      <div class="flex flex-col gap-3">
-        <img
-          v-for="image of colorImages"
-          :src="getThumbnailUrl(image)"
-          alt="Product Image"
-          class="max-w-[5.75rem] cursor-pointer aspect-[23/28] object-cover"
-          @click="mainImage = image"
-        />
+    <div
+      class="lg:grid items-start grid-cols-[5.75rem_1fr] hidden gap-4 w-full"
+    >
+      <div class="h-[38rem] overflow-y-hidden">
+        <div
+          class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-3"
+        >
+          <img
+            v-for="image of colorImages"
+            :src="getThumbnailUrl(image)"
+            alt="Product Image"
+            class="max-w-[5.75rem] snap-start cursor-pointer aspect-[23/28] object-cover"
+            @click="mainImage = image"
+          />
+        </div>
       </div>
-      <div>
-        <img
-          :src="getDefaultUrl(mainImage)"
-          alt="Product Image"
-          class="object-cover"
-        />
+      <div class="relative">
+        <ClientOnly>
+          <ZoomImg
+            trigger="hover"
+            :zoom-scale="3"
+            :src="getDefaultUrl(mainImage)"
+            :zoom="getDefaultUrl(mainImage)"
+          />
+        </ClientOnly>
       </div>
     </div>
 

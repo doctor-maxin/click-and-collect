@@ -4,6 +4,7 @@ export type MapPoint = {
   shortname: string;
   address: string;
   country: string;
+  city: string;
   phone: {
     number: string;
     ext: number;
