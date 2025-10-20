@@ -34,13 +34,13 @@ const { appliedFilters } = storeToRefs(filtersStore);
       </template>
     </div>
     <div v-if="hasMore" class="flex justify-center w-full my-9">
-      <button
-        type="button"
-        class="text-[1.25rem] cursor-pointer text-center"
+      <UiButton
+        variant="outline"
+        class="text-base cursor-pointer text-center lg:!h-9"
         @click="$emit('load-more')"
       >
         Показать больше
-      </button>
+      </UiButton>
     </div>
   </div>
   <div v-else class="py-24 flex w-full justify-center items-center">
