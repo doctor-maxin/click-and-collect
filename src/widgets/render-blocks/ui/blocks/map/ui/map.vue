@@ -21,8 +21,13 @@ defineProps<{
   data: ISharedMap;
 }>();
 
-const { data: points } = await useAsyncData<MapPoint[]>("map-points", () =>
-  $fetch("/api/map-points"),
+const { data: points } = await useAsyncData<MapPoint[]>(
+  "map-points",
+  () => $fetch("/api/map-points"),
+  {
+    transform: (data) =>
+      data.filter((point) => point.coordinates.lat && point.coordinates.lon),
+  },
 );
 
 const map = shallowRef<null | YMap>(null);
@@ -123,7 +128,7 @@ watch(viewMode, (mode) => {
         :media="data.defaultMedia"
         :mobile-media="data.defaultMobileMedia"
         loading="lazy"
-        class="aspect-[6/7] lg:aspect-[7/5]"
+        class="aspect-[6/7] lg:h-full"
       />
 
       <yandex-map

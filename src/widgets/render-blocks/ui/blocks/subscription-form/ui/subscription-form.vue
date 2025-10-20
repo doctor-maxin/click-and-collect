@@ -45,7 +45,7 @@ const handleForm = form.handleSubmit(async (values) => {
     <FeatureRenderMedia
       :media="data.bg"
       :mobile-media="data.mobileBg"
-      class="h-full !absolute"
+      class="h-full !absolute w-full"
     />
     <div
       class="container relative z-10 mx-auto flex h-full items-end justify-start"

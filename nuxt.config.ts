@@ -12,12 +12,18 @@ export default defineNuxtConfig({
     "nuxt-graphql-client",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
+    "@nuxtjs/seo",
   ],
   alias: {
     "@": "../src",
     "@assets": "../src/app/assets",
   },
-
+  site: {
+    url: process.env.NUXT_SITE_URL,
+    name: process.env.NUXT_SITE_NAME,
+    description: process.env.NUXT_SITE_DESCRIPTION,
+    defaultLocale: process.env.NUXT_DEFAULT_LOCALE,
+  },
   yandexMaps: {
     apikey: process.env.NUXT_YANDEX_API_KEY,
   },

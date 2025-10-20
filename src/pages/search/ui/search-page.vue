@@ -22,6 +22,7 @@ const { data: filtersResponse } = await useAsyncData(
       .index("products")
       .search<StoreProduct>(query.value?.toString(), {
         hitsPerPage: 0,
+        distinct: "id",
         facets: ["color", "size"],
       });
   },
@@ -37,6 +38,7 @@ const { data: productsResponse, status } = await useAsyncData(
       .search<StoreProduct>(query.value?.toString(), {
         filter,
         hitsPerPage: limit.value,
+        // distinct: "id",
         page: page.value,
         facets: ["color", "size"],
       });
@@ -63,6 +65,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
+});
+
+useSeoMeta({
+  title: `Товары по запросу ${query.value?.toString() ?? ""}`,
 });
 </script>
 <template>
