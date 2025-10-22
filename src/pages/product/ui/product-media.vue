@@ -59,9 +59,10 @@ watch(
           />
         </div>
       </div>
-      <div class="relative">
+      <div class="relative h-full desktop-media">
         <ClientOnly>
           <ZoomImg
+            class="h-full"
             trigger="hover"
             :zoom-scale="3"
             :src="getDefaultUrl(mainImage)"
@@ -110,5 +111,9 @@ watch(
 }
 .product-card-pagination .swiper-pagination-bullet-active {
   background-color: rgba(255, 255, 255, 1);
+}
+
+.desktop-media .vz-zoomimg-img {
+  object-fit: cover;
 }
 </style>

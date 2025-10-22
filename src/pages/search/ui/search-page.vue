@@ -38,13 +38,14 @@ const { data: productsResponse, status } = await useAsyncData(
       .search<StoreProduct>(query.value?.toString(), {
         filter,
         hitsPerPage: limit.value,
-        // distinct: "id",
+        matchingStrategy: "all",
         page: page.value,
         facets: ["color", "size"],
       });
   },
   {
     deep: true,
+    server: false,
     watch: [page, appliedFilters],
   },
 );
