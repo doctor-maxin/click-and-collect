@@ -212,3 +212,12 @@ body {
     color: white;
   }
 }
+
+.wb {
+  background: linear-gradient(
+    30.88deg,
+    rgba(111, 1, 251, 1),
+    rgba(255, 73, 215, 1) 100%
+  );
+  color: white;
+}
