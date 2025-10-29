@@ -8,6 +8,9 @@ const { data } = await useAsyncData("popular-products", () =>
     order: "updated_at",
   }),
 );
+defineEmits<{
+  (e: "close"): void;
+}>();
 </script>
 <template>
   <div class="w-full flex flex-col gap-9">
@@ -19,6 +22,7 @@ const { data } = await useAsyncData("popular-products", () =>
         :product="product"
         v-for="product in data?.products"
         :key="product.id"
+        @click="$emit('close')"
       />
     </div>
   </div>

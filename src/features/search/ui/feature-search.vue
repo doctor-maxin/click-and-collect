@@ -19,7 +19,7 @@ const isOpen = ref(false);
       class="bg-white py-9 block overflow-y-auto box-border w-[var(--reka-popper-available-width)] h-[var(--reka-popper-available-height)]"
     >
       <div class="container px-4 grid grid-cols-2 gap-4 mx-auto">
-        <PopularProducts />
+        <PopularProducts @close="isOpen = false" />
         <div class="lg:pl-[7.75rem] pt-[4.5rem]">
           <SearchInput @close="isOpen = false" />
         </div>

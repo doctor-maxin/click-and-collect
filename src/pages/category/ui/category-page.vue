@@ -8,6 +8,7 @@ import { WidgetProductsGrid } from "~/widgets/products-grid";
 import { useRoute } from "#app";
 import { useFiltersStore } from "~/shared/lib/filters.store";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
+import { getCategoryFromTree } from "~/shared/lib/utils/get-category-from-tree";
 
 const route = useRoute();
 const client = useMedusaClient();
@@ -29,31 +30,9 @@ const { data: product_categories } =
 
 const category = computed(() => {
   if (!product_categories.value) return null;
-
   const handle = route.params.handle as string;
-  const paths: StoreProductCategory[] = [];
-  let slugs = handle.split("-");
-  let slug = slugs.shift();
 
-  let list = product_categories.value;
-  while (slugs.length >= 0) {
-    const tmpCategory = list.find((c) => c.handle === slug);
-    if (tmpCategory) {
-      const parentCategory = paths[paths.length - 1];
-      if (parentCategory) {
-        tmpCategory.parent_category = parentCategory;
-        tmpCategory.parent_category_id = parentCategory.id;
-      }
-      paths.push(tmpCategory);
-      list = tmpCategory.category_children ?? [];
-    }
-
-    const nextSlug = slugs.shift();
-    if (!nextSlug) break;
-    slug = `${slug}-${nextSlug}`;
-  }
-
-  return paths[paths.length - 1];
+  return getCategoryFromTree(handle, product_categories.value);
 });
 
 if (!category.value)
@@ -125,7 +104,7 @@ watchEffect(() => {
       <CategoryFilters :category="category" />
       <WidgetProductsGrid
         :products="products"
-        :has-more="count > products.length"
+        :has-more="count < products.length"
         :is-loading="status === 'pending'"
         @load-more="filtersStore.setPage(page + 1)"
       />

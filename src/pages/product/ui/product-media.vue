@@ -7,6 +7,7 @@ import { ZoomImg, Magnifier } from "vue3-zoomer";
 
 const productStore = useProductStore();
 const { product, color } = storeToRefs(productStore);
+const isError = ref(false);
 
 function getThumbnailUrl(image?: StoreProductImage) {
   if (!image?.url?.trim()) return "/not_found.png";
@@ -28,6 +29,21 @@ const colorImages = computed(() =>
       i.metadata?.color?.toLowerCase() === color.value?.value?.toLowerCase(),
   ),
 );
+
+const onError = (event: Event) => {
+  if (!event.target) return;
+  const target = event.target as HTMLImageElement;
+  target.src = "/not_found.png";
+};
+const zoomImgRef = useTemplateRef("zoomImgRef");
+const onErrorZoomImg = () => {
+  if (!zoomImgRef.value) return;
+  isError.value = true;
+};
+const changeMainImage = (image: StoreProductImage) => {
+  mainImage.value = image;
+  isError.value = false;
+};
 
 watch(
   () => color.value?.value,
@@ -55,20 +71,30 @@ watch(
             :src="getThumbnailUrl(image)"
             alt="Product Image"
             class="max-w-[5.75rem] snap-start cursor-pointer aspect-[23/28] object-cover"
-            @click="mainImage = image"
+            @click="changeMainImage(image)"
+            @error="onError"
           />
         </div>
       </div>
       <div class="relative h-full desktop-media">
         <ClientOnly>
           <ZoomImg
+            v-if="!isError"
+            ref="zoomImgRef"
             class="h-full"
             trigger="hover"
             :zoom-scale="3"
             :src="getDefaultUrl(mainImage)"
             :zoom="getDefaultUrl(mainImage)"
+            @error="onErrorZoomImg"
           />
         </ClientOnly>
+        <img
+          v-if="isError"
+          src="/not_found.png"
+          alt="Product Image"
+          class="h-full object-cover"
+        />
       </div>
     </div>
 
