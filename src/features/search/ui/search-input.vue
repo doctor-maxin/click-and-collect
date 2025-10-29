@@ -73,7 +73,7 @@ const handleForm = () => {
         class="h-8 pr-[3.5rem] w-full outline-0 placeholder:text-[hsla(0,0%,62%,1)] appearance-none text-2xl placeholder:font-medium"
       />
 
-      <button type="submit" class="absolute right-0">
+      <button type="submit" class="absolute cursor-pointer right-0">
         <SvgoLongArray
           class="!mb-0 text-[hsla(0,0%,62%,1)] !w-[3.5rem] text-2xl"
           filled

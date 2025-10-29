@@ -9,7 +9,7 @@ const productStore = useProductStore();
 const { product, variant, price } = storeToRefs(productStore);
 const router = useRouter();
 const sku = computed(() =>
-  product?.value?.variants?.[0]?.sku?.split("-").splice(0, 3).join("-"),
+  variant.value?.sku?.split("-").slice(0, -1).join("-"),
 );
 
 const marketplaces = computed(
@@ -24,7 +24,7 @@ watch(
   variant,
   (v) => {
     if (!v) return;
-    router.push({
+    router.replace({
       query: {
         variant: v.id,
       },
@@ -56,7 +56,9 @@ watch(
     }}</span>
     <span class="text-base block my-3 lg:my-9 leading-5"
       >Состав:
-      <span class="uppercase"> {{ product?.metadata?.composition }}</span></span
+      <span class="capitalize">
+        {{ product?.metadata?.composition?.toLowerCase() }}</span
+      ></span
     >
     <ProductColorPicker />
     <ProductSizePicker />
