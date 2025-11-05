@@ -104,7 +104,7 @@ watch(viewMode, (mode) => {
 });
 </script>
 <template>
-  <section class="pt-6 lg:pt-9 container lg:max-w-none mx-auto">
+  <section id="stores" class="pt-6 lg:pt-9 container lg:max-w-none mx-auto">
     <h2 class="font-bold mb-6 lg:mb-[3.25rem] text-[2rem] text-center">
       {{ data.header }}
     </h2>

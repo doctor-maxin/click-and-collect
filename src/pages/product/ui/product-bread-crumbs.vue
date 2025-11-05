@@ -36,9 +36,9 @@ const breadcrumbs = computed(() => {
         label: `${c?.name[0]?.toUpperCase()}${c?.name?.slice(1).toLowerCase()}`,
       });
     }
-
     if (c) parentCategory = c.category_children;
   }
+  console.log("product", product);
 
   list.push({
     path: `/products/${product.handle}`,
