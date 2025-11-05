@@ -11,7 +11,7 @@ const filtersStore = useFiltersStore();
 
 const query = computed(() => route.query.q?.toString() ?? "");
 
-const { limit, page, count, appliedFilters } = storeToRefs(filtersStore);
+const { limit, page, totalPages, appliedFilters } = storeToRefs(filtersStore);
 const products = ref<StoreProduct[]>([]);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 
@@ -19,9 +19,10 @@ const { data: filtersResponse } = await useAsyncData(
   () => `search-${query.value}`,
   () => {
     return searchClient
-      .index("products")
+      .index("cards")
       .search<StoreProduct>(query.value?.toString(), {
         hitsPerPage: 0,
+        attributesToSearchOn: ["coloredTitle"],
         distinct: "id",
         facets: ["color", "size"],
       });
@@ -34,7 +35,7 @@ const { data: productsResponse, status } = await useAsyncData(
     let filter: string[] = [];
     filter = prepareFilterQuery(filter, appliedFilters.value);
     return searchClient
-      .index("products")
+      .index("cards")
       .search<StoreProduct>(query.value?.toString(), {
         filter,
         hitsPerPage: limit.value,
@@ -59,7 +60,7 @@ watchEffect(() => {
     }
 
     //@ts-ignore
-    filtersStore.setCount(productsResponse.value?.totalHits ?? 0);
+    filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
     filtersStore.setAvailableFilters(productsResponse.value?.facetDistribution);
   }
 });
@@ -71,6 +72,13 @@ watchEffect(() => {
 useSeoMeta({
   title: `Товары по запросу ${query.value?.toString() ?? ""}`,
 });
+
+watch(
+  () => query.value,
+  () => {
+    filtersStore.setPage(1);
+  },
+);
 </script>
 <template>
   <div class="mt-16 lg:mt-[8.125rem]">
@@ -83,7 +91,7 @@ useSeoMeta({
       <SearchFilters />
       <WidgetProductsGrid
         :products="products"
-        :has-more="count > products.length"
+        :has-more="page < totalPages"
         :is-loading="status === 'pending'"
         @load-more="filtersStore.setPage(page + 1)"
       />

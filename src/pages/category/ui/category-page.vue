@@ -15,7 +15,7 @@ const client = useMedusaClient();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
 
-const { limit, page, count, appliedFilters } = storeToRefs(filtersStore);
+const { limit, page, totalPages, appliedFilters } = storeToRefs(filtersStore);
 
 if (!route.params.handle || route.params.handle === "undefined")
   throw createError({
@@ -49,7 +49,7 @@ filtersStore.setAppliedFiltersFromQuery(route.query);
 const { data: filtersResponse } = await useAsyncData(
   () => `filters-${category.value?.id}`,
   () => {
-    return searchClient.index("products").search<StoreProduct>(null, {
+    return searchClient.index("cards").search<StoreProduct>(null, {
       filter: [`category_ids IN ['${category.value?.id}']`],
       hitsPerPage: 0,
       facets: ["color", "size"],
@@ -61,7 +61,7 @@ const { data: productsResponse, status } = await useAsyncData(
   () => {
     let filter = [`category_ids IN ['${category.value?.id}']`];
     filter = prepareFilterQuery(filter, appliedFilters.value);
-    return searchClient.index("products").search<StoreProduct>(null, {
+    return searchClient.index("cards").search<StoreProduct>(null, {
       filter,
       hitsPerPage: limit.value,
       page: page.value,
@@ -83,7 +83,7 @@ watchEffect(() => {
     }
 
     //@ts-ignore
-    filtersStore.setCount(productsResponse.value?.totalHits ?? 0);
+    filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
     filtersStore.setAvailableFilters(productsResponse.value?.facetDistribution);
   }
 });
@@ -91,6 +91,13 @@ watchEffect(() => {
 watchEffect(() => {
   filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
 });
+
+watch(
+  () => route.params.handle,
+  () => {
+    filtersStore.setPage(1);
+  },
+);
 </script>
 
 <template>
@@ -104,7 +111,7 @@ watchEffect(() => {
       <CategoryFilters :category="category" />
       <WidgetProductsGrid
         :products="products"
-        :has-more="count < products.length"
+        :has-more="page < totalPages"
         :is-loading="status === 'pending'"
         @load-more="filtersStore.setPage(page + 1)"
       />

@@ -41,6 +41,10 @@ function onMouseOver(event: MouseEvent) {
   if (swiper.instance.value?.activeIndex !== index)
     swiper.instance.value?.slideTo(index);
 }
+
+const link = computed(
+  () => `/products/${product.handle}?variant=${product.variants?.[0]?.id}`,
+);
 </script>
 <template>
   <article
@@ -48,7 +52,7 @@ function onMouseOver(event: MouseEvent) {
     :data-id="product.id"
   >
     <div class="relative" @mousemove="onMouseOver">
-      <NuxtLink class="contents" :to="`/products/${product.handle}`">
+      <NuxtLink class="contents" :to="link">
         <template v-if="imageList?.length">
           <swiper-container
             :init="false"
@@ -87,6 +91,7 @@ function onMouseOver(event: MouseEvent) {
       <ProductCardOptions
         class="group-hover:translate-y-0 transition-all translate-y-4 opacity-0 group-hover:opacity-100"
         :product="product"
+        @mousemove.stop
       />
     </div>
     <div class="flex flex-col gap-2">
