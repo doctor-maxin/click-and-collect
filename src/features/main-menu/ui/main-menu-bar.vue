@@ -46,7 +46,7 @@ defineEmits<{
       >
         <NavigationMenuTrigger
           v-if="category.category_children?.length"
-          class="uppercase main-menu-bar-link relative py-2 text-left font-semibold text-base leading-5 w-full"
+          class="uppercase main-menu-bar-link relative py-2 text-left font-semibold text-xl leading-5 w-full"
         >
           <NavigationMenuLink as-child>
             <NuxtLink
@@ -61,7 +61,7 @@ defineEmits<{
         <NavigationMenuLink
           as-child
           v-else
-          class="uppercase block text-left py-2 gap-4 font-semibold text-base leading-5 w-full"
+          class="uppercase block text-left py-2 gap-4 font-semibold text-xl leading-5 w-full"
         >
           <NuxtLink :to="'/catalog/' + category.handle" @click="$emit('close')">
             {{ category.name }} s
@@ -79,7 +79,7 @@ defineEmits<{
                 )"
                 :value="subCategory.handle"
                 :key="subCategory.id"
-                class="uppercase py-2 items-center gap-4 font-medium text-base leading-5 flex justify-between w-full"
+                class="uppercase py-2 items-center gap-4 font-medium text-xl leading-5 flex justify-between w-full"
               >
                 <NavigationMenuLink>
                   <NuxtLink
@@ -103,7 +103,7 @@ defineEmits<{
       >
         <NavigationMenuTrigger
           v-if="item.type === 'WRAPPER' && item.items?.length"
-          class="uppercase py-2 text-left font-semibold text-base leading-5 w-full"
+          class="uppercase py-2 text-left font-semibold text-xl leading-5 w-full"
         >
           <NavigationMenuLink as-child>
             <NuxtLink
@@ -121,7 +121,7 @@ defineEmits<{
         <NavigationMenuLink
           as-child
           v-else
-          class="uppercase block text-left py-2 gap-4 font-semibold text-base leading-5 w-full"
+          class="uppercase block text-left py-2 gap-4 font-semibold text-xl leading-5 w-full"
         >
           <NuxtLink
             :to="item.path"
@@ -143,7 +143,7 @@ defineEmits<{
                 v-for="subItem of item.items"
                 :value="subItem.slug"
                 :key="item.uiRouterKey"
-                class="uppercase py-2 items-center gap-4 font-medium text-base leading-5 flex justify-between w-full"
+                class="uppercase py-2 items-center gap-4 font-medium text-xl leading-5 flex justify-between w-full"
               >
                 <NavigationMenuLink>
                   <NuxtLink
