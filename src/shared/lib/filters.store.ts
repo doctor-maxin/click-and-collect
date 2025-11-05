@@ -18,7 +18,7 @@ export const useFiltersStore = defineStore("filters", {
     isOpen: false,
     limit: 8,
     page: 1,
-    count: 0,
+    totalPages: 1,
   }),
   actions: {
     close() {
@@ -84,8 +84,8 @@ export const useFiltersStore = defineStore("filters", {
     setPage(page: number) {
       this.page = page;
     },
-    setCount(count: number) {
-      this.count = count;
+    setTotalPages(totalPages: number) {
+      this.totalPages = totalPages;
     },
   },
 });
