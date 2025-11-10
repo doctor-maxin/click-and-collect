@@ -7,7 +7,8 @@ import { ZoomImg, Magnifier } from "vue3-zoomer";
 
 const productStore = useProductStore();
 const { product, color } = storeToRefs(productStore);
-const isError = ref(false);
+const mainImage = ref(product?.value?.images?.[0]);
+const isError = ref(!mainImage.value?.trim());
 
 function getThumbnailUrl(image?: StoreProductImage) {
   if (!image?.url?.trim()) return "/not_found.png";
@@ -19,8 +20,6 @@ function getDefaultUrl(image?: StoreProductImage) {
 
   return image.url.replace("500px", "1400px");
 }
-
-const mainImage = ref(product?.value?.images?.[0]);
 
 const colorImages = computed(() =>
   product.value?.images?.filter(
