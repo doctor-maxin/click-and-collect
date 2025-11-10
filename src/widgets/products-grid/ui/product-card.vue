@@ -98,6 +98,7 @@ const link = computed(
           <NuxtImg
             class="object-cover object-center size-full"
             src="/not_found.png"
+            provider="ipx"
           />
         </div>
       </NuxtLink>

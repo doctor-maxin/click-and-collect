@@ -93,5 +93,8 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: "bun",
+    prerender: {
+      routes: ["/_ipx/_/not_found.png"],
+    },
   },
 });
