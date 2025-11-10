@@ -8,9 +8,12 @@ import { UiWbButton } from "#components";
 const productStore = useProductStore();
 const { product, variant, price } = storeToRefs(productStore);
 const router = useRouter();
-const sku = computed(() =>
-  variant.value?.sku?.split("-").slice(0, -1).join("-"),
-);
+const sku = computed(() => {
+  if (variant.value?.sku?.includes("-")) {
+    return variant.value?.sku?.split("-").slice(0, -1).join("-");
+  }
+  return variant.value?.sku;
+});
 
 const marketplaces = computed(
   () =>
