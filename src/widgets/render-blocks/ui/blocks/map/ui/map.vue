@@ -44,13 +44,19 @@ const options = markRaw([
 
 const viewMode = ref("map");
 const city = ref();
-const cities = computed(
-  () =>
-    points.value?.map((point) => ({
-      label: point.city,
-      value: point.city,
-    })) ?? [],
-);
+const cities = computed(() => {
+  const list = new Set<string>();
+  if (!points.value) {
+    return [];
+  }
+  points.value.forEach((item) => list.add(item.city));
+  console.log(list);
+
+  return Array.from(list).map((city) => ({
+    label: city,
+    value: city,
+  }));
+});
 const openMarker = ref<number | null>(null);
 
 const cityPoints = computed(
@@ -108,10 +114,12 @@ watch(viewMode, (mode) => {
     <h2 class="font-bold mb-6 lg:mb-[3.25rem] text-[2rem] text-center">
       {{ data.header }}
     </h2>
-    <header class="flex mb-3 lg:mb-9 lg:mx-auto lg:container justify-end py-2">
+    <header
+      class="flex flex-col-reverse gap-3 px-4 lg:px-0 lg:flex-row mb-3 lg:mb-9 lg:mx-auto lg:container justify-end py-2"
+    >
       <div class="mr-auto">
-        <UiSelect
-          placeholder="Москва"
+        <UiCombobox
+          placeholder="Введите город"
           label="Город"
           :options="cities"
           v-model="city"
