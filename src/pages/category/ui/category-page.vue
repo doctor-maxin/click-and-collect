@@ -15,7 +15,8 @@ const client = useMedusaClient();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
 
-const { limit, page, totalPages, appliedFilters } = storeToRefs(filtersStore);
+const { limit, sort, page, totalPages, appliedFilters } =
+  storeToRefs(filtersStore);
 
 if (!route.params.handle || route.params.handle === "undefined")
   throw createError({
@@ -65,11 +66,12 @@ const { data: productsResponse, status } = await useAsyncData(
       filter,
       hitsPerPage: limit.value,
       page: page.value,
+      sort: sort.value ? [sort.value] : undefined,
       facets: ["color", "size"],
     });
   },
   {
-    watch: [page, appliedFilters],
+    watch: [page, appliedFilters, sort],
     deep: true,
   },
 );

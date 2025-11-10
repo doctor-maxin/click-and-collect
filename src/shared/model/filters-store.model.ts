@@ -5,6 +5,7 @@ export interface IFiltersStore {
   page: number;
   totalPages: number;
   isOpen: boolean;
+  sort: string | null;
 
   availableFilters: Record<string, IFilterValue[] | null>;
   filtersList: Record<string, IFilterValue[] | null>;
