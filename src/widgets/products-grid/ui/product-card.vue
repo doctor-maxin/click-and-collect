@@ -42,8 +42,22 @@ function onMouseOver(event: MouseEvent) {
     swiper.instance.value?.slideTo(index);
 }
 
+const smallestVariant = computed(() => {
+  let smallest = product.variants?.[0];
+
+  const optionId = product.options?.find((o) => o.title === "size");
+  if (!optionId) return smallest;
+
+  product.variants?.forEach((variant) => {
+    let seq = variant.metadata?.sequence as number;
+    if (seq < (smallest?.metadata?.sequence as number)) {
+      smallest = variant;
+    }
+  });
+  return smallest;
+});
 const link = computed(
-  () => `/products/${product.handle}?variant=${product.variants?.[0]?.id}`,
+  () => `/products/${product.handle}?variant=${smallestVariant?.value?.id}`,
 );
 </script>
 <template>
