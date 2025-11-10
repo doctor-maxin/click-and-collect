@@ -16,6 +16,7 @@ export const useFiltersStore = defineStore("filters", {
     },
 
     isOpen: false,
+    sort: null,
     limit: 8,
     page: 1,
     totalPages: 1,
@@ -26,6 +27,9 @@ export const useFiltersStore = defineStore("filters", {
     },
     open() {
       this.isOpen = true;
+    },
+    setSort(sort: string | null) {
+      this.sort = sort;
     },
     setIsOpen(val: boolean) {
       this.isOpen = val;
