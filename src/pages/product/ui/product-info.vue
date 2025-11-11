@@ -17,7 +17,7 @@ const sku = computed(() => {
 
 const marketplaces = computed(
   () =>
-    product?.value?.metadata?.marketplaces as {
+    variant?.value?.metadata?.marketplaces as {
       link: string;
       provider: string;
     }[],
@@ -49,7 +49,6 @@ watch(
       class="text-base block mb-3 lg:mb-6 leading-5 text-[hsl(216,64%,15%)]/50"
       >Арт. {{ sku }}</span
     >
-
     <span v-if="typeof price === 'number'" class="my-6 text-2xl font-medium">{{
       price.toLocaleString("ru-RU", {
         style: "currency",
