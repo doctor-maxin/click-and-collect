@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SvgoWb } from "#components";
+import { SvgoOzon } from "#components";
 import { PopoverRoot, PopoverTrigger, PopoverContent } from "reka-ui";
 
 defineProps<{
@@ -28,19 +28,19 @@ const isPopoverOpen = ref(false);
   >
     <a
       :href="item.link"
-      class="flex px-8 border-r border-white items-center justify-center cursor-pointer h-12"
+      class="flex px-8 border-r border-white w-full items-center justify-center cursor-pointer h-12"
       target="_blank"
     >
       <span class="flex items-center gap-1.5">
         <span class="flex text-base leading-5 font-medium">Купить на </span>
-        <SvgoWb class="!w-[6.25rem] !h-[0.9375rem]" filled />
+        <SvgoOzon class="!w-[4.25rem] !h-[0.9375rem]" filled />
       </span>
     </a>
     <PopoverRoot v-model:open="isPopoverOpen">
       <PopoverTrigger as-child>
         <button
           type="button"
-          class="h-12 cursor-pointer rounded-r px-2.5"
+          class="h-12 cursor-pointer rounded-r px-2.5 ml-auto"
           @click="copyLink(item.link)"
         >
           <SvgoCopy class="!mb-0 text-white text-2xl" filled />
