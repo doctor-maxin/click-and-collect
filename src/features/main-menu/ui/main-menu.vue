@@ -44,7 +44,7 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
           :menu="mainMenu"
           @close="isOpen = false"
         />
-        <MainMenuFooter />
+        <MainMenuFooter @close="isOpen = false" />
         <DialogClose class="cursor-pointer absolute top-3 right-3">
           <SvgoClose filled class="text-2xl !mb-0" />
         </DialogClose>

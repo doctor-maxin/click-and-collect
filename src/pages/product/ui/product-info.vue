@@ -72,7 +72,7 @@ watch(
       <template v-for="item of marketplaces" :key="item.provider">
         <UiWbButton :item="item" v-if="item.provider === 'WB'" />
         <UiOzonButton :item="item" v-if="item.provider === 'OZON'" />
-        <UiLamodaButton :item="item" v-if="item.provider === 'LAMODA'" />
+        <UiLamodaButton :item="item" v-if="item.provider === 'Lamoda'" />
       </template>
     </div>
     <span v-else class="text-[1.25rem] leading-6 my-0"
