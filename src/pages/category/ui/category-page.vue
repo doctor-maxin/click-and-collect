@@ -52,7 +52,7 @@ const { data: filtersResponse } = await useAsyncData(
     return searchClient.index("cards").search<StoreProduct>(null, {
       filter: [`category_ids IN ['${category.value?.id}']`],
       hitsPerPage: 0,
-      facets: ["color", "size", "subclass"],
+      facets: ["color", "size", "metadata.subclass"],
     });
   },
 );
@@ -65,7 +65,7 @@ const { data: productsResponse, status } = await useAsyncData(
       filter,
       hitsPerPage: limit.value,
       page: page.value,
-      facets: ["color", "size", "subclass"],
+      facets: ["color", "size", "metadata.subclass"],
     });
   },
   {

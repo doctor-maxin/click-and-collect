@@ -30,7 +30,7 @@ const form = useForm<IFiltersForm>({
   validationSchema: yup.object({
     color: yup.array().of(yup.string()),
     size: yup.array().of(yup.string()),
-    subclass: yup.array().of(yup.string()),
+    ["metadata.subclass"]: yup.array().of(yup.string()),
   }),
   initialValues: appliedFilters.value,
 });
@@ -57,7 +57,7 @@ const resetForm = () => {
       values: {
         color: [],
         size: [],
-        subclass: [],
+        ["metadata.subclass"]: [],
       },
     },
     {
@@ -85,8 +85,8 @@ const resetForm = () => {
       placeholder="Цвет"
     />
     <UiAutocomplete
-      :options="options('subclass')"
-      name="subclass"
+      :options="options('metadata.subclass')"
+      name="metadata.subclass"
       :form="form"
       placeholder="Категория"
     />

@@ -7,9 +7,17 @@ const { product } = defineProps<{
 }>();
 const router = useRouter();
 const sizeValues = computed(() => {
+  const sizeOption = product?.options?.find(
+    (o) => o.title.toLowerCase() === "size",
+  );
+
+  if (!sizeOption) return [];
+
   const list =
-    product?.options?.find((o) => o.title.toLowerCase() === "size")?.values ??
-    [];
+    product?.variants?.map((variant) => {
+      return variant.options?.find((o) => o.option_id === sizeOption.id)!;
+    }) ?? [];
+
   if (!list || !product?.variants) return [];
   return sortSizeOptions(list, product?.variants);
 });

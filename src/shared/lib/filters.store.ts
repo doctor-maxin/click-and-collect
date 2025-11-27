@@ -8,13 +8,13 @@ export const useFiltersStore = defineStore("filters", {
     filtersList: {
       color: null,
       size: null,
-      subclass: null,
+      ["metadata.subclass"]: null,
     },
     appliedFilters: {},
     availableFilters: {
       color: null,
       size: null,
-      subclass: null,
+      ["metadata.subclass"]: null,
     },
 
     isOpen: false,
