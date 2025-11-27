@@ -49,7 +49,6 @@ watch(
       class="text-base block mb-3 lg:mb-6 leading-5 text-[hsl(216,64%,15%)]/50"
       >Арт. {{ sku }}</span
     >
-
     <span v-if="typeof price === 'number'" class="my-6 text-2xl font-medium">{{
       price.toLocaleString("ru-RU", {
         style: "currency",
@@ -71,9 +70,9 @@ watch(
         маркетплейсах</span
       >
       <template v-for="item of marketplaces" :key="item.provider">
-        <UiWbButton :item="item" v-if="item.provider === 'WB'"
-          >qwdqwdqw</UiWbButton
-        >
+        <UiWbButton :item="item" v-if="item.provider === 'WB'" />
+        <UiOzonButton :item="item" v-if="item.provider === 'OZON'" />
+        <UiLamodaButton :item="item" v-if="item.provider === 'Lamoda'" />
       </template>
     </div>
     <span v-else class="text-[1.25rem] leading-6 my-0"

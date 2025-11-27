@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import {
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectItemIndicator,
   SelectItemText,
-  SelectLabel,
   SelectPortal,
   SelectRoot,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
   SelectIcon,

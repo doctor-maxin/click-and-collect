@@ -38,7 +38,6 @@ const breadcrumbs = computed(() => {
     }
     if (c) parentCategory = c.category_children;
   }
-  console.log("product", product);
 
   list.push({
     path: `/products/${product.handle}`,

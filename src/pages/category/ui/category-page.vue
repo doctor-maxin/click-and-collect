@@ -15,33 +15,34 @@ const client = useMedusaClient();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
 
-const { limit, page, totalPages, appliedFilters } = storeToRefs(filtersStore);
+const { limit, sort, page, totalPages, appliedFilters } =
+    storeToRefs(filtersStore);
 
 if (!route.params.handle || route.params.handle === "undefined")
-  throw createError({
-    message: "Категория не найдена",
-    statusCode: 404,
-    fatal: true,
-    data: route.params,
-  });
+    throw createError({
+        message: "Категория не найдена",
+        statusCode: 404,
+        fatal: true,
+        data: route.params,
+    });
 
 const { data: product_categories } =
-  useNuxtData<StoreProductCategory[]>("categories");
+    useNuxtData<StoreProductCategory[]>("categories");
 
 const category = computed(() => {
-  if (!product_categories.value) return null;
-  const handle = route.params.handle as string;
+    if (!product_categories.value) return null;
+    const handle = route.params.handle as string;
 
-  return getCategoryFromTree(handle, product_categories.value);
+    return getCategoryFromTree(handle, product_categories.value);
 });
 
 if (!category.value)
-  throw createError({
-    message: "Категория не найдена",
-    statusCode: 404,
-    fatal: true,
-    data: route.params,
-  });
+    throw createError({
+        message: "Категория не найдена",
+        statusCode: 404,
+        fatal: true,
+        data: route.params,
+    });
 
 const products = ref<StoreProduct[]>([]);
 filtersStore.setAppliedFiltersFromQuery(route.query);
@@ -75,46 +76,48 @@ const { data: productsResponse, status } = await useAsyncData(
 );
 
 watchEffect(() => {
-  if (status.value === "success") {
-    if (page.value === 1) {
-      products.value = productsResponse.value?.hits ?? [];
-    } else {
-      products.value.push(...(productsResponse.value?.hits ?? []));
-    }
+    if (status.value === "success") {
+        if (page.value === 1) {
+            products.value = productsResponse.value?.hits ?? [];
+        } else {
+            products.value.push(...(productsResponse.value?.hits ?? []));
+        }
 
-    //@ts-ignore
-    filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
-    filtersStore.setAvailableFilters(productsResponse.value?.facetDistribution);
-  }
+        //@ts-ignore
+        filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
+        filtersStore.setAvailableFilters(
+            productsResponse.value?.facetDistribution,
+        );
+    }
 });
 
 watchEffect(() => {
-  filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
+    filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
 });
 
 watch(
-  () => route.params.handle,
-  () => {
-    filtersStore.setPage(1);
-  },
+    () => route.params.handle,
+    () => {
+        filtersStore.setPage(1);
+    },
 );
 </script>
 
 <template>
-  <div class="mt-16 lg:mt-[8.125rem]">
-    <div v-if="category" class="px-4 container mx-auto">
-      <CategoryBreadCrumbs :category="category" />
-      <h1 class="font-serif font-medium my-9 text-[1.75rem] uppercase">
-        {{ category.name }}
-      </h1>
-      <CategoryLinks :category="category" />
-      <CategoryFilters :category="category" />
-      <WidgetProductsGrid
-        :products="products"
-        :has-more="page < totalPages"
-        :is-loading="status === 'pending'"
-        @load-more="filtersStore.setPage(page + 1)"
-      />
+    <div class="mt-16 lg:mt-[8.125rem]">
+        <div v-if="category" class="px-4 container mx-auto">
+            <CategoryBreadCrumbs :category="category" />
+            <h1 class="font-serif font-medium my-9 text-[1.75rem] uppercase">
+                {{ category.name }}
+            </h1>
+            <CategoryLinks :category="category" />
+            <CategoryFilters :category="category" />
+            <WidgetProductsGrid
+                :products="products"
+                :has-more="page < totalPages"
+                :is-loading="status === 'pending'"
+                @load-more="filtersStore.setPage(page + 1)"
+            />
+        </div>
     </div>
-  </div>
 </template>
