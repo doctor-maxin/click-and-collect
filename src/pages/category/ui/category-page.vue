@@ -48,32 +48,31 @@ const products = ref<StoreProduct[]>([]);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 
 const { data: filtersResponse } = await useAsyncData(
-    () => `filters-${category.value?.id}`,
-    () => {
-        return searchClient.index("cards").search<StoreProduct>(null, {
-            filter: [`category_ids IN ['${category.value?.id}']`],
-            hitsPerPage: 0,
-            facets: ["color", "size"],
-        });
-    },
+  () => `filters-${category.value?.id}`,
+  () => {
+    return searchClient.index("cards").search<StoreProduct>(null, {
+      filter: [`category_ids IN ['${category.value?.id}']`],
+      hitsPerPage: 0,
+      facets: ["color", "size", "metadata.subclass"],
+    });
+  },
 );
 const { data: productsResponse, status } = await useAsyncData(
-    () => category.value?.id as string,
-    () => {
-        let filter = [`category_ids IN ['${category.value?.id}']`];
-        filter = prepareFilterQuery(filter, appliedFilters.value);
-        return searchClient.index("cards").search<StoreProduct>(null, {
-            filter,
-            hitsPerPage: limit.value,
-            page: page.value,
-            sort: sort.value && sort.value !== "*" ? [sort.value] : undefined,
-            facets: ["color", "size"],
-        });
-    },
-    {
-        watch: [page, appliedFilters, sort],
-        deep: true,
-    },
+  () => category.value?.id as string,
+  () => {
+    let filter = [`category_ids IN ['${category.value?.id}']`];
+    filter = prepareFilterQuery(filter, appliedFilters.value);
+    return searchClient.index("cards").search<StoreProduct>(null, {
+      filter,
+      hitsPerPage: limit.value,
+      page: page.value,
+      facets: ["color", "size", "metadata.subclass"],
+    });
+  },
+  {
+    watch: [page, appliedFilters],
+    deep: true,
+  },
 );
 
 watchEffect(() => {

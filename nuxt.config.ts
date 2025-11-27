@@ -30,7 +30,7 @@ export default defineNuxtConfig({
   rootDir: ".",
   srcDir: "src",
   css: ["./src/app/assets/styles/main.css"],
-  ssr: true,
+  ssr: process.env.NODE_ENV !== "development",
   image: {
     format: ["webp", "avif"],
     strapi: {
