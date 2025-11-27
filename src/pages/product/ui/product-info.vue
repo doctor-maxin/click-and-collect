@@ -17,7 +17,7 @@ const sku = computed(() => {
 
 const marketplaces = computed(
   () =>
-    product?.value?.metadata?.marketplaces as {
+    variant?.value?.metadata?.marketplaces as {
       link: string;
       provider: string;
     }[],

@@ -24,7 +24,7 @@ const { data: filtersResponse } = await useAsyncData(
         hitsPerPage: 0,
         attributesToSearchOn: ["coloredTitle"],
         distinct: "id",
-        facets: ["color", "size"],
+        facets: ["color", "size", "subclass"],
       });
   },
 );
@@ -41,7 +41,7 @@ const { data: productsResponse, status } = await useAsyncData(
         hitsPerPage: limit.value,
         matchingStrategy: "all",
         page: page.value,
-        facets: ["color", "size"],
+        facets: ["color", "size", "subclass"],
       });
   },
   {

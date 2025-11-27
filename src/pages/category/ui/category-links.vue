@@ -2,9 +2,12 @@
 import type { StoreProductCategory } from "@medusajs/types";
 
 const { category } = defineProps<{
-  category: StoreProductCategory;
+  category: StoreProductCategory & { mpath: string };
 }>();
 
+const level = computed(() => category.mpath.split(".").length);
+
+console.log("category", level.value);
 const { data: availableCategories } = useNuxtData<string[]>(
   "available-categories",
 );
@@ -14,7 +17,7 @@ function clearedCategories(list: StoreProductCategory[]) {
 </script>
 
 <template>
-  <div class="my-9 flex-wrap flex gap-3">
+  <div v-if="level < 3" class="my-9 flex-wrap flex gap-3">
     <NuxtLink
       v-for="subCategory of clearedCategories(category.category_children)"
       :key="subCategory.id"

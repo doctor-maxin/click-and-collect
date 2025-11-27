@@ -1,4 +1,4 @@
-export const allowedFacets = ["color", "size"];
+export const allowedFacets = ["color", "size", "subclass"];
 
 export function prepareFilterQuery(
   input: string[],
