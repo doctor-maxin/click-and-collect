@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { NavigationRenderType, NavigationItemType } from "#gql/default";
 
+defineEmits<{
+  (e: "close"): void;
+}>();
+
 const { data: footerMenu } = await useAsyncData(
   "footer-menu",
   () =>
@@ -49,6 +53,7 @@ const defaultLinks = computed(() =>
               :to="
                 getItemUrl(item?.type, item?.path, item?.related?.__typename)
               "
+              @click="$emit('close')"
               >{{ item?.title }}</NuxtLink
             >
           </li>
@@ -61,6 +66,7 @@ const defaultLinks = computed(() =>
           <NuxtLink
             :to="getItemUrl(item?.type, item?.path, item?.related?.__typename)"
             class="cursor-pointer"
+            @click="$emit('close')"
           >
             <figure class="w-9 aspect-square">
               <img :src="item?.additionalFields?.icon!" />
