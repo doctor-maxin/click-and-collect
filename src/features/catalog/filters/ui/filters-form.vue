@@ -12,10 +12,13 @@ const route = useRoute();
 const { filtersList, appliedFilters, availableFilters } =
   storeToRefs(filtersStore);
 
-const options = computed(() => (key: string) => {
+const options = computed(() => (key: string, type: "or" | "and") => {
   const list = [];
   for (const item of filtersList.value[key] ?? []) {
-    if (availableFilters.value[key]?.some((v) => v.value === item.value)) {
+    if (
+      availableFilters.value[key]?.some((v) => v.value === item.value) ||
+      type === "or"
+    ) {
       list.push(item);
     } else {
       list.push({
@@ -30,9 +33,13 @@ const form = useForm<IFiltersForm>({
   validationSchema: yup.object({
     color: yup.array().of(yup.string()),
     size: yup.array().of(yup.string()),
-    ["metadata.subclass"]: yup.array().of(yup.string()),
+    ["subclass"]: yup.array().of(yup.string()),
   }),
-  initialValues: appliedFilters.value,
+  keepValuesOnUnmount: true,
+  initialValues: {
+    ...appliedFilters.value,
+    subclass: appliedFilters.value["metadata.subclass"] || [],
+  },
 });
 
 const handleForm = form.handleSubmit(async (values) => {
@@ -57,7 +64,7 @@ const resetForm = () => {
       values: {
         color: [],
         size: [],
-        ["metadata.subclass"]: [],
+        subclass: [],
       },
     },
     {
@@ -73,20 +80,20 @@ const resetForm = () => {
 <template>
   <div class="flex flex-col w-full gap-5">
     <UiAutocomplete
-      :options="options('size')"
+      :options="options('size', 'and')"
       name="size"
       :form="form"
       placeholder="Размер"
     />
     <UiAutocomplete
-      :options="options('color')"
+      :options="options('color', 'and')"
       name="color"
       :form="form"
       placeholder="Цвет"
     />
     <UiAutocomplete
-      :options="options('metadata.subclass')"
-      name="metadata.subclass"
+      :options="options('metadata.subclass', 'or')"
+      name="subclass"
       :form="form"
       placeholder="Категория"
     />
