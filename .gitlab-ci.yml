@@ -90,4 +90,3 @@ deploy_production:
     ssh -i ~/.ssh/id_rsa $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "cd $DEPLOY_PATH_PROD && bash deploy-production.sh"
   environment:
     name: production
-  when: manual
