@@ -54,7 +54,8 @@ export const useFiltersStore = defineStore("filters", {
       );
     },
     setAppliedFiltersFromQuery(appliedFilters: LocationQuery) {
-      for (const [key, value] of Object.entries(appliedFilters)) {
+      for (let [key, value] of Object.entries(appliedFilters)) {
+        if (key === "subclass") key = "metadata.subclass";
         if (value?.length === 0 || !allowedFacets.includes(key)) continue;
 
         if (Array.isArray(value)) {

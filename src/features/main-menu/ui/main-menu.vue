@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "reka-ui";
 import MainMenuBar from "./main-menu-bar.vue";
+import MainMenuSubtreeBar from "./main-menu-subtree-bar.vue";
 import MainMenuFooter from "./main-menu-footer.vue";
 
 const isOpen = ref(false);
@@ -38,7 +39,13 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
         <VisuallyHidden as-child>
           <DialogDescription>Main Menu</DialogDescription>
         </VisuallyHidden>
-        <MainMenuBar
+        <!-- <MainMenuBar
+          v-model="isExpanded"
+          v-if="mainMenu"
+          :menu="mainMenu"
+          @close="isOpen = false"
+        /> -->
+        <MainMenuSubtreeBar
           v-model="isExpanded"
           v-if="mainMenu"
           :menu="mainMenu"
