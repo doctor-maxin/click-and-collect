@@ -70,8 +70,10 @@ deploy_production:
   rules:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "main"
   before_script:
-    - *ssh_setup
+    - apk update && apk add openssh-client rsync
+    - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY_PROD" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H "$DEPLOY_HOST_PROD" >> ~/.ssh/known_hosts
   script: |
     set -euo pipefail
