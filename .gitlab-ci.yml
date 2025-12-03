@@ -48,7 +48,7 @@ deploy_staging:
   script: |
     set -euo pipefail
 
-    printenv | grep -E '^(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sort > .env
+    printenv | grep -E '^STAGING_(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sed 's/^STAGING_//' | sort > .env
 
     ssh -i ~/.ssh/id_rsa $DEPLOY_USER@$DEPLOY_HOST "mkdir -p '$DEPLOY_PATH'"
 
@@ -76,7 +76,7 @@ deploy_production:
   script: |
     set -euo pipefail
 
-    printenv | grep -E '^(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sort > .env
+    printenv | grep -E '^PROD_(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sed 's/^STAGING_//' | sort > .env
 
     ssh -i ~/.ssh/id_rsa $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "mkdir -p '$DEPLOY_PATH_PROD'"
 
