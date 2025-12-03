@@ -15,9 +15,11 @@ default:
     policy: pull-push
 
 .ssh_setup: &ssh_setup
-  - apk update && apk add openssh-client rsync
-  - eval $(ssh-agent -s)
+  - apk update && apk add openssh-client rsync sshpass
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
   - echo "PubkeyAcceptedKeyTypes +ssh-rsa" >> /etc/ssh/ssh_config || true
+  - eval $(ssh-agent -s)
 
 build:
   stage: build
@@ -43,21 +45,26 @@ deploy_staging:
     - if: $CI_COMMIT_BRANCH == "develop"
   before_script:
     - *ssh_setup
-    - echo "$SSH_PRIVATE_KEY" | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -p ${SSH_PORT:-22} -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+    - |
+      if [ -n "$SSH_PASSPHRASE" ]; then
+        echo "$SSH_PASSPHRASE" | SSH_ASKPASS=/bin/cat setsid ssh-add ~/.ssh/id_rsa
+      else
+        SSH_ASKPASS=/dev/null ssh-add ~/.ssh/id_rsa 2>/dev/null || true
+      fi
     - ssh -o BatchMode=yes -o ConnectTimeout=5 -p ${SSH_PORT:-22} $DEPLOY_USER@$DEPLOY_HOST exit
   script:
     - set -euo pipefail
     - printenv | grep -E '^STAGING_(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sed 's/^STAGING_//' | sort > .env
-    - ssh -p ${SSH_PORT:-22} $DEPLOY_USER@$DEPLOY_HOST "mkdir -p '$DEPLOY_PATH'"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" .output/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/.output/"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" ecosystem.config.cjs "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/ecosystem.config.cjs"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" .env "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/.env"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT:-22}" deploy.sh "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/deploy.sh"
+    - ssh -o BatchMode=yes -p ${SSH_PORT:-22} $DEPLOY_USER@$DEPLOY_HOST "mkdir -p '$DEPLOY_PATH'"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT:-22}" .output/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/.output/"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT:-22}" ecosystem.config.cjs "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/ecosystem.config.cjs"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT:-22}" .env "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/.env"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT:-22}" deploy.sh "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/deploy.sh"
     - echo "Build uploaded to $DEPLOY_HOST:$DEPLOY_PATH"
-    - ssh -p ${SSH_PORT:-22} $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && bash deploy.sh"
+    - ssh -o BatchMode=yes -p ${SSH_PORT:-22} $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && bash deploy.sh"
   environment:
     name: staging
 
@@ -69,20 +76,25 @@ deploy_production:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "main"
   before_script:
     - *ssh_setup
-    - echo "$SSH_PRIVATE_KEY_PROD" | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY_PROD" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -p ${SSH_PORT_PROD:-22} -H "$DEPLOY_HOST_PROD" >> ~/.ssh/known_hosts
+    - |
+      if [ -n "$SSH_PASSPHRASE_PROD" ]; then
+        echo "$SSH_PASSPHRASE_PROD" | SSH_ASKPASS=/bin/cat setsid ssh-add ~/.ssh/id_rsa
+      else
+        SSH_ASKPASS=/dev/null ssh-add ~/.ssh/id_rsa 2>/dev/null || true
+      fi
     - ssh -o BatchMode=yes -o ConnectTimeout=5 -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD exit
   script:
     - set -euo pipefail
     - printenv | grep -E '^PROD_(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sed 's/^PROD_//' | sort > .env
-    - ssh -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "mkdir -p '$DEPLOY_PATH_PROD'"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT_PROD:-22}" .output/ "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/.output/"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT_PROD:-22}" ecosystem.production.config.cjs "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/ecosystem.production.config.cjs"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT_PROD:-22}" .env "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/.env"
-    - rsync -az --delete -e "ssh -p ${SSH_PORT_PROD:-22}" deploy-production.sh "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/deploy-production.sh"
+    - ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "mkdir -p '$DEPLOY_PATH_PROD'"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" .output/ "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/.output/"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" ecosystem.production.config.cjs "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/ecosystem.production.config.cjs"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" .env "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/.env"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" deploy-production.sh "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/deploy-production.sh"
     - echo "Build uploaded to $DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD"
-    - ssh -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "cd $DEPLOY_PATH_PROD && bash deploy-production.sh"
+    - ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "cd $DEPLOY_PATH_PROD && bash deploy-production.sh"
   environment:
     name: production
