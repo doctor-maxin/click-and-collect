@@ -5,5 +5,9 @@ query GetConfig {
     email
     phone
     yandexMapKey
+    cookieBanner {
+      header
+      content
+    }
   }
 }

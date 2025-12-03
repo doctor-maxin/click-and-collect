@@ -30,11 +30,12 @@ const breadcrumbs = computed(() => {
   let parentCategory = product_categories.value;
   for (const path of paths) {
     const c = parentCategory.find((c) => c.id === path);
-
-    list.push({
-      path: `/catalog/` + c?.handle,
-      label: `${c?.name[0]?.toUpperCase()}${c?.name?.slice(1).toLowerCase()}`,
-    });
+    if (c?.parent_category_id) {
+      list.push({
+        path: `/catalog/` + c?.handle,
+        label: `${c?.name[0]?.toUpperCase()}${c?.name?.slice(1).toLowerCase()}`,
+      });
+    }
     if (c) parentCategory = c.category_children;
   }
 

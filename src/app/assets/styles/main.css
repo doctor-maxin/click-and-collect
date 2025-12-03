@@ -8,6 +8,7 @@
   --color-blue: hsl(197, 100%, 45%);
   --color-white: hsl(0, 0%, 100%);
   --color-gray: hsl(0, 0%, 75%);
+  --color-light-gray: hsl(0, 0%, 85%);
   --color-red: hsl(0, 75%, 45%);
 }
 
@@ -73,6 +74,7 @@ body {
   overflow: hidden;
   width: var(--reka-navigation-menu-viewport-width);
   height: var(--reka-navigation-menu-viewport-height);
+  top: var(--reka-navigation-menu-viewport-top);
   transition:
     width,
     height,
@@ -163,4 +165,69 @@ body {
 .slide-left-leave-to {
   transform: translateX(-1rem);
   opacity: 0;
+}
+
+.content {
+  font-size: 16px;
+  line-height: 24px;
+}
+.content :is(h2, h3, h4, h5, h6) {
+  margin-block: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+.content ul {
+  list-style: disc;
+  list-style-position: inside;
+}
+
+.content ol {
+  list-style: decimal;
+  list-style-position: inside;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgb(175, 177, 182);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.layout:has(.home-page > section.carousel:first-of-type) .ui-header {
+  color: white;
+  background: linear-gradient(
+    0deg,
+    rgba(194, 195, 197, 0),
+    rgba(0, 0, 0, 0.7) 100%
+  );
+
+  a,
+  button {
+    color: white;
+  }
+}
+
+.wb {
+  background: linear-gradient(
+    30.88deg,
+    rgba(111, 1, 251, 1),
+    rgba(255, 73, 215, 1) 100%
+  );
+  color: white;
+}
+
+.ozon {
+  color: white;
+  background-color: #005bff;
+}
+
+.lamoda {
+  color: white;
+  background-color: #000000;
 }

@@ -11,10 +11,18 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "nuxt-graphql-client",
     "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
+    "@nuxtjs/seo",
   ],
   alias: {
     "@": "../src",
     "@assets": "../src/app/assets",
+  },
+  site: {
+    url: process.env.NUXT_SITE_URL,
+    name: process.env.NUXT_SITE_NAME,
+    description: process.env.NUXT_SITE_DESCRIPTION,
+    defaultLocale: process.env.NUXT_DEFAULT_LOCALE,
   },
   yandexMaps: {
     apikey: process.env.NUXT_YANDEX_API_KEY,
@@ -22,7 +30,7 @@ export default defineNuxtConfig({
   rootDir: ".",
   srcDir: "src",
   css: ["./src/app/assets/styles/main.css"],
-  ssr: true,
+  ssr: process.env.NODE_ENV !== "development",
   image: {
     format: ["webp", "avif"],
     strapi: {
@@ -58,6 +66,10 @@ export default defineNuxtConfig({
     clients: {
       default: {
         host: process.env.STRAPI_URL + "/graphql",
+        codegenHeaders: {
+          Authorization: "Bearer " + process.env.STRAPI_TOKEN,
+        },
+        retainToken: true,
         token: {
           type: "Bearer",
           name: "Authorization",
@@ -72,6 +84,8 @@ export default defineNuxtConfig({
       strapiToken: process.env.STRAPI_TOKEN,
       medusaUrl: process.env.NUXT_MEDUSA_URL,
       medusaToken: process.env.NUXT_MEDUSA_TOKEN,
+      searchApiKey: process.env.NUXT_SEARCH_API_KEY,
+      searchUrl: process.env.NUXT_SEARCH_URL,
     },
   },
   vite: {
@@ -79,5 +93,8 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: "bun",
+    prerender: {
+      routes: ["/_ipx/_/not_found.png"],
+    },
   },
 });

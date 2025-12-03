@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { StoreProductImage } from "@medusajs/types";
+import { FeatureZoomImage } from "~/features/zoom-image";
 import { useProductStore } from "../lib/product-store";
+import { ClientOnly } from "#components";
+import { ZoomImg, Magnifier } from "vue3-zoomer";
 
 const productStore = useProductStore();
-const { product } = storeToRefs(productStore);
+const { product, color } = storeToRefs(productStore);
+const mainImage = ref(product?.value?.images?.[0]);
+const isError = ref(!mainImage.value?.url?.trim());
 
 function getThumbnailUrl(image?: StoreProductImage) {
   if (!image?.url?.trim()) return "/not_found.png";
@@ -16,55 +21,110 @@ function getDefaultUrl(image?: StoreProductImage) {
   return image.url.replace("500px", "1400px");
 }
 
-const mainImage = ref(product?.value?.images?.[0]);
+const colorImages = computed(() =>
+  product.value?.images?.filter(
+    (i) =>
+      //@ts-ignore
+      i.metadata?.color?.toLowerCase() === color.value?.value?.toLowerCase(),
+  ),
+);
+
+const onError = (event: Event) => {
+  if (!event.target) return;
+  const target = event.target as HTMLImageElement;
+  target.src = "/not_found.png";
+};
+const zoomImgRef = useTemplateRef("zoomImgRef");
+const onErrorZoomImg = () => {
+  if (!zoomImgRef.value) return;
+  isError.value = true;
+};
+const changeMainImage = (image: StoreProductImage) => {
+  mainImage.value = image;
+  isError.value = false;
+};
+
+watch(
+  () => color.value?.value,
+  (colorString: string) => {
+    if (mainImage.value?.metadata?.color !== colorString) {
+      mainImage.value = colorImages.value?.[0];
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 </script>
 <template>
-  <div class="lg:flex hidden gap-4 w-full">
-    <div class="flex flex-col gap-3">
-      <img
-        v-for="image of product?.images"
-        :src="getThumbnailUrl(image)"
-        alt="Product Image"
-        class="max-w-[5.75rem] cursor-pointer aspect-[23/28] object-cover"
-        @click="mainImage = image"
-      />
-    </div>
-    <div>
-      <img
-        :src="getDefaultUrl(mainImage)"
-        alt="Product Image"
-        class="object-cover"
-      />
-    </div>
-  </div>
-
   <div>
-    <ClientOnly>
-      <swiper-container
-        :pagination="{
-          el: '.product-card-pagination',
-          type: 'bullets',
-        }"
-        ref="containerRef"
-        class="aspect-[15/18]"
-      >
-        <swiper-slide
-          v-for="image of product?.images"
-          :key="image.id"
-          class="size-full"
+    <div
+      class="lg:grid items-start grid-cols-[5.75rem_1fr] hidden gap-4 w-full"
+    >
+      <div class="h-[38rem] overflow-y-hidden">
+        <div
+          class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-3"
         >
-          <NuxtImg
-            class="object-cover object-center size-full"
-            :src="image.url"
+          <img
+            v-for="image of colorImages"
+            :src="getThumbnailUrl(image)"
+            alt="Product Image"
+            class="max-w-[5.75rem] snap-start cursor-pointer aspect-[23/28] object-cover"
+            @click="changeMainImage(image)"
+            @error="onError"
           />
-        </swiper-slide>
-        <div slot="container-end">
-          <div
-            class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
-          ></div>
         </div>
-      </swiper-container>
-    </ClientOnly>
+      </div>
+      <div class="relative h-full desktop-media">
+        <ClientOnly>
+          <ZoomImg
+            v-if="!isError"
+            ref="zoomImgRef"
+            class="h-full"
+            trigger="hover"
+            :zoom-scale="3"
+            :src="getDefaultUrl(mainImage)"
+            :zoom="getDefaultUrl(mainImage)"
+            @error="onErrorZoomImg"
+          />
+        </ClientOnly>
+        <img
+          v-if="isError"
+          src="/not_found.png"
+          alt="Product Image"
+          class="h-full object-cover"
+        />
+      </div>
+    </div>
+
+    <div class="lg:hidden">
+      <ClientOnly>
+        <swiper-container
+          :pagination="{
+            el: '.product-card-pagination',
+            type: 'bullets',
+          }"
+          ref="containerRef"
+          class="aspect-[15/18]"
+        >
+          <swiper-slide
+            v-for="image of product?.images"
+            :key="image.id"
+            class="size-full"
+          >
+            <NuxtImg
+              class="object-cover object-center size-full"
+              :src="image.url"
+            />
+          </swiper-slide>
+          <div slot="container-end">
+            <div
+              class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
+            ></div>
+          </div>
+        </swiper-container>
+      </ClientOnly>
+    </div>
   </div>
 </template>
 <style lang="css">
@@ -76,5 +136,9 @@ const mainImage = ref(product?.value?.images?.[0]);
 }
 .product-card-pagination .swiper-pagination-bullet-active {
   background-color: rgba(255, 255, 255, 1);
+}
+
+.desktop-media .vz-zoomimg-img {
+  object-fit: cover;
 }
 </style>

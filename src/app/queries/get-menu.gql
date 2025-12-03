@@ -1,0 +1,29 @@
+query RenderNavigation(
+  $navigationIdOrSlug: String!
+  $type: NavigationRenderType
+) {
+  renderNavigation(navigationIdOrSlug: $navigationIdOrSlug, type: $type) {
+    id
+    title
+    order
+    additionalFields {
+      isSocialMenu
+      icon
+      color
+    }
+    items {
+      id
+      path
+      title
+      additionalFields {
+        isSocialMenu
+        icon
+        color
+      }
+      type
+      related {
+        __typename
+      }
+    }
+  }
+}

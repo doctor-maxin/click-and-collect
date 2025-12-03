@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FeatureMainMenu } from "~/features/main-menu";
+import { FeatureSearch } from "~/features/search";
 
 const client = useStrapiClient();
 await useAsyncData(
@@ -12,10 +13,10 @@ await useAsyncData(
 </script>
 <template>
   <div
-    class="absolute left-0 top-0 z-30 bg-transparent w-full flex justify-center"
+    class="absolute ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center"
   >
     <div
-      class="container px-4 lg:px-0 py-2 lg:py-5 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"
+      class="container px-4 py-2 lg:py-5 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"
     >
       <FeatureMainMenu />
 
@@ -25,9 +26,7 @@ await useAsyncData(
           :fontControlled="false"
         />
       </NuxtLink>
-      <button type="button">
-        <SvgoSearch filled class="text-2xl" />
-      </button>
+      <FeatureSearch />
     </div>
   </div>
 </template>

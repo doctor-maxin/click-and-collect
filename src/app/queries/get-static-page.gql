@@ -1,0 +1,9 @@
+query GetStaticPage($status: PublicationStatus, $filters: PageFiltersInput) {
+  pages(status: $status, filters: $filters) {
+    title
+    handle
+    publishedAt
+    content
+    preamble
+  }
+}

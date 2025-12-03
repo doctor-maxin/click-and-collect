@@ -1,31 +1,46 @@
 <script setup lang="ts">
-import type { StoreProduct } from "@medusajs/types";
+import type { StoreProduct, StoreProductOptionValue } from "@medusajs/types";
+import { sortSizeOptions } from "~/shared/lib/utils/sort-size-options";
 
 const { product } = defineProps<{
   product: StoreProduct;
 }>();
-const sizeValues = computed(
-  () => product?.options?.find((o) => o.title === "size")?.values ?? [],
-);
+const router = useRouter();
+const sizeValues = computed(() => {
+  const sizeOption = product?.options?.find(
+    (o) => o.title.toLowerCase() === "size",
+  );
+
+  if (!sizeOption) return [];
+
+  const list =
+    product?.variants?.map((variant) => {
+      return variant.options?.find((o) => o.option_id === sizeOption.id)!;
+    }) ?? [];
+
+  if (!list || !product?.variants) return [];
+  return sortSizeOptions(list, product?.variants);
+});
 const haveScrollbar = ref(false);
 const showToLeft = ref(false);
 const showToRight = ref(false);
 
 const optionsContainer = useTemplateRef("optionsContainer");
 const optionsScrollbar = useTemplateRef("optionsScrollbar");
+const trashHold = shallowRef(20);
 
 function onScroll() {
   if (!optionsScrollbar.value) return;
 
   if (
     optionsScrollbar.value.scrollLeft + optionsScrollbar.value.clientWidth >=
-    optionsScrollbar.value.scrollWidth - 40
+    optionsScrollbar.value.scrollWidth - trashHold.value
   ) {
     showToRight.value = false;
     showToLeft.value = true;
   }
 
-  if (optionsScrollbar.value.scrollLeft < 40) {
+  if (optionsScrollbar.value.scrollLeft < trashHold.value) {
     showToLeft.value = false;
     showToRight.value = true;
   }
@@ -65,6 +80,17 @@ function scrollRight() {
     behavior: "smooth",
   });
 }
+
+function routeTo(option: StoreProductOptionValue) {
+  const variant = product.variants?.find((v) =>
+    v?.options?.some(
+      (o) => o.option_id === option.option_id && o.value === option.value,
+    ),
+  );
+  console.log(variant);
+
+  router.push(`/products/${product.handle}?variant=${variant?.id}`);
+}
 </script>
 <template>
   <div
@@ -93,12 +119,13 @@ function scrollRight() {
       >
         <span
           v-for="(v, i) of sizeValues"
-          :key="v.id"
-          class="text-black whitespace-nowrap text-base leading-5"
+          :key="i"
+          class="text-black whitespace-nowrap text-base leading-5 cursor-pointer"
           :class="{
             'snap-start': i === 0,
             'snap-end': i !== 0,
           }"
+          @click="routeTo(v)"
         >
           {{ v.value }}
         </span>

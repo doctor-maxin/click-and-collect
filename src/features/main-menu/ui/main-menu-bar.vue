@@ -10,22 +10,29 @@ import {
   NavigationMenuTrigger,
   NavigationMenuViewport,
 } from "reka-ui";
-import { useMedusaClient } from "#imports";
 import type { StoreProductCategory } from "@medusajs/types";
 
-const client = useMedusaClient();
-
+const appConfig = useAppConfig();
 const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
-
+const { data: availableCategories } = useNuxtData<string[]>(
+  "available-categories",
+);
 const categoriesTree = computed(
   () =>
-    product_categories.value?.find((c) => c.handle === "sinsay")
+    product_categories.value?.find((c) => c.handle === appConfig.brand)
       ?.category_children || [],
 );
 
+function clearedCategories(list: StoreProductCategory[]) {
+  return list.filter((c) => availableCategories.value?.includes(c.id));
+}
+
 defineProps<{
   menu: NavigationMenu;
+}>();
+defineEmits<{
+  (e: "close"): void;
 }>();
 </script>
 
@@ -33,16 +40,20 @@ defineProps<{
   <NavigationMenuRoot orientation="vertical" class="flex w-full">
     <NavigationMenuList class="flex flex-col min-w-[9rem]">
       <NavigationMenuItem
-        v-for="category of categoriesTree"
+        v-for="category of clearedCategories(categoriesTree)"
         :key="category.id"
         class="group"
       >
         <NavigationMenuTrigger
           v-if="category.category_children?.length"
-          class="uppercase py-2 text-left font-semibold text-base leading-5 w-full"
+          class="uppercase main-menu-bar-link relative py-2 text-left font-semibold text-xl leading-5 w-full"
         >
           <NavigationMenuLink as-child>
-            <NuxtLink :to="'/catalog/' + category.handle" class="w-full block">
+            <NuxtLink
+              :to="'/catalog/' + category.handle"
+              class="w-full block"
+              @click="$emit('close')"
+            >
               {{ category.name }}
             </NuxtLink>
           </NavigationMenuLink>
@@ -50,10 +61,10 @@ defineProps<{
         <NavigationMenuLink
           as-child
           v-else
-          class="uppercase block text-left py-2 gap-4 font-semibold text-base leading-5 w-full"
+          class="uppercase block text-left py-2 gap-4 font-semibold text-xl leading-5 w-full"
         >
-          <NuxtLink :to="'/catalog/' + category.handle">
-            {{ category.name }}
+          <NuxtLink :to="'/catalog/' + category.handle" @click="$emit('close')">
+            {{ category.name }} s
           </NuxtLink>
         </NavigationMenuLink>
         <NavigationMenuContent
@@ -63,13 +74,18 @@ defineProps<{
           <NavigationMenuSub>
             <NavigationMenuList class="flex flex-col min-w-[9rem]">
               <NavigationMenuItem
-                v-for="subCategory of category.category_children"
+                v-for="subCategory of clearedCategories(
+                  category.category_children,
+                )"
                 :value="subCategory.handle"
                 :key="subCategory.id"
-                class="uppercase py-2 items-center gap-4 font-medium text-base leading-5 flex justify-between w-full"
+                class="uppercase py-2 items-center gap-4 font-medium text-xl leading-5 flex justify-between w-full"
               >
                 <NavigationMenuLink>
-                  <NuxtLink :to="`/catalog/${subCategory.handle}`">
+                  <NuxtLink
+                    :to="`/catalog/${subCategory.handle}`"
+                    @click="$emit('close')"
+                  >
                     {{ subCategory.name }}
                   </NuxtLink>
                 </NavigationMenuLink>
@@ -87,7 +103,7 @@ defineProps<{
       >
         <NavigationMenuTrigger
           v-if="item.type === 'WRAPPER' && item.items?.length"
-          class="uppercase py-2 text-left font-semibold text-base leading-5 w-full"
+          class="uppercase py-2 text-left font-semibold text-xl leading-5 w-full"
         >
           <NavigationMenuLink as-child>
             <NuxtLink
@@ -96,6 +112,7 @@ defineProps<{
                 color: item.additionalFields?.color ?? 'inherit',
               }"
               class="w-full block"
+              @click="$emit('close')"
             >
               {{ item.title }}
             </NuxtLink>
@@ -104,13 +121,14 @@ defineProps<{
         <NavigationMenuLink
           as-child
           v-else
-          class="uppercase block text-left py-2 gap-4 font-semibold text-base leading-5 w-full"
+          class="uppercase block text-left py-2 gap-4 font-semibold text-xl leading-5 w-full"
         >
           <NuxtLink
             :to="item.path"
             :style="{
               color: item.additionalFields?.color ?? 'inherit',
             }"
+            @click="$emit('close')"
           >
             {{ item.title }}
           </NuxtLink>
@@ -125,7 +143,7 @@ defineProps<{
                 v-for="subItem of item.items"
                 :value="subItem.slug"
                 :key="item.uiRouterKey"
-                class="uppercase py-2 items-center gap-4 font-medium text-base leading-5 flex justify-between w-full"
+                class="uppercase py-2 items-center gap-4 font-medium text-xl leading-5 flex justify-between w-full"
               >
                 <NavigationMenuLink>
                   <NuxtLink
@@ -133,6 +151,7 @@ defineProps<{
                     :style="{
                       color: item.additionalFields?.color ?? 'inherit',
                     }"
+                    @click="$emit('close')"
                   >
                     {{ subItem.title }}
                   </NuxtLink>
@@ -153,7 +172,9 @@ defineProps<{
     </NavigationMenuList>
 
     <div class="perspective-[2000px]">
-      <NavigationMenuViewport class="navigation-menu-viewport" />
+      <NavigationMenuViewport align="start" class="navigation-menu-viewport" />
     </div>
   </NavigationMenuRoot>
 </template>
+
+<style></style>

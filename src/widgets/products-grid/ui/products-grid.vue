@@ -16,6 +16,9 @@ const {
 defineEmits<{
   (e: "load-more"): void;
 }>();
+
+const filtersStore = useFiltersStore();
+const { appliedFilters } = storeToRefs(filtersStore);
 </script>
 <template>
   <div v-if="products.length > 0">
@@ -31,13 +34,20 @@ defineEmits<{
       </template>
     </div>
     <div v-if="hasMore" class="flex justify-center w-full my-9">
-      <button
-        type="button"
-        class="text-[1.25rem] cursor-pointer text-center"
+      <UiButton
+        variant="outline"
+        class="text-base cursor-pointer text-center lg:!h-9"
         @click="$emit('load-more')"
       >
         Показать больше
-      </button>
+      </UiButton>
     </div>
+  </div>
+  <div v-else class="py-24 flex w-full justify-center items-center">
+    <span class="text-[1.5rem] font-medium leading-8 text-center">{{
+      Object.keys(appliedFilters).length > 0
+        ? "Нет товаров по указанным фильтрам"
+        : "Нет товаров"
+    }}</span>
   </div>
 </template>
