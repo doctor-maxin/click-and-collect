@@ -88,11 +88,12 @@ deploy_production:
     - ssh -o BatchMode=yes -o ConnectTimeout=5 -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD exit
   script:
     - set -euo pipefail
-    - printenv | grep -E '^PROD_(NUXT_|STRAPI_|FTP_|APP_|PORT=|DATABASE_URL=|REDIS_URL=|JWT_|KEY_|SECRET_)' | sed 's/^PROD_//' | sort > .env
+    - echo "$PROD_ENV" > .env
     - ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "mkdir -p '$DEPLOY_PATH_PROD'"
     - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" .output/ "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/.output/"
     - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" ecosystem.production.config.cjs "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/ecosystem.production.config.cjs"
     - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" .env "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/.env"
+    - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" node_modules/ "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/node_modules/"
     - rsync -az --delete -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" deploy-production.sh "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/deploy-production.sh"
     - echo "Build uploaded to $DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD"
     - ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "cd $DEPLOY_PATH_PROD && bash deploy-production.sh"
