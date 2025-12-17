@@ -90,6 +90,9 @@ export default defineNuxtConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      allowedHosts: [process.env.NUXT_SITE_URL!],
+    },
   },
   nitro: {
     preset: "bun",
