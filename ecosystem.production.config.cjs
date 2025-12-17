@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: "sin-storefront-prod",
-      script: ".output/server/index.mjs",
+      script: "npm",
+      args: "run start",
       interpreter: "bun",
       instances: "max",
       exec_mode: "cluster",

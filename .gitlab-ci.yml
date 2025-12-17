@@ -9,9 +9,12 @@ variables:
 default:
   image: oven/bun:1.1
   cache:
+    key:
+      files:
+        - bun.lock
+        - package.json
     paths:
       - node_modules/
-      - bun.lock
     policy: pull-push
 
 .ssh_setup: &ssh_setup
@@ -23,14 +26,29 @@ default:
 
 build:
   stage: build
+  cache:
+    key:
+      files:
+        - bun.lock
+        - package.json
+    paths:
+      - node_modules/
+    policy: pull-push
   script:
     - bun --version
     - bun install
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "develop" ]; then
+        echo "$DEV_ENV" > .env
+      elif [ "$CI_COMMIT_BRANCH" = "master" ] || [ "$CI_COMMIT_BRANCH" = "main" ]; then
+        echo "$PROD_ENV" > .env
+      fi
     - bun run build
     - test -f .output/server/index.mjs
   artifacts:
     paths:
       - .output/
+      - .env
       - ecosystem.config.cjs
       - ecosystem.production.config.cjs
       - deploy.sh
