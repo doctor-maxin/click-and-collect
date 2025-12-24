@@ -27,7 +27,7 @@ const showToRight = ref(false);
 
 const optionsContainer = useTemplateRef("optionsContainer");
 const optionsScrollbar = useTemplateRef("optionsScrollbar");
-const trashHold = shallowRef(20);
+const trashHold = shallowRef(0);
 
 function onScroll() {
   if (!optionsScrollbar.value) return;
@@ -40,7 +40,7 @@ function onScroll() {
     showToLeft.value = true;
   }
 
-  if (optionsScrollbar.value.scrollLeft < trashHold.value) {
+  if (optionsScrollbar.value.scrollLeft <= trashHold.value) {
     showToLeft.value = false;
     showToRight.value = true;
   }
@@ -67,16 +67,14 @@ onUnmounted(() => {
 function scrollLeft() {
   if (!optionsScrollbar.value) return;
 
-  optionsScrollbar.value.scrollBy({
-    left: -optionsScrollbar.value.clientWidth,
+  optionsScrollbar.value.firstElementChild?.scrollIntoView({
     behavior: "smooth",
   });
 }
 function scrollRight() {
   if (!optionsScrollbar.value) return;
 
-  optionsScrollbar.value.scrollBy({
-    left: optionsScrollbar.value.clientWidth,
+  optionsScrollbar.value.lastElementChild?.scrollIntoView({
     behavior: "smooth",
   });
 }
