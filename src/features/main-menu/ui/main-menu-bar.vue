@@ -25,7 +25,15 @@ const categoriesTree = computed(
 );
 
 function clearedCategories(list: StoreProductCategory[]) {
-  return list.filter((c) => availableCategories.value?.includes(c.id));
+  const availableList = list.filter((c) =>
+    availableCategories.value?.includes(c.id),
+  );
+  const uniqueList = new Map<string, StoreProductCategory>();
+  availableList.forEach((item) =>
+    uniqueList.set(item.name?.toLowerCase(), item),
+  );
+
+  return uniqueList.values();
 }
 
 defineProps<{
@@ -64,7 +72,7 @@ defineEmits<{
           class="uppercase block text-left py-2 gap-4 font-semibold text-xl leading-5 w-full"
         >
           <NuxtLink :to="'/catalog/' + category.handle" @click="$emit('close')">
-            {{ category.name }} s
+            {{ category.name }}
           </NuxtLink>
         </NavigationMenuLink>
         <NavigationMenuContent
@@ -83,7 +91,15 @@ defineEmits<{
               >
                 <NavigationMenuLink>
                   <NuxtLink
-                    :to="`/catalog/${subCategory.handle}`"
+                    :to="{
+                      name: 'catalog-handle',
+                      params: {
+                        handle: category.handle,
+                      },
+                      query: {
+                        ['metadata.subclass']: subCategory.name,
+                      },
+                    }"
                     @click="$emit('close')"
                   >
                     {{ subCategory.name }}

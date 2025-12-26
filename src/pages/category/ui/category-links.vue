@@ -12,7 +12,15 @@ const { data: availableCategories } = useNuxtData<string[]>(
   "available-categories",
 );
 function clearedCategories(list: StoreProductCategory[]) {
-  return list.filter((c) => availableCategories.value?.includes(c.id));
+  const availableList = list.filter((c) =>
+    availableCategories.value?.includes(c.id),
+  );
+  const uniqueList = new Map<string, StoreProductCategory>();
+  availableList.forEach((item) =>
+    uniqueList.set(item.name?.toLowerCase(), item),
+  );
+
+  return uniqueList.values();
 }
 </script>
 
@@ -21,7 +29,15 @@ function clearedCategories(list: StoreProductCategory[]) {
     <NuxtLink
       v-for="subCategory of clearedCategories(category.category_children)"
       :key="subCategory.id"
-      :to="`/catalog/${subCategory.handle}`"
+      :to="{
+        name: 'catalog-handle',
+        params: {
+          handle: category.handle,
+        },
+        query: {
+          ['metadata.subclass']: subCategory.name,
+        },
+      }"
     >
       <UiBadge>{{ subCategory.name }}</UiBadge>
     </NuxtLink>

@@ -77,7 +77,7 @@ defineEmits<{
           class="uppercase block text-left py-2 gap-4 font-semibold text-xl leading-5 w-full"
         >
           <NuxtLink :to="'/catalog/' + category.handle" @click="$emit('close')">
-            {{ category.name }} s
+            {{ category.name }}
           </NuxtLink>
         </NavigationMenuLink>
         <NavigationMenuContent

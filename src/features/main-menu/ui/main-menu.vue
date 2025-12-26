@@ -39,18 +39,18 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
         <VisuallyHidden as-child>
           <DialogDescription>Main Menu</DialogDescription>
         </VisuallyHidden>
-        <!-- <MainMenuBar
-          v-model="isExpanded"
-          v-if="mainMenu"
-          :menu="mainMenu"
-          @close="isOpen = false"
-        /> -->
-        <MainMenuSubtreeBar
+        <MainMenuBar
           v-model="isExpanded"
           v-if="mainMenu"
           :menu="mainMenu"
           @close="isOpen = false"
         />
+        <!-- <MainMenuSubtreeBar
+          v-model="isExpanded"
+          v-if="mainMenu"
+          :menu="mainMenu"
+          @close="isOpen = false"
+        /> -->
         <MainMenuFooter @close="isOpen = false" />
         <DialogClose class="cursor-pointer absolute top-3 right-3">
           <SvgoClose filled class="text-2xl !mb-0" />

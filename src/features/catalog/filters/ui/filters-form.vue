@@ -48,6 +48,13 @@ const handleForm = form.handleSubmit(async (values) => {
   const query: Record<string, string | string[]> = {
     ...values,
   };
+
+  // Заменяем ключ subclass на metadata.subclass
+  if (query.subclass) {
+    query["metadata.subclass"] = query.subclass;
+    delete query.subclass;
+  }
+
   if (route.query.q) {
     query.q = route.query.q.toString();
   }
