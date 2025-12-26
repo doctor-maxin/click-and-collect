@@ -61,7 +61,9 @@ export default defineNuxtConfig({
     watch: true,
     autoImport: true,
     functionPrefix: "Gql",
-    documentPaths: ["src/app/queries"],
+    documentPaths: [
+      process.env.NODE_ENV === "production" ? "app/queries" : "src/app/queries",
+    ],
     preferGETQueries: false,
     clients: {
       default: {
@@ -86,6 +88,11 @@ export default defineNuxtConfig({
       medusaToken: process.env.NUXT_MEDUSA_TOKEN,
       searchApiKey: process.env.NUXT_SEARCH_API_KEY,
       searchUrl: process.env.NUXT_SEARCH_URL,
+    },
+  },
+  router: {
+    options: {
+      scrollBehaviorType: "smooth",
     },
   },
   vite: {
