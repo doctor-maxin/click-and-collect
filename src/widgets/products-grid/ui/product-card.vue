@@ -3,6 +3,7 @@ import type { StoreProduct } from "@medusajs/types";
 import { FeatureRenderMedia } from "~/features/render-media";
 import ProductCardOptions from "./product-card-options.vue";
 import ProductCardPrice from "./product-card-price.vue";
+import ProductImage from "./product-image.vue";
 
 const { product } = defineProps<{
   product: StoreProduct;
@@ -83,7 +84,7 @@ const link = computed(
               :key="image.id"
               class="size-full"
             >
-              <NuxtImg
+              <ProductImage
                 class="object-cover object-center size-full"
                 :src="image.url"
                 loading="lazy"
@@ -95,10 +96,9 @@ const link = computed(
           ></div>
         </template>
         <div v-else class="aspect-[15/18]">
-          <NuxtImg
+          <ProductImage
             class="object-cover object-center size-full"
             src="/not_found.png"
-            provider="ipx"
           />
         </div>
       </NuxtLink>

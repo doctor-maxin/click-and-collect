@@ -1,4 +1,5 @@
 export default defineAppConfig({
   brand: "sinsay",
-  test: true,
+  test: false,
+  provider: "s3",
 });

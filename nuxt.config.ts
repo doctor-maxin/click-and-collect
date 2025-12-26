@@ -36,6 +36,11 @@ export default defineNuxtConfig({
     strapi: {
       baseURL: `${process.env.STRAPI_URL}`,
     },
+    providers: {
+      customS3: {
+        provider: "~/providers/customS3.ts",
+      },
+    },
   },
   components: {
     dirs: [

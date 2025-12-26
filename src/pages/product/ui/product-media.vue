@@ -4,6 +4,7 @@ import { FeatureZoomImage } from "~/features/zoom-image";
 import { useProductStore } from "../lib/product-store";
 import { ClientOnly } from "#components";
 import { ZoomImg, Magnifier } from "vue3-zoomer";
+import ProductImage from "~/widgets/products-grid/ui/product-image.vue";
 
 const productStore = useProductStore();
 const { product, color } = storeToRefs(productStore);
@@ -65,10 +66,12 @@ watch(
         <div
           class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-3"
         >
-          <img
+          <ProductImage
             v-for="image of colorImages"
             :src="getThumbnailUrl(image)"
             alt="Product Image"
+            :width="92"
+            :height="112"
             class="max-w-[5.75rem] snap-start cursor-pointer aspect-[23/28] object-cover"
             @click="changeMainImage(image)"
             @error="onError"
@@ -112,7 +115,7 @@ watch(
             :key="image.id"
             class="size-full"
           >
-            <NuxtImg
+            <ProductImage
               class="object-cover object-center size-full"
               :src="image.url"
             />
