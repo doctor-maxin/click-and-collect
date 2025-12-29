@@ -125,7 +125,7 @@ function routeTo(option: StoreProductOptionValue) {
           }"
           @click="routeTo(v)"
         >
-          {{ v.value }}
+          {{ v?.value ?? "-" }}
         </span>
       </div>
       <Transition name="slide-right" mode="out-in">
