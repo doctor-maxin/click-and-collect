@@ -4,6 +4,7 @@ const { appliedFilters } = storeToRefs(filtersStore);
 const router = useRouter();
 const route = useRoute();
 const count = computed(() => Object.values(appliedFilters.value).length || 0);
+const filterEntries = computed(() => Object.entries(appliedFilters.value));
 
 const removeFilterValue = (filter: string, value: string) => {
   filtersStore.removeFilterValue(filter, value);
@@ -15,6 +16,7 @@ const removeFilterValue = (filter: string, value: string) => {
   if (route.query.q) {
     query.q = route.query.q.toString();
   }
+
   router.push({
     query,
   });
@@ -31,7 +33,7 @@ const resetFilters = () => {
 <template>
   <div v-if="count > 0" class="flex w-full gap-8 items-start">
     <div class="flex w-full gap-4 flex-wrap">
-      <template v-for="[filter, values] in Object.entries(appliedFilters)">
+      <template v-for="[filter, values] of filterEntries" :key="filter">
         <button
           v-for="value of values"
           class="px-2 py-1 cursor-pointer border rounded-lg flex items-center gap-2"

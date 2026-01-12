@@ -87,6 +87,7 @@ const link = computed(
               <ProductImage
                 class="object-cover object-center size-full"
                 :src="image.url"
+                :alt="(image.metadata?.alt as string) ?? product.title"
                 loading="lazy"
               />
             </swiper-slide>
@@ -97,6 +98,7 @@ const link = computed(
         </template>
         <div v-else class="aspect-[15/18]">
           <ProductImage
+            alt="Product Image not found"
             class="object-cover object-center size-full"
             src="/not_found.png"
           />

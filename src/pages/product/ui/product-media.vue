@@ -10,6 +10,10 @@ const productStore = useProductStore();
 const { product, color } = storeToRefs(productStore);
 const mainImage = ref(product?.value?.images?.[0]);
 const isError = ref(!mainImage.value?.url?.trim());
+const img = useImage();
+
+const appConfig = useAppConfig();
+const isS3 = computed(() => appConfig.provider === "s3");
 
 function getThumbnailUrl(image?: StoreProductImage) {
   if (!image?.url?.trim()) return "/not_found.png";
@@ -19,7 +23,16 @@ function getThumbnailUrl(image?: StoreProductImage) {
 function getDefaultUrl(image?: StoreProductImage) {
   if (!image?.url?.trim()) return "/not_found.png";
 
-  return image.url.replace("500px", "1400px");
+  return isS3.value
+    ? img(
+        image.url,
+        {},
+        {
+          //@ts-ignore
+          provider: "customS3",
+        },
+      )
+    : image.url.replace("500px", "1400px");
 }
 
 const colorImages = computed(() =>
@@ -118,6 +131,7 @@ watch(
             <ProductImage
               class="object-cover object-center size-full"
               :src="image.url"
+              :alt="product?.title as string"
             />
           </swiper-slide>
           <div slot="container-end">

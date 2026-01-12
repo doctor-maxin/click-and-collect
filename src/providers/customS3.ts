@@ -33,7 +33,6 @@ export default defineProvider<{ baseURL?: string }>({
 
       // Собираем новый путь
       const newPath = "/" + relevantParts.join("/");
-      console.log("url", newPath);
 
       // Формируем новый URL с облачным доменом
       const newUrl = `https://ecom-sin.website.yandexcloud.net${newPath}`;

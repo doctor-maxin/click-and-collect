@@ -61,6 +61,7 @@ const { data: productsResponse, status } = await useAsyncData(
   () => category.value?.id as string,
   () => {
     let filter = [`category_ids IN ['${category.value?.id}']`];
+    console.log("RE INDEDX");
     filter = prepareFilterQuery(filter, appliedFilters.value);
     return searchClient.index("cards").search<StoreProduct>(null, {
       filter,
@@ -70,7 +71,7 @@ const { data: productsResponse, status } = await useAsyncData(
     });
   },
   {
-    watch: [page, appliedFilters],
+    watch: [page, () => JSON.stringify(appliedFilters)],
     deep: true,
   },
 );

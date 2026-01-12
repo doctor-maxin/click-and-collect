@@ -73,11 +73,9 @@ export const useFiltersStore = defineStore("filters", {
       this.appliedFilters[filter] =
         this.appliedFilters[filter]?.filter((v) => v !== value) ?? [];
 
-      this.appliedFilters = Object.fromEntries(
-        Object.entries(this.appliedFilters).filter(
-          ([key, value]) => value?.length > 0,
-        ),
-      );
+      if (this.appliedFilters[filter]?.length === 0) {
+        delete this.appliedFilters[filter];
+      }
     },
     setAvailableFilters(values?: FacetDistribution) {
       if (!values) return;
