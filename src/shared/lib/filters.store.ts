@@ -9,12 +9,14 @@ export const useFiltersStore = defineStore("filters", {
       color: null,
       size: null,
       ["metadata.subclass"]: null,
+      ["metadata.class"]: null,
     },
     appliedFilters: {},
     availableFilters: {
       color: null,
       size: null,
       ["metadata.subclass"]: null,
+      ["metadata.class"]: null,
     },
 
     isOpen: false,
@@ -56,6 +58,7 @@ export const useFiltersStore = defineStore("filters", {
     setAppliedFiltersFromQuery(appliedFilters: LocationQuery) {
       for (let [key, value] of Object.entries(appliedFilters)) {
         if (key === "subclass") key = "metadata.subclass";
+        if (key === "class") key = "metadata.class";
         if (value?.length === 0 || !allowedFacets.includes(key)) continue;
 
         if (Array.isArray(value)) {

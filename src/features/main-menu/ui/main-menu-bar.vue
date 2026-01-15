@@ -97,7 +97,7 @@ defineEmits<{
                         handle: category.handle,
                       },
                       query: {
-                        ['metadata.subclass']: subCategory.name,
+                        ['metadata.class']: subCategory.name,
                       },
                     }"
                     @click="$emit('close')"

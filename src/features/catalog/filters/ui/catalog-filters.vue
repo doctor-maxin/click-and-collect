@@ -17,7 +17,9 @@ const filtersStore = useFiltersStore();
 const { isOpen, appliedFilters } = storeToRefs(filtersStore);
 
 const filterCount = computed(() => {
-  return Object.keys(appliedFilters.value).length;
+  return Object.keys(appliedFilters.value)?.filter(
+    (k) => k !== "metadata.class",
+  ).length;
 });
 </script>
 <template>

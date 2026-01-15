@@ -34,11 +34,13 @@ const form = useForm<IFiltersForm>({
     color: yup.array().of(yup.string()),
     size: yup.array().of(yup.string()),
     ["subclass"]: yup.array().of(yup.string()),
+    ["class"]: yup.array().of(yup.string()),
   }),
   keepValuesOnUnmount: true,
   initialValues: {
     ...appliedFilters.value,
     subclass: appliedFilters.value["metadata.subclass"] || [],
+    ["class"]: appliedFilters.value["metadata.class"] || [],
   },
 });
 
@@ -53,6 +55,10 @@ const handleForm = form.handleSubmit(async (values) => {
   if (query.subclass) {
     query["metadata.subclass"] = query.subclass;
     delete query.subclass;
+  }
+  if (query.class) {
+    query["metadata.class"] = query.class;
+    delete query.class;
   }
 
   if (route.query.q) {
@@ -72,6 +78,7 @@ const resetForm = () => {
         color: [],
         size: [],
         subclass: [],
+        ["class"]: [],
       },
     },
     {

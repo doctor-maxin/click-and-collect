@@ -35,7 +35,7 @@ function clearedCategories(list: StoreProductCategory[]) {
           handle: category.handle,
         },
         query: {
-          ['metadata.subclass']: subCategory.name,
+          ['metadata.class']: subCategory.name,
         },
       }"
     >

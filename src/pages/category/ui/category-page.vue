@@ -53,7 +53,7 @@ const { data: filtersResponse } = await useAsyncData(
     return searchClient.index("cards").search<StoreProduct>(null, {
       filter: [`category_ids IN ['${category.value?.id}']`],
       hitsPerPage: 0,
-      facets: ["color", "size", "metadata.subclass"],
+      facets: ["color", "size", "metadata.subclass", "metadata.class"],
     });
   },
 );
@@ -67,11 +67,11 @@ const { data: productsResponse, status } = await useAsyncData(
       filter,
       hitsPerPage: limit.value,
       page: page.value,
-      facets: ["color", "size", "metadata.subclass"],
+      facets: ["color", "size", "metadata.subclass", "metadata.class"],
     });
   },
   {
-    watch: [page, () => JSON.stringify(appliedFilters)],
+    watch: [page, () => JSON.stringify(appliedFilters.value)],
     deep: true,
   },
 );
@@ -88,23 +88,32 @@ watchEffect(() => {
   };
 
   const querySubclass = getQueryValue("metadata.subclass");
+  const queryClass = getQueryValue("metadata.class");
   const queryColor = getQueryValue("color");
   const querySize = getQueryValue("size");
 
   const filterSubclass = getFilterValue("subclass");
+  const filterClass = getFilterValue("class");
   const filterColor = getFilterValue("color");
   const filterSize = getFilterValue("size");
 
   if (
     querySubclass !== filterSubclass ||
+    queryClass !== filterClass ||
     queryColor !== filterColor ||
     querySize !== filterSize
   ) {
-    const allowedFacets = ["color", "size", "metadata.subclass"];
+    const allowedFacets = [
+      "color",
+      "size",
+      "metadata.subclass",
+      "metadata.class",
+    ];
     const newFilters: Record<string, string[]> = {};
 
     for (let [key, value] of Object.entries(route.query)) {
       if (key === "subclass") key = "metadata.subclass";
+      if (key === "class") key = "metadata.class";
       if (value?.length === 0 || !allowedFacets.includes(key)) continue;
 
       if (Array.isArray(value)) {
