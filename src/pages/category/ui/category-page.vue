@@ -25,16 +25,24 @@ if (!route.params.handle || route.params.handle === "undefined")
     fatal: true,
     data: route.params,
   });
-
+console.log("PAGE RLOEADED");
 const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
+const category = ref(null);
 
-const category = computed(() => {
-  if (!product_categories.value) return null;
-  const handle = route.params.handle as string;
+watch(
+  () => route.params.handle,
+  () => {
+    if (!product_categories.value) return null;
+    const handle = route.params.handle as string;
+    console.log("ROUTE CHANGED", handle);
 
-  return getCategoryFromTree(handle, product_categories.value);
-});
+    category.value = getCategoryFromTree(handle, product_categories.value);
+  },
+  {
+    immediate: true,
+  },
+);
 
 if (!category.value)
   throw createError({
@@ -45,6 +53,7 @@ if (!category.value)
   });
 
 const products = ref<StoreProduct[]>([]);
+const isInternalUpdate = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 
 const { data: filtersResponse } = await useAsyncData(
@@ -60,6 +69,7 @@ const { data: filtersResponse } = await useAsyncData(
 const { data: productsResponse, status } = await useAsyncData(
   () => category.value?.id as string,
   () => {
+    isInternalUpdate.value = true;
     let filter = [`category_ids IN ['${category.value?.id}']`];
     console.log("RE INDEDX");
     filter = prepareFilterQuery(filter, appliedFilters.value);
@@ -73,10 +83,13 @@ const { data: productsResponse, status } = await useAsyncData(
   {
     watch: [page, () => JSON.stringify(appliedFilters.value)],
     deep: true,
+    dedupe: "cancel",
   },
 );
 
 watchEffect(() => {
+  if (isInternalUpdate.value) return;
+
   const getQueryValue = (key: string) => {
     const v = route.query[key];
     return Array.isArray(v) ? v.join(",") : (v as string);
@@ -124,7 +137,7 @@ watchEffect(() => {
         newFilters[key] = [value.trim()];
       }
     }
-
+    console.log("[setAppliedFilters]", newFilters);
     filtersStore.setAppliedFilters(newFilters);
   }
 });
@@ -141,6 +154,7 @@ watchEffect(() => {
     //@ts-ignore
     filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
     filtersStore.setAvailableFilters(productsResponse.value?.facetDistribution);
+    isInternalUpdate.value = false;
   }
 });
 
@@ -153,6 +167,7 @@ watch(
   () => route.params.handle,
   () => {
     filtersStore.setPage(1);
+    filtersStore.resetFilters();
   },
 );
 </script>

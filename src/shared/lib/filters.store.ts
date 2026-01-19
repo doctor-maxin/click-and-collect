@@ -80,6 +80,18 @@ export const useFiltersStore = defineStore("filters", {
         delete this.appliedFilters[filter];
       }
     },
+    setFilterValue(filter: string, value: string) {
+      if (!this.appliedFilters[filter]) {
+        this.appliedFilters[filter] = [];
+      }
+      const trimmedValue = value.trim();
+      if (!this.appliedFilters[filter].includes(trimmedValue)) {
+        this.appliedFilters[filter] = [
+          ...this.appliedFilters[filter],
+          trimmedValue,
+        ];
+      }
+    },
     setAvailableFilters(values?: FacetDistribution) {
       if (!values) return;
 

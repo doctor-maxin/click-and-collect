@@ -8,8 +8,13 @@ const isS3 = computed(() => appConfig.provider === "s3");
 const img = useImage();
 
 const colorImage = (color: string) => {
+  const variant = product.value?.variants?.find((v) =>
+    v.options.some((o) => o.value === color && o.option.title === "color"),
+  );
   const image = product.value?.images?.find(
-    (i) => i.metadata?.color?.toLowerCase() === color?.toLowerCase(),
+    (i) =>
+      i.metadata?.color?.toLowerCase() ===
+      variant.metadata?.color?.toLowerCase(),
   );
   if (!image) return "/not_found.png";
 

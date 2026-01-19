@@ -15,6 +15,10 @@ const sku = computed(() => {
   return variant.value?.sku;
 });
 
+const productTitle = computed(
+  () => variant.value?.metadata?.name ?? product.value?.title,
+);
+
 const marketplaces = computed(
   () =>
     variant?.value?.metadata?.marketplaces as {
@@ -43,7 +47,7 @@ watch(
     <h1
       class="text-base lg:text-[1.25rem] font-medium leading-5 lg:leading-6 uppercase mb-3 lg:mb-4"
     >
-      {{ product?.title }}
+      {{ productTitle }}
     </h1>
     <span
       class="text-base block mb-3 lg:mb-6 leading-5 text-[hsl(216,64%,15%)]/50"

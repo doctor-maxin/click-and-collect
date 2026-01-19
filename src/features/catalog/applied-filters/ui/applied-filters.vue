@@ -4,7 +4,11 @@ const { appliedFilters } = storeToRefs(filtersStore);
 const router = useRouter();
 const route = useRoute();
 const count = computed(() => Object.values(appliedFilters.value).length || 0);
-const filterEntries = computed(() => Object.entries(appliedFilters.value));
+const filterEntries = computed(() =>
+  Object.entries(appliedFilters.value).filter(
+    ([key]) => key !== "metadata.class",
+  ),
+);
 
 const removeFilterValue = (filter: string, value: string) => {
   filtersStore.removeFilterValue(filter, value);

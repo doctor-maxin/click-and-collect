@@ -78,7 +78,7 @@ watch(
       <ProductBreadCrumbs :product="product" />
       <div class="grid gap-4 lg:gap-8 grid-cols-1 lg:grid-cols-2">
         <ProductMedia class="lg:max-w-[32.75rem]" :product="product" />
-        <ProductInfo class="lg:max-w-[26rem]" :product="product" />
+        <ProductInfo class="lg:max-w-[26.5rem]" :product="product" />
       </div>
     </div>
   </div>

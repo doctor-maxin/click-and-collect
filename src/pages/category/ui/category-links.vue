@@ -6,6 +6,9 @@ const { category } = defineProps<{
 }>();
 
 const level = computed(() => category.mpath.split(".").length);
+const route = useRoute();
+const router = useRouter();
+const filtersStore = useFiltersStore();
 
 console.log("category", level.value);
 const { data: availableCategories } = useNuxtData<string[]>(
@@ -22,24 +25,48 @@ function clearedCategories(list: StoreProductCategory[]) {
 
   return uniqueList.values();
 }
+
+const isCategoryActive = (categoryName: string) => {
+  const existingClass = filtersStore.appliedFilters["metadata.class"];
+  if (Array.isArray(existingClass)) {
+    return existingClass.includes(categoryName);
+  }
+  return existingClass === categoryName;
+};
+
+const handleCategoryClick = (category: StoreProductCategory) => {
+  const existingClass = filtersStore.appliedFilters["metadata.class"];
+
+  if (isCategoryActive(category.name)) {
+    filtersStore.removeFilterValue("metadata.class", category.name);
+  } else {
+    filtersStore.setFilterValue("metadata.class", category.name);
+  }
+
+  const newQuery = { ...route.query };
+
+  if (filtersStore.appliedFilters["metadata.class"]) {
+    newQuery["metadata.class"] = filtersStore.appliedFilters["metadata.class"];
+  } else {
+    delete newQuery["metadata.class"];
+  }
+
+  router.push({
+    query: newQuery,
+  });
+};
 </script>
 
 <template>
   <div v-if="level < 3" class="my-9 flex-wrap flex gap-3">
-    <NuxtLink
+    <div
       v-for="subCategory of clearedCategories(category.category_children)"
       :key="subCategory.id"
-      :to="{
-        name: 'catalog-handle',
-        params: {
-          handle: category.handle,
-        },
-        query: {
-          ['metadata.class']: subCategory.name,
-        },
-      }"
+      @click="handleCategoryClick(subCategory)"
     >
-      <UiBadge>{{ subCategory.name }}</UiBadge>
-    </NuxtLink>
+      <UiBadge :active="isCategoryActive(subCategory.name)">{{
+        subCategory.name
+      }}</UiBadge>
+    </div>
   </div>
 </template>

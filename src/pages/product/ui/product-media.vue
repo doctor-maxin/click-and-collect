@@ -7,7 +7,7 @@ import { ZoomImg, Magnifier } from "vue3-zoomer";
 import ProductImage from "~/widgets/products-grid/ui/product-image.vue";
 
 const productStore = useProductStore();
-const { product, color } = storeToRefs(productStore);
+const { product, variant } = storeToRefs(productStore);
 const mainImage = ref(product?.value?.images?.[0]);
 const isError = ref(!mainImage.value?.url?.trim());
 const img = useImage();
@@ -39,7 +39,8 @@ const colorImages = computed(() =>
   product.value?.images?.filter(
     (i) =>
       //@ts-ignore
-      i.metadata?.color?.toLowerCase() === color.value?.value?.toLowerCase(),
+      i.metadata?.color?.toLowerCase() ===
+      variant.value?.metadata?.color?.toLowerCase(),
   ),
 );
 
@@ -59,7 +60,7 @@ const changeMainImage = (image: StoreProductImage) => {
 };
 
 watch(
-  () => color.value?.value,
+  () => variant.value?.metadata?.color,
   (colorString: string) => {
     if (mainImage.value?.metadata?.color !== colorString) {
       mainImage.value = colorImages.value?.[0];
