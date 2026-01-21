@@ -77,11 +77,12 @@ const { data: productsResponse, status } = await useAsyncData(
       filter,
       hitsPerPage: limit.value,
       page: page.value,
+      sort: sort.value ? [sort.value] : [],
       facets: ["color", "size", "metadata.subclass", "metadata.class"],
     });
   },
   {
-    watch: [page, () => JSON.stringify(appliedFilters.value)],
+    watch: [page, sort, () => JSON.stringify(appliedFilters.value)],
     deep: true,
     dedupe: "cancel",
   },
@@ -176,6 +177,11 @@ watch(
     filtersStore.resetFilters();
   },
 );
+
+watch(sort, () => {
+  filtersStore.setPage(1);
+  console.log("on sort changed");
+});
 </script>
 
 <template>
