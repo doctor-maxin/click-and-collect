@@ -29,18 +29,18 @@ function clearedCategories(list: StoreProductCategory[]) {
 const isCategoryActive = (categoryName: string) => {
   const existingClass = filtersStore.appliedFilters["metadata.class"];
   if (Array.isArray(existingClass)) {
-    return existingClass.includes(categoryName);
+    return existingClass.map((c) => c?.trim()).includes(categoryName?.trim());
   }
-  return existingClass === categoryName;
+  return existingClass?.trim() === categoryName?.trim();
 };
 
 const handleCategoryClick = (category: StoreProductCategory) => {
   const existingClass = filtersStore.appliedFilters["metadata.class"];
 
   if (isCategoryActive(category.name)) {
-    filtersStore.removeFilterValue("metadata.class", category.name);
+    filtersStore.removeFilterValue("metadata.class", category.name?.trim());
   } else {
-    filtersStore.setFilterValue("metadata.class", category.name);
+    filtersStore.setFilterValue("metadata.class", category.name?.trim());
   }
 
   const newQuery = { ...route.query };
