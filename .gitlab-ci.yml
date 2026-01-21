@@ -23,37 +23,6 @@ default:
   - echo "PubkeyAcceptedKeyTypes +ssh-rsa" >> /etc/ssh/ssh_config || true
   - eval $(ssh-agent -s)
 
-build:
-  stage: build
-  cache:
-    key:
-      files:
-        - bun.lock
-        - package.json
-    paths:
-      - node_modules/
-    policy: pull-push
-  script:
-    - bun --version
-    - bun install
-    - |
-      if [ "$CI_COMMIT_BRANCH" = "develop" ]; then
-        echo "$DEV_ENV" > .env
-      elif [ "$CI_COMMIT_BRANCH" = "master" ] || [ "$CI_COMMIT_BRANCH" = "main" ]; then
-        echo "$PROD_ENV" > .env
-      fi
-    - bun run build
-    - test -f .output/server/index.mjs
-  artifacts:
-    paths:
-      - .output/
-      - .env
-      - ecosystem.config.cjs
-      - ecosystem.production.config.cjs
-      - deploy.sh
-      - deploy-production.sh
-    expire_in: 1 week
-
 deploy_staging:
   stage: deploy
   image: alpine:3.20
