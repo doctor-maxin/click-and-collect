@@ -1,5 +1,4 @@
 stages:
-  - build
   - deploy
 
 variables:
@@ -89,7 +88,6 @@ deploy_staging:
 deploy_production:
   stage: deploy
   image: alpine:3.20
-  needs: ["build"]
   rules:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "main"
   before_script:

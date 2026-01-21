@@ -11,6 +11,10 @@ export PATH=$PATH:$HOME/.bun/bin;
 
 echo "📍 Current PATH: $PATH"
 
+
+bun install
+bun run build
+
 # Create logs directory if it doesn't exist
 mkdir -p logs
 

@@ -71,7 +71,7 @@ const { data: productsResponse, status } = await useAsyncData(
   () => {
     isInternalUpdate.value = true;
     let filter = [`category_ids IN ['${category.value?.id}']`];
-    console.log("RE INDEDX");
+    console.log("RE INDEDX", appliedFilters.value);
     filter = prepareFilterQuery(filter, appliedFilters.value);
     return searchClient.index("cards").search<StoreProduct>(null, {
       filter,
@@ -87,60 +87,66 @@ const { data: productsResponse, status } = await useAsyncData(
   },
 );
 
-watchEffect(() => {
-  if (isInternalUpdate.value) return;
+watch(
+  () => route.query,
+  () => {
+    if (isInternalUpdate.value) return;
 
-  const getQueryValue = (key: string) => {
-    const v = route.query[key];
-    return Array.isArray(v) ? v.join(",") : (v as string);
-  };
+    const getQueryValue = (key: string) => {
+      const v = route.query[key];
+      return Array.isArray(v) ? v.join(",") : (v as string);
+    };
 
-  const getFilterValue = (key: string) => {
-    const v = filtersStore.appliedFilters?.[key];
-    return Array.isArray(v) ? v.join(",") : v;
-  };
+    const getFilterValue = (key: string) => {
+      const v = filtersStore.appliedFilters?.[key];
+      return Array.isArray(v) ? v.join(",") : v;
+    };
 
-  const querySubclass = getQueryValue("metadata.subclass");
-  const queryClass = getQueryValue("metadata.class");
-  const queryColor = getQueryValue("color");
-  const querySize = getQueryValue("size");
+    const querySubclass = getQueryValue("metadata.subclass");
+    const queryClass = getQueryValue("metadata.class");
+    const queryColor = getQueryValue("color");
+    const querySize = getQueryValue("size");
 
-  const filterSubclass = getFilterValue("subclass");
-  const filterClass = getFilterValue("class");
-  const filterColor = getFilterValue("color");
-  const filterSize = getFilterValue("size");
+    const filterSubclass = getFilterValue("subclass");
+    const filterClass = getFilterValue("class");
+    const filterColor = getFilterValue("color");
+    const filterSize = getFilterValue("size");
 
-  if (
-    querySubclass !== filterSubclass ||
-    queryClass !== filterClass ||
-    queryColor !== filterColor ||
-    querySize !== filterSize
-  ) {
-    const allowedFacets = [
-      "color",
-      "size",
-      "metadata.subclass",
-      "metadata.class",
-    ];
-    const newFilters: Record<string, string[]> = {};
+    if (
+      querySubclass !== filterSubclass ||
+      queryClass !== filterClass ||
+      queryColor !== filterColor ||
+      querySize !== filterSize
+    ) {
+      const allowedFacets = [
+        "color",
+        "size",
+        "metadata.subclass",
+        "metadata.class",
+      ];
+      const newFilters: Record<string, string[]> = {};
 
-    for (let [key, value] of Object.entries(route.query)) {
-      if (key === "subclass") key = "metadata.subclass";
-      if (key === "class") key = "metadata.class";
-      if (value?.length === 0 || !allowedFacets.includes(key)) continue;
+      for (let [key, value] of Object.entries(route.query)) {
+        if (key === "subclass") key = "metadata.subclass";
+        if (key === "class") key = "metadata.class";
+        if (value?.length === 0 || !allowedFacets.includes(key)) continue;
 
-      if (Array.isArray(value)) {
-        newFilters[key] = value
-          .filter((v) => !!v)
-          .map((v) => v?.trim() as string);
-      } else if (value) {
-        newFilters[key] = [value.trim()];
+        if (Array.isArray(value)) {
+          newFilters[key] = value
+            .filter((v) => !!v)
+            .map((v) => v?.trim() as string);
+        } else if (value) {
+          newFilters[key] = [value.trim()];
+        }
       }
+      console.log("[setAppliedFilters]", newFilters, route.query);
+      filtersStore.setAppliedFilters(newFilters);
     }
-    console.log("[setAppliedFilters]", newFilters);
-    filtersStore.setAppliedFilters(newFilters);
-  }
-});
+  },
+  {
+    deep: true,
+  },
+);
 
 // Update Filter response
 watchEffect(() => {

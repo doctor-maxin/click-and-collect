@@ -3,28 +3,29 @@ import type { IFiltersStore } from "../model/filters-store.model";
 import type { LocationQuery } from "vue-router";
 import { allowedFacets } from "./utils/prepare-filter-query";
 
-export const useFiltersStore = defineStore("filters", {
-  state: (): IFiltersStore => ({
-    filtersList: {
-      color: null,
-      size: null,
-      ["metadata.subclass"]: null,
-      ["metadata.class"]: null,
-    },
-    appliedFilters: {},
-    availableFilters: {
-      color: null,
-      size: null,
-      ["metadata.subclass"]: null,
-      ["metadata.class"]: null,
-    },
+const initialFilters: IFiltersStore = {
+  filtersList: {
+    color: null,
+    size: null,
+    ["metadata.subclass"]: null,
+    ["metadata.class"]: null,
+  },
+  appliedFilters: {},
+  availableFilters: {
+    color: null,
+    size: null,
+    ["metadata.subclass"]: null,
+    ["metadata.class"]: null,
+  },
 
-    isOpen: false,
-    sort: null,
-    limit: 8,
-    page: 1,
-    totalPages: 1,
-  }),
+  isOpen: false,
+  sort: null,
+  limit: 8,
+  page: 1,
+  totalPages: 1,
+};
+export const useFiltersStore = defineStore("filters", {
+  state: (): IFiltersStore => ({ ...initialFilters }),
   actions: {
     close() {
       this.isOpen = false;
@@ -56,6 +57,8 @@ export const useFiltersStore = defineStore("filters", {
       );
     },
     setAppliedFiltersFromQuery(appliedFilters: LocationQuery) {
+      console.log("[setAppliedFiltersFromQuery] input", appliedFilters);
+      this.appliedFilters = {};
       for (let [key, value] of Object.entries(appliedFilters)) {
         if (key === "subclass") key = "metadata.subclass";
         if (key === "class") key = "metadata.class";
@@ -68,6 +71,7 @@ export const useFiltersStore = defineStore("filters", {
           this.appliedFilters[key] = [value.trim()];
         }
       }
+      console.log("[setAppliedFiltersFromQuery] output", this.appliedFilters);
     },
     resetFilters() {
       this.appliedFilters = {};
