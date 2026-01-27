@@ -1,13 +1,24 @@
 module.exports = {
   apps: [
     {
-      name: "sin-storefront",
-      script: ".output/server/index.mjs",
+      name: "sin-storefront-dev",
+      script: "npm",
+      args: "run start",
       interpreter: "bun",
       env: {
         NODE_ENV: "production",
         PORT: 3000,
       },
+      error_file: "./logs/err.log",
+      out_file: "./logs/out.log",
+      log_file: "./logs/combined.log",
+      time: true,
+      max_memory_restart: "2G",
+      restart_delay: 4000,
+      max_restarts: 10,
+      min_uptime: "10s",
+      autorestart: true,
+      watch: false,
     },
   ],
 };
