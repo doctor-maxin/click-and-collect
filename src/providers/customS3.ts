@@ -35,7 +35,24 @@ export default defineProvider<{ baseURL?: string }>({
       const newPath = "/" + relevantParts.join("/");
 
       // Формируем новый URL с облачным доменом
-      const newUrl = `https://ecom-sin.website.yandexcloud.net${newPath}`;
+      const newUrl = `https://сдн.син.рус${newPath}`;
+
+      const params = new URLSearchParams();
+
+      if (Object.keys(modifiers).length) {
+        if (modifiers.width) params.set("w", modifiers.width.toString());
+        if (modifiers.height) params.set("h", modifiers.height.toString());
+        if (modifiers.format) params.set("format", modifiers.format.toString());
+        if (modifiers.fit) params.set("fit", modifiers.fit.toString());
+
+        //@ts-ignore
+        if (modifiers.v) params.set("v", modifiers.v as string);
+
+        return {
+          url: newUrl + "?" + params.toString(),
+        };
+      }
+
       return {
         url: newUrl,
       };

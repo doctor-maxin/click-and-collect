@@ -20,13 +20,22 @@ function getThumbnailUrl(image?: StoreProductImage) {
 
   return image.url.replace("500px", "100px");
 }
-function getDefaultUrl(image?: StoreProductImage) {
+
+function getDefaultUrl(image?: StoreProductImage, original?: boolean) {
   if (!image?.url?.trim()) return "/not_found.png";
 
   return isS3.value
     ? img(
         image.url,
-        {},
+        original
+          ? {
+              width: 1200,
+              height: 1800,
+            }
+          : {
+              width: 400,
+              height: 600,
+            },
         {
           //@ts-ignore
           provider: "customS3",
@@ -100,8 +109,7 @@ watch(
             class="h-full"
             trigger="hover"
             :zoom-scale="3"
-            :src="getDefaultUrl(mainImage)"
-            :zoom="getDefaultUrl(mainImage)"
+            :src="getDefaultUrl(mainImage, true)"
             @error="onErrorZoomImg"
           />
         </ClientOnly>

@@ -87,6 +87,8 @@ const link = computed(
               <ProductImage
                 class="object-cover object-center size-full"
                 :src="image.url"
+                :width="360"
+                :height="430"
                 :alt="(image.metadata?.alt as string) ?? product.title"
                 loading="lazy"
               />

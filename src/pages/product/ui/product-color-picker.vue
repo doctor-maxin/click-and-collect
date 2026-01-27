@@ -21,7 +21,9 @@ const colorImage = (color: string) => {
   return isS3.value
     ? img(
         image.url,
-        {},
+        {
+          width: 84,
+        },
         {
           //@ts-ignore
           provider: "customS3",
