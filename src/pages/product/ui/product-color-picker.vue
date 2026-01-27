@@ -22,7 +22,7 @@ const colorImage = (color: string) => {
     ? img(
         image.url,
         {
-          width: 84,
+          width: 168,
         },
         {
           //@ts-ignore

@@ -80,17 +80,18 @@ const link = computed(
             class="aspect-[15/18]"
           >
             <swiper-slide
-              v-for="image of imageList"
+              v-for="(image, index) of imageList"
               :key="image.id"
               class="size-full"
             >
               <ProductImage
                 class="object-cover object-center size-full"
                 :src="image.url"
-                :width="360"
-                :height="430"
+                :width="720"
                 :alt="(image.metadata?.alt as string) ?? product.title"
-                loading="lazy"
+                :loading="index < 8 ? 'eager' : 'lazy'"
+                format="webp"
+                sizes="(max-width: 768px) 350px, 720px"
               />
             </swiper-slide>
           </swiper-container>

@@ -5,6 +5,7 @@ interface Props {
   width?: number;
   height?: number;
   loading?: "lazy" | "eager";
+  sizes?: string;
   format?: "webp" | "avif" | "jpeg" | "jpg" | "png" | "svg" | "gif";
 }
 
@@ -26,6 +27,9 @@ const isS3 = computed(() => appConfig.provider === "s3");
     :loading="loading"
     :format="format"
     provider="customS3"
+    placeholder
+    :placeholder-width="20"
+    :sizes="sizes"
   />
   <img
     v-else
@@ -34,5 +38,6 @@ const isS3 = computed(() => appConfig.provider === "s3");
     :width="width"
     :height="height"
     :loading="loading"
+    :sizes="sizes"
   />
 </template>
