@@ -4,6 +4,7 @@ interface Props {
   alt: string;
   width?: number;
   height?: number;
+  fetchpriority?: string;
   loading?: "lazy" | "eager";
   sizes?: string;
   format?: "webp" | "avif" | "jpeg" | "jpg" | "png" | "svg" | "gif";
@@ -28,6 +29,7 @@ const isS3 = computed(() => appConfig.provider === "s3");
     :format="format"
     provider="customS3"
     placeholder
+    :fetchpriority="fetchpriority"
     :placeholder-width="20"
     :sizes="sizes"
   />

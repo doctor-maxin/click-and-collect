@@ -87,11 +87,12 @@ const link = computed(
               <ProductImage
                 class="object-cover object-center size-full"
                 :src="image.url"
-                :width="720"
+                :width="540"
                 :alt="(image.metadata?.alt as string) ?? product.title"
                 :loading="index === 0 ? 'eager' : 'lazy'"
                 format="webp"
-                sizes="(max-width: 768px) 350px, 720px"
+                fetchpriority="high"
+                sizes="(max-width: 768px) 350px, 540px"
               />
             </swiper-slide>
           </swiper-container>
