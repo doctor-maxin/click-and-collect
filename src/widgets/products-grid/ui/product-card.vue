@@ -89,7 +89,7 @@ const link = computed(
                 :src="image.url"
                 :width="720"
                 :alt="(image.metadata?.alt as string) ?? product.title"
-                :loading="index < 8 ? 'eager' : 'lazy'"
+                :loading="index === 0 ? 'eager' : 'lazy'"
                 format="webp"
                 sizes="(max-width: 768px) 350px, 720px"
               />
