@@ -4,7 +4,7 @@ export default defineProvider<{ baseURL?: string }>({
   getImage(src: string, { modifiers = {} }) {
     try {
       // Если уже облачный URL, возвращаем как есть
-      if (src.includes("ecom-sin.website.yandexcloud.net")) {
+      if (src.includes("bb600a4e-a27e-48b8-bc47-e6bcadae623a.selcdn.net")) {
         return {
           url: src,
         };
@@ -35,18 +35,17 @@ export default defineProvider<{ baseURL?: string }>({
       const newPath = "/" + relevantParts.join("/");
 
       // Формируем новый URL с облачным доменом
-      const newUrl = `https://сдн.син.рус${newPath}`;
+      const newUrl = `https://bb600a4e-a27e-48b8-bc47-e6bcadae623a.selcdn.net${newPath}`;
 
       const params = new URLSearchParams();
 
       if (Object.keys(modifiers).length) {
-        if (modifiers.width) params.set("w", modifiers.width.toString());
-        if (modifiers.height) params.set("h", modifiers.height.toString());
-        if (modifiers.format) params.set("format", modifiers.format.toString());
+        if (modifiers.width) params.set("width", modifiers.width.toString());
+        if (modifiers.height) params.set("height", modifiers.height.toString());
+        if (modifiers.format) params.set("fmt", modifiers.format.toString());
         if (modifiers.fit) params.set("fit", modifiers.fit.toString());
-
-        //@ts-ignore
-        if (modifiers.v) params.set("v", modifiers.v as string);
+        if (modifiers.quality)
+          params.set("quality", modifiers.quality.toString());
 
         return {
           url: newUrl + "?" + params.toString(),

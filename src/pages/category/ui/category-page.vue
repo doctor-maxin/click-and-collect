@@ -176,6 +176,10 @@ watch(
     filtersStore.setPage(1);
     filtersStore.resetFilters();
   },
+  {
+    immediate: true,
+    deep: true,
+  },
 );
 
 watch(sort, () => {

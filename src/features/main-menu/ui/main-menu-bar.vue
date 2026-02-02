@@ -80,7 +80,7 @@ defineEmits<{
           class="pl-[6rem] navigation-menu-content"
         >
           <NavigationMenuSub>
-            <NavigationMenuList class="flex flex-col min-w-[9rem]">
+            <NavigationMenuList class="flex flex-col min-w-[15rem]">
               <NavigationMenuItem
                 v-for="subCategory of clearedCategories(
                   category.category_children,
