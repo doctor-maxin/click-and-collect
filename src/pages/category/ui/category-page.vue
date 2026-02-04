@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import CategoryBreadCrumbs from "./category-breadcrumbs.vue";
-import CategoryLinks from "./category-links.vue";
-import CategoryFilters from "./category-filters.vue";
-import CategoryProducts from "./category-products.vue";
-import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
-import { WidgetProductsGrid } from "~/widgets/products-grid";
 import { useRoute } from "#app";
+import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
 import { useFiltersStore } from "~/shared/lib/filters.store";
-import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { getCategoryFromTree } from "~/shared/lib/utils/get-category-from-tree";
+import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
+import { WidgetProductsGrid } from "~/widgets/products-grid";
+import CategoryBreadCrumbs from "./category-breadcrumbs.vue";
+import CategoryFilters from "./category-filters.vue";
+import CategoryLinks from "./category-links.vue";
 
 const route = useRoute();
-const client = useMedusaClient();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
 
@@ -28,7 +26,7 @@ if (!route.params.handle || route.params.handle === "undefined")
 console.log("PAGE RLOEADED");
 const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
-const category = ref(null);
+const category = ref<StoreProductCategory | null>(null);
 
 watch(
   () => route.params.handle,
@@ -172,9 +170,11 @@ watchEffect(() => {
 
 watch(
   () => route.params.handle,
-  () => {
-    filtersStore.setPage(1);
-    filtersStore.resetFilters();
+  (val, oldVal) => {
+    if (val && oldVal && val !== oldVal) {
+      filtersStore.setPage(1);
+      filtersStore.resetFilters();
+    }
   },
   {
     immediate: true,

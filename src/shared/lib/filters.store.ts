@@ -50,6 +50,7 @@ export const useFiltersStore = defineStore("filters", {
       }
     },
     setAppliedFilters(appliedFilters: IFiltersStore["appliedFilters"]) {
+      console.log("[setAppliedFilters] input", appliedFilters);
       this.appliedFilters = Object.fromEntries(
         Object.entries(appliedFilters).filter(
           ([key, value]) => value?.length > 0,
@@ -74,9 +75,11 @@ export const useFiltersStore = defineStore("filters", {
       console.log("[setAppliedFiltersFromQuery] output", this.appliedFilters);
     },
     resetFilters() {
+      console.log("[resetFilters]");
       this.appliedFilters = {};
     },
     removeFilterValue(filter: string, value: string) {
+      console.log("[removeFilterValue]");
       this.appliedFilters[filter] =
         this.appliedFilters[filter]?.filter((v) => v !== value) ?? [];
 
@@ -85,6 +88,7 @@ export const useFiltersStore = defineStore("filters", {
       }
     },
     setFilterValue(filter: string, value: string) {
+      console.log("[setFilterValue]");
       if (!this.appliedFilters[filter]) {
         this.appliedFilters[filter] = [];
       }
