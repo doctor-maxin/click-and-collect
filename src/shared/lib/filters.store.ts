@@ -52,9 +52,13 @@ export const useFiltersStore = defineStore("filters", {
     setAppliedFilters(appliedFilters: IFiltersStore["appliedFilters"]) {
       console.log("[setAppliedFilters] input", appliedFilters);
       this.appliedFilters = Object.fromEntries(
-        Object.entries(appliedFilters).filter(
-          ([key, value]) => value?.length > 0,
-        ),
+        Object.entries(appliedFilters)
+          .map((input) => {
+            if (input[0] === "subclass") input[0] = "metadata.subclass";
+            if (input[0] === "class") input[0] = "metadata.class";
+            return input;
+          })
+          .filter(([key, value]) => value?.length > 0),
       );
     },
     setAppliedFiltersFromQuery(appliedFilters: LocationQuery) {

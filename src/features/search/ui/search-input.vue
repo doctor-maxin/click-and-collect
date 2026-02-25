@@ -51,6 +51,7 @@ const selectCategory = (handle: string) => {
 };
 
 const handleForm = () => {
+  if (!query.value) return;
   searchStore.addQuery(query.value);
   router.push({
     path: `/search`,
@@ -69,6 +70,7 @@ const handleForm = () => {
       <input
         placeholder="ХОЧУ КУПИТЬ"
         type="search"
+        required
         v-model="query"
         class="h-8 pr-[3.5rem] w-full outline-0 placeholder:text-[hsla(0,0%,62%,1)] appearance-none text-2xl placeholder:font-medium"
       />
