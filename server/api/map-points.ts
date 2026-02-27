@@ -4,34 +4,34 @@ import { createWriteStream, statSync } from "fs";
 import { XMLParser, XMLBuilder, XMLValidator } from "fast-xml-parser";
 
 export default defineEventHandler(async (event) => {
-  const client = new Client();
-  client.ftp.verbose = true;
-  const fileLink = "localfile.xml";
+    const client = new Client();
+    client.ftp.verbose = true;
+    const fileLink = "localfile.xml";
 
-  try {
-    const isHaveFile = statSync(fileLink, {
-      throwIfNoEntry: false,
-    });
+    try {
+        const isHaveFile = statSync(fileLink, {
+            throwIfNopEntry: false,
+        });
+        if (!isHaveFile) {
+            const response = await client.access({
+                host: process.env.FTP_HOST as string,
+                user: process.env.FTP_USER as string,
+                password: process.env.FTP_PASS as string,
+            });
+            console.log("BOM", response);
+            await client.downloadTo(createWriteStream(fileLink), "XML СИН.xml");
+        }
 
-    if (!isHaveFile) {
-      await client.access({
-        host: process.env.FTP_HOST as string,
-        user: process.env.FTP_USER as string,
-        password: process.env.FTP_PASS as string,
-      });
-      await client.downloadTo(createWriteStream(fileLink), "XML СИН.xml");
+        const file = await readFile(fileLink, {
+            encoding: "utf-8",
+        });
+        const parser = new XMLParser();
+
+        const points = await parser.parse(file);
+        return points.companies.company;
+    } catch (err) {
+        console.error(err);
     }
 
-    const file = await readFile(fileLink, {
-      encoding: "utf-8",
-    });
-    const parser = new XMLParser();
-
-    const points = await parser.parse(file);
-    return points.companies.company;
-  } catch (err) {
-    console.error(err);
-  }
-
-  return [];
+    return [];
 });
