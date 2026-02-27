@@ -20,7 +20,7 @@ await useAsyncData(
     >
       <FeatureMainMenu />
 
-      <NuxtLink to="/">
+      <NuxtLink to="/" class="mx-auto">
         <SvgoLogo
           class="h-12 lg:h-[5.625rem] mx-auto"
           :fontControlled="false"
