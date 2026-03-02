@@ -21,11 +21,15 @@ defineProps<{
         class="flex justify-center items-center relative aspect-[3/4]"
       >
         <h3
-          class="absolute uppercase font-bold z-10 text-[1.75rem] leading-9 text-white"
+          class="absolute text-center uppercase font-bold z-10 text-[1.75rem] leading-9 text-white"
         >
           {{ item.name }}
         </h3>
-        <FeatureRenderMedia :media="item.image" :mobile-media="item.image" />
+        <FeatureRenderMedia
+          class="w-full h-full"
+          :media="item.image"
+          :mobile-media="item.image"
+        />
       </NuxtLink>
     </article>
   </section>
