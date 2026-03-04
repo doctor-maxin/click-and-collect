@@ -7,6 +7,7 @@ import SearchFilters from "./search-filters.vue";
 import PopularProducts from "~/features/search/ui/popular-products.vue";
 
 const route = useRoute();
+const router = useRouter();
 const searchClient = useSearchClient();
 const filtersStore = useFiltersStore();
 
@@ -15,7 +16,50 @@ const query = computed(() => route.query.q?.toString() ?? "");
 const { limit, page, totalPages, appliedFilters, sort } =
   storeToRefs(filtersStore);
 const products = ref<StoreProduct[]>([]);
+const shouldAppendProducts = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
+
+const getPageFromQuery = () => {
+  const rawPage = Array.isArray(route.query.page)
+    ? route.query.page[0]
+    : route.query.page;
+  const parsedPage = Number(rawPage);
+  if (!Number.isFinite(parsedPage) || parsedPage < 1) return 1;
+  return Math.floor(parsedPage);
+};
+
+const pushPageToQuery = (nextPage: number, append = false) => {
+  const currentPageQuery = Array.isArray(route.query.page)
+    ? route.query.page[0]
+    : route.query.page;
+  if (nextPage <= 1 && !currentPageQuery) return;
+  if (nextPage > 1 && currentPageQuery === String(nextPage)) return;
+
+  const nextQuery: Record<string, string | string[]> = { ...route.query };
+  if (nextPage <= 1) {
+    delete nextQuery.page;
+  } else {
+    nextQuery.page = String(nextPage);
+  }
+
+  if (append) {
+    nextQuery._append = "1";
+  } else {
+    delete nextQuery._append;
+  }
+  router.push({ query: nextQuery });
+};
+
+watch(
+  () => route.query.page,
+  () => {
+    const nextPage = getPageFromQuery();
+    if (page.value === nextPage) return;
+    filtersStore.setPage(nextPage);
+    if (nextPage === 1) shouldAppendProducts.value = false;
+  },
+  { immediate: true },
+);
 
 const { data: filtersResponse } = await useAsyncData(
   () => `search-${query.value}`,
@@ -56,11 +100,12 @@ const { data: productsResponse, status } = await useAsyncData(
 
 watchEffect(() => {
   if (status.value === "success") {
-    if (page.value === 1) {
+    if (page.value === 1 || !shouldAppendProducts.value) {
       products.value = productsResponse.value?.hits ?? [];
     } else {
       products.value.push(...(productsResponse.value?.hits ?? []));
     }
+    shouldAppendProducts.value = false;
 
     //@ts-ignore
     filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
@@ -79,13 +124,26 @@ useSeoMeta({
 watch(
   () => query.value,
   () => {
-    filtersStore.setPage(1);
+    shouldAppendProducts.value = false;
+    pushPageToQuery(1, false);
   },
 );
 
 watch(sort, () => {
-  filtersStore.setPage(1);
+  shouldAppendProducts.value = false;
+  pushPageToQuery(1, false);
 });
+
+const onLoadMore = () => {
+  shouldAppendProducts.value = true;
+  pushPageToQuery(page.value + 1, true);
+};
+
+const onPageChange = (nextPage: number) => {
+  if (nextPage === page.value) return;
+  shouldAppendProducts.value = false;
+  pushPageToQuery(nextPage, false);
+};
 </script>
 <template>
   <div class="mt-16 lg:mt-[8.125rem]">
@@ -106,9 +164,12 @@ watch(sort, () => {
         :products="products"
         :has-more="page < totalPages"
         :is-loading="status === 'pending'"
+        :current-page="page"
+        :total-pages="totalPages"
         empty-message="По вашему запросу ничего не найдено.
 Попробуйте изменить запрос и мы поищем еще раз."
-        @load-more="filtersStore.setPage(page + 1)"
+        @load-more="onLoadMore"
+        @page-change="onPageChange"
       />
       <section
         v-if="status !== 'pending' && products.length === 0"

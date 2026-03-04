@@ -32,10 +32,12 @@ if (!page.value)
 <template>
   <div v-if="page" class="mt-16 lg:mt-[8.125rem]">
     <div class="container mx-auto px-4">
-      <h1 class="my-9 text-center font-semibold text-[1.25rem] leading-6">
+      <h1
+        class="mt-6 mb-4 lg:my-9 text-center font-semibold text-[1.25rem] leading-6"
+      >
         {{ page.title }}
       </h1>
-      <div v-if="page.preamble" class="content max-w-[37rem] ml-auto">
+      <div v-if="page.preamble?.trim()" class="content max-w-[37rem] ml-auto">
         <StrapiBlocks :content="page?.preamble as BlocksContent" />
       </div>
       <div v-if="page.content" class="content">

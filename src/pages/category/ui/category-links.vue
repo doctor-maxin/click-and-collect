@@ -51,6 +51,12 @@ const handleCategoryClick = (category: StoreProductCategory) => {
     delete newQuery["metadata.class"];
   }
 
+  delete newQuery.page;
+  delete newQuery._append;
+
+  filtersStore.setAppliedFiltersFromQuery(newQuery);
+  filtersStore.setPage(1);
+
   router.push({
     query: newQuery,
   });

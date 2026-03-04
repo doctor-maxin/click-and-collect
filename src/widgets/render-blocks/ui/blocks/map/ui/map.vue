@@ -111,11 +111,13 @@ watch(viewMode, (mode) => {
 </script>
 <template>
   <section id="stores" class="pt-6 lg:pt-9 container lg:max-w-none mx-auto">
-    <h2 class="font-bold mb-6 lg:mb-[3.25rem] text-[2rem] text-center">
+    <h2
+      class="font-bold mb-6 lg:mb-[3.25rem] text-xl lg:text-[2rem] text-center"
+    >
       {{ data.header }}
     </h2>
     <header
-      class="flex flex-col-reverse gap-3 px-4 lg:px-0 lg:flex-row mb-3 lg:mb-9 lg:mx-auto lg:container justify-end py-2"
+      class="flex flex-col gap-3 px-4 lg:px-0 lg:flex-row mb-3 lg:mb-9 lg:mx-auto lg:container justify-end py-2"
     >
       <div class="mr-auto">
         <UiCombobox

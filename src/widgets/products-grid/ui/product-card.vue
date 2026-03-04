@@ -116,7 +116,7 @@ const link = computed(
       />
     </div>
     <div class="flex flex-col gap-2">
-      <div class="text-xs leading-4 uppercase font-medium">
+      <div class="text-xs lg:text-base leading-4 uppercase font-medium">
         {{ product.title }}
       </div>
       <ProductCardPrice

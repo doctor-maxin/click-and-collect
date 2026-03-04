@@ -4,23 +4,20 @@ import type { RouterConfig } from "@nuxt/schema";
 // https://router.vuejs.org/api/#routeroptions
 export default <RouterConfig>{
   scrollBehavior: (to, from, savedPosition) => {
-    // scroll to hash, useful for using to="#some-id" in NuxtLink
-    // ex: <NuxtLink to="#top"> To Top </NuxtLink>
-    if (to.hash) {
-      return new Promise((res) => {
-        setTimeout(() => {
-          res({
-            el: to.hash,
-            behavior: "smooth",
-          });
-        }, 300);
-      });
-    }
+    const toPage = Array.isArray(to.query.page)
+      ? to.query.page[0]
+      : to.query.page;
+    const fromPage = Array.isArray(from.query.page)
+      ? from.query.page[0]
+      : from.query.page;
+    const toAppend = Array.isArray(to.query._append)
+      ? to.query._append[0]
+      : to.query._append;
 
-    // The remainder is not relevant to this discussion but maybe useful as well
+    // Numbered pagination should bring user to top, "load more" should not.
+    if (to.path === from.path && toPage !== fromPage) {
+      if (toAppend === "1") return false;
 
-    // if link is to same page, scroll to top with smooth behavior
-    if (to === from) {
       return {
         left: 0,
         top: 0,
@@ -28,14 +25,28 @@ export default <RouterConfig>{
       };
     }
 
-    // this is an example for how to use saved scroll position on browser forward/back navigation
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          left: savedPosition?.left || 0,
-          top: savedPosition?.top || 0,
-        });
-      }, 500);
-    });
+    // Keep scroll position for other query-only updates (e.g. filters/sort).
+    if (to.path === from.path && to.hash === from.hash) {
+      return false;
+    }
+
+    // Scroll to hash anchor.
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: "smooth",
+      };
+    }
+
+    // Restore browser back/forward position.
+    if (savedPosition) {
+      return savedPosition;
+    }
+
+    // New page navigation.
+    return {
+      left: 0,
+      top: 0,
+    };
   },
 };

@@ -3,11 +3,13 @@ import ProductBreadCrumbs from "./product-bread-crumbs.vue";
 import ProductMedia from "./product-media.vue";
 import ProductInfo from "./product-info.vue";
 import { useProductStore } from "../lib/product-store";
-import type { StoreRegion } from "@medusajs/types";
+import { useRecentlyViewedStore } from "~/features/recently-viewed";
+import { WidgetRecentlyViewed } from "~/widgets/recently-viewed";
 
 const route = useRoute();
 const client = useMedusaClient();
 const productStore = useProductStore();
+const recentlyViewedStore = useRecentlyViewedStore();
 const { variant } = storeToRefs(productStore);
 
 if (!route.params.handle || route.params.handle === "undefined")
@@ -39,6 +41,11 @@ if (!product.value)
   });
 
 productStore.setProduct(product.value);
+
+onMounted(() => {
+  if (!product.value) return;
+  recentlyViewedStore.addProduct(product.value);
+});
 
 watch(
   () => route.query?.variant,
@@ -80,6 +87,9 @@ watch(
         <ProductMedia class="lg:max-w-[32.75rem]" :product="product" />
         <ProductInfo class="lg:max-w-[26.5rem]" :product="product" />
       </div>
+      <ClientOnly>
+        <WidgetRecentlyViewed :current-product-id="product.id" />
+      </ClientOnly>
     </div>
   </div>
 </template>
