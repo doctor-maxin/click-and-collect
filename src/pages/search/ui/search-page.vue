@@ -70,7 +70,7 @@ const { data: filtersResponse } = await useAsyncData(
         hitsPerPage: 0,
         attributesToSearchOn: ["coloredTitle"],
         distinct: "id",
-        facets: ["color", "size", "metadata.subclass", "metadata.class"],
+        facets: ["color", "size", "metadata.subclass", "metadata.class", "is_discounted"],
       });
   },
 );
@@ -88,7 +88,7 @@ const { data: productsResponse, status } = await useAsyncData(
         matchingStrategy: "all",
         page: page.value,
         sort: sort.value ? [sort.value] : [],
-        facets: ["color", "size", "metadata.subclass", "metadata.class"],
+        facets: ["color", "size", "metadata.subclass", "metadata.class", "is_discounted"],
       });
   },
   {

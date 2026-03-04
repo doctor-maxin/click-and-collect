@@ -6,6 +6,7 @@ export interface IFiltersStore {
   totalPages: number;
   isOpen: boolean;
   sort: string | null;
+  lastAppliedInput: string | null;
 
   availableFilters: Record<string, IFilterValue[] | null>;
   filtersList: Record<string, IFilterValue[] | null>;

@@ -87,7 +87,7 @@ const visiblePages = computed<(number | "...")[]>(() => {
           :disabled="currentPage <= 1"
           @click="$emit('page-change', currentPage - 1)"
         >
-          <SvgoChevron filled class="text-2xl rotate-180" />
+          <SvgoChevron filled class="text-2xl !mb-0 rotate-180" />
         </UiButton>
         <template v-for="(page, idx) in visiblePages" :key="`${page}-${idx}`">
           <span v-if="page === '...'" class="px-1 text-base text-gray-500"
@@ -109,7 +109,7 @@ const visiblePages = computed<(number | "...")[]>(() => {
           :disabled="currentPage >= totalPages"
           @click="$emit('page-change', currentPage + 1)"
         >
-          <SvgoChevron filled class="text-2xl" />
+          <SvgoChevron filled class="text-2xl !mb-0" />
         </UiButton>
       </nav>
     </div>

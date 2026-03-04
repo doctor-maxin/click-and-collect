@@ -159,10 +159,10 @@ watch(
 }
 
 /* Учитываем предпочтение уменьшения движения */
-@media (prefers-reduced-motion: reduce) {
+/*@media (prefers-reduced-motion: reduce) {
   .content {
     animation: none !important;
     transform: none !important;
   }
-}
+}*/
 </style>

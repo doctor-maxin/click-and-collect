@@ -10,18 +10,25 @@ const filtersStore = useFiltersStore();
 const router = useRouter();
 const route = useRoute();
 
-const { filtersList, appliedFilters, availableFilters } =
+const { filtersList, appliedFilters, availableFilters, lastAppliedInput } =
   storeToRefs(filtersStore);
+const lastAppliedField = ref<string | null>(null);
 
 const options = computed(() => (key: string, type: "or" | "and") => {
   const list = [];
+  const isActiveInput = lastAppliedInput.value === key;
+  const selectedValues = new Set(appliedFilters.value[key] ?? []);
+  const availableValues = new Set(
+    (availableFilters.value[key] ?? []).map((item) => item.value),
+  );
+
   for (const item of filtersList.value[key] ?? []) {
-    if (
-      availableFilters.value[key]?.some((v) => v.value === item.value) ||
-      type === "or"
-    ) {
+    const isAvailable = availableValues.has(item.value);
+    const isSelected = selectedValues.has(item.value);
+
+    if (isAvailable || isSelected || isActiveInput) {
       list.push(item);
-    } else {
+    } else if (type === "and" || type === "or") {
       list.push({
         ...item,
         disabled: true,
@@ -49,6 +56,9 @@ const form = useForm<IFiltersForm>({
 });
 
 const handleForm = form.handleSubmit(async (values) => {
+  const previousIsDiscounted =
+    appliedFilters.value["is_discounted"]?.includes("true") ?? false;
+
   const nextFilters: Record<string, string[]> = {
     color: values.color ?? [],
     size: values.size ?? [],
@@ -60,7 +70,12 @@ const handleForm = form.handleSubmit(async (values) => {
     nextFilters.is_discounted = ["true"];
   }
 
-  filtersStore.setAppliedFilters(nextFilters);
+  filtersStore.setAppliedFilters(nextFilters, { trackLastApplied: true });
+  if (lastAppliedField.value) {
+    filtersStore.setLastAppliedInput(lastAppliedField.value);
+  } else if (previousIsDiscounted !== values.is_discounted) {
+    filtersStore.setLastAppliedInput("is_discounted");
+  }
 
   const query: Record<string, string | string[]> = {
     ...nextFilters,
@@ -85,11 +100,13 @@ const handleForm = form.handleSubmit(async (values) => {
   router.push({
     query,
   });
+  lastAppliedField.value = null;
   filtersStore.close();
 });
 
 const resetForm = () => {
-  filtersStore.setAppliedFilters({});
+  filtersStore.setAppliedFilters({}, { trackLastApplied: false });
+  filtersStore.setLastAppliedInput(null);
   form.resetForm(
     {
       values: {
@@ -107,6 +124,7 @@ const resetForm = () => {
   router.push({
     query: route.query.q ? { q: route.query.q.toString() } : {},
   });
+  lastAppliedField.value = null;
   filtersStore.close();
 };
 </script>
@@ -117,18 +135,21 @@ const resetForm = () => {
       name="size"
       :form="form"
       placeholder="Размер"
+      @applied="lastAppliedField = $event"
     />
     <UiAutocomplete
       :options="options('color', 'and')"
       name="color"
       :form="form"
       placeholder="Цвет"
+      @applied="lastAppliedField = $event"
     />
     <UiAutocomplete
       :options="options('metadata.subclass', 'or')"
       name="subclass"
       :form="form"
       placeholder="Категория"
+      @applied="lastAppliedField = $event"
     />
     <UiCheckbox name="is_discounted" :form="form">Только со скидкой</UiCheckbox>
     <div class="flex gap-3 flex-col mt-4">

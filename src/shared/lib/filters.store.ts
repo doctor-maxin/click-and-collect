@@ -22,6 +22,7 @@ const initialFilters: IFiltersStore = {
 
   isOpen: false,
   sort: null,
+  lastAppliedInput: null,
   limit: 8,
   page: 1,
   totalPages: 1,
@@ -29,6 +30,11 @@ const initialFilters: IFiltersStore = {
 export const useFiltersStore = defineStore("filters", {
   state: (): IFiltersStore => ({ ...initialFilters }),
   actions: {
+    normalizeFilterKey(key: string) {
+      if (key === "subclass") return "metadata.subclass";
+      if (key === "class") return "metadata.class";
+      return key;
+    },
     close() {
       this.isOpen = false;
     },
@@ -41,6 +47,9 @@ export const useFiltersStore = defineStore("filters", {
     setIsOpen(val: boolean) {
       this.isOpen = val;
     },
+    setLastAppliedInput(key: string | null) {
+      this.lastAppliedInput = key ? this.normalizeFilterKey(key) : null;
+    },
     setFiltersList(values?: FacetDistribution) {
       if (!values) return;
 
@@ -51,24 +60,39 @@ export const useFiltersStore = defineStore("filters", {
         }));
       }
     },
-    setAppliedFilters(appliedFilters: IFiltersStore["appliedFilters"]) {
-      console.log("[setAppliedFilters] input", appliedFilters);
+    setAppliedFilters(
+      appliedFilters: IFiltersStore["appliedFilters"],
+      options?: { trackLastApplied?: boolean },
+    ) {
+      const previousFilters = { ...this.appliedFilters };
       this.appliedFilters = Object.fromEntries(
         Object.entries(appliedFilters)
           .map((input) => {
-            if (input[0] === "subclass") input[0] = "metadata.subclass";
-            if (input[0] === "class") input[0] = "metadata.class";
+            input[0] = this.normalizeFilterKey(input[0]);
             return input;
           })
           .filter(([key, value]) => value?.length > 0),
       );
+
+      if (options?.trackLastApplied === false) return;
+
+      const changedKeys = new Set<string>([
+        ...Object.keys(previousFilters),
+        ...Object.keys(this.appliedFilters),
+      ]);
+      const lastChanged = Array.from(changedKeys).find((key) => {
+        const prev = (previousFilters[key] ?? []).join(",");
+        const next = (this.appliedFilters[key] ?? []).join(",");
+        return prev !== next;
+      });
+
+      this.lastAppliedInput = lastChanged ?? this.lastAppliedInput;
     },
     setAppliedFiltersFromQuery(appliedFilters: LocationQuery) {
-      console.log("[setAppliedFiltersFromQuery] input", appliedFilters);
       this.appliedFilters = {};
+      this.lastAppliedInput = null;
       for (let [key, value] of Object.entries(appliedFilters)) {
-        if (key === "subclass") key = "metadata.subclass";
-        if (key === "class") key = "metadata.class";
+        key = this.normalizeFilterKey(key);
         if (value?.length === 0 || !allowedFacets.includes(key)) continue;
 
         if (Array.isArray(value)) {
@@ -78,23 +102,23 @@ export const useFiltersStore = defineStore("filters", {
           this.appliedFilters[key] = [value.trim()];
         }
       }
-      console.log("[setAppliedFiltersFromQuery] output", this.appliedFilters);
     },
     resetFilters() {
-      console.log("[resetFilters]");
       this.appliedFilters = {};
+      this.lastAppliedInput = null;
     },
     removeFilterValue(filter: string, value: string) {
-      console.log("[removeFilterValue]");
+      filter = this.normalizeFilterKey(filter);
       this.appliedFilters[filter] =
         this.appliedFilters[filter]?.filter((v) => v !== value) ?? [];
+      this.lastAppliedInput = filter;
 
       if (this.appliedFilters[filter]?.length === 0) {
         delete this.appliedFilters[filter];
       }
     },
     setFilterValue(filter: string, value: string) {
-      console.log("[setFilterValue]");
+      filter = this.normalizeFilterKey(filter);
       if (!this.appliedFilters[filter]) {
         this.appliedFilters[filter] = [];
       }
@@ -105,14 +129,23 @@ export const useFiltersStore = defineStore("filters", {
           trimmedValue,
         ];
       }
+      this.lastAppliedInput = filter;
     },
     setAvailableFilters(values?: FacetDistribution) {
-      if (!values) return;
-
-      for (const [key, value] of Object.entries(values)) {
-        this.availableFilters[key] = Object.entries(value)
-          .filter(([key, value]) => value > 0)
-          .map(([key]) => ({ label: key, value: key }));
+      const keys = Object.keys(this.filtersList);
+      for (const key of keys) {
+        if (key === this.lastAppliedInput) {
+          this.availableFilters[key] =
+            this.filtersList[key]?.map((item) => ({
+              label: item.label,
+              value: item.value,
+            })) ?? null;
+          continue;
+        }
+        const facetValues = values?.[key] ?? {};
+        this.availableFilters[key] = Object.entries(facetValues)
+          .filter(([, count]) => count > 0)
+          .map(([value]) => ({ label: value, value }));
       }
     },
     setPage(page: number) {

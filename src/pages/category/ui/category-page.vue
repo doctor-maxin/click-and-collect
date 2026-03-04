@@ -104,7 +104,13 @@ const { data: filtersResponse } = await useAsyncData(
     return searchClient.index("cards").search<StoreProduct>(null, {
       filter: [`category_ids IN ['${category.value?.id}']`],
       hitsPerPage: 0,
-      facets: ["color", "size", "metadata.subclass", "metadata.class"],
+      facets: [
+        "color",
+        "size",
+        "metadata.subclass",
+        "metadata.class",
+        "is_discounted",
+      ],
     });
   },
 );
@@ -120,7 +126,13 @@ const { data: productsResponse, status } = await useAsyncData(
       hitsPerPage: limit.value,
       page: page.value,
       sort: sort.value ? [sort.value] : [],
-      facets: ["color", "size", "metadata.subclass", "metadata.class"],
+      facets: [
+        "color",
+        "size",
+        "metadata.subclass",
+        "metadata.class",
+        "is_discounted",
+      ],
     });
   },
   {
@@ -186,8 +198,7 @@ watch(
           newFilters[key] = [value.trim()];
         }
       }
-      console.log("[setAppliedFilters]", newFilters, route.query);
-      filtersStore.setAppliedFilters(newFilters);
+      filtersStore.setAppliedFilters(newFilters, { trackLastApplied: false });
     }
   },
   {

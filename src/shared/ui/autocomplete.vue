@@ -24,6 +24,9 @@ const { name, form, options } = defineProps<{
   placeholder?: string;
   options: IFilterValue[];
 }>();
+const emit = defineEmits<{
+  (e: "applied", name: string): void;
+}>();
 
 const { handleBlur, handleChange, value, resetField } = useField<
   IFilterValue["value"][]
@@ -50,6 +53,7 @@ const selectAll = () => {
 
 const applyFilter = () => {
   handleChange(model.value);
+  emit("applied", name);
   isOpen.value = false;
   query.value = "";
 };
@@ -108,14 +112,13 @@ const reset = () => {
           v-if="!open && value?.length > 0"
           filled
           class="text-[1.5rem] !mb-0"
-          @click="reset"
+          @click.stop="reset"
         />
       </ComboboxTrigger>
     </ComboboxAnchor>
 
     <ComboboxContent
       @focus-outside.prevent
-      @interact-outside.prevent="isOpen = false"
       class="absolute py-2 px-4 z-10 w-full bg-white rounded-b-lg border-x border-b top-full"
     >
       <ComboboxViewport class="flex flex-col w-full">
