@@ -58,7 +58,7 @@ const handleCategoryClick = (category: StoreProductCategory) => {
 </script>
 
 <template>
-  <div v-if="level < 3" class="my-9 flex-wrap flex gap-3">
+  <div v-if="level < 3" class="mt-4 mb-6 lg:my-9 flex-wrap flex gap-3">
     <div
       v-for="subCategory of clearedCategories(category.category_children)"
       :key="subCategory.id"

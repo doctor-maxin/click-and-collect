@@ -42,7 +42,7 @@ const breadcrumbs = computed(() => {
 });
 </script>
 <template>
-  <div class="my-9">
+  <div class="hidden lg:block my-9">
     <UiBreadcrumbs :items="breadcrumbs" />
   </div>
 </template>

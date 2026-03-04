@@ -43,7 +43,7 @@ const filterCount = computed(() => {
     <DialogPortal>
       <DialogOverlay class="fixed dialog-overlay z-10 inset-0 bg-black/30" />
       <DialogContent
-        class="bg-white transition-all dialog-content top-0 left-0 fixed z-40 h-screen py-[3.875rem] px-[3.5rem] w-[25rem]"
+        class="bg-white transition-all dialog-content top-0 left-0 fixed z-40 h-screen w-full max-w-full overflow-y-auto p-4 sm:w-[25rem] sm:overflow-visible sm:py-[3.875rem] sm:px-[3.5rem]"
       >
         <VisuallyHidden as-child>
           <DialogTitle>Filters</DialogTitle>
@@ -52,9 +52,15 @@ const filterCount = computed(() => {
           <DialogDescription>Filters</DialogDescription>
         </VisuallyHidden>
 
+        <h2 class="sm:hidden text-xl font-semibold text-center mb-4">
+          Фильтры
+        </h2>
+
         <FiltersForm />
 
-        <DialogClose class="cursor-pointer absolute top-3 right-3">
+        <DialogClose
+          class="cursor-pointer absolute top-4 right-4 sm:top-3 sm:right-3"
+        >
           <SvgoClose filled class="text-2xl !mb-0" />
         </DialogClose>
       </DialogContent>

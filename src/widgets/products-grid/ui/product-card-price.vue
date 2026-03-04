@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex gap-3 text-2xl items-center">
+    <div class="flex gap-3 text-base items-center">
         <template
             v-if="
                 calculated_price.original_amount !==

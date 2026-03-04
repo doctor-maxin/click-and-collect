@@ -9,6 +9,10 @@ const filterEntries = computed(() =>
     ([key]) => key !== "metadata.class",
   ),
 );
+const getFilterLabel = (filter: string, value: string) => {
+  if (filter === "is_discounted") return "Со скидкой";
+  return value;
+};
 
 const removeFilterValue = (filter: string, value: string) => {
   filtersStore.removeFilterValue(filter, value);
@@ -40,10 +44,18 @@ const resetFilters = () => {
       <template v-for="[filter, values] of filterEntries" :key="filter">
         <button
           v-for="value of values"
-          class="px-2 py-1 cursor-pointer border rounded-lg flex items-center gap-2"
+          class="cursor-pointer flex items-center gap-2"
+          :class="{
+            'px-2 py-1 border rounded-lg': filter !== 'is_discounted',
+          }"
           @click="removeFilterValue(filter, value)"
         >
-          <span class="text-sm">{{ value }}</span>
+          <UiBadge v-if="filter === 'is_discounted'" :active="true">
+            {{ getFilterLabel(filter, value) }}
+          </UiBadge>
+          <span v-else class="text-sm">{{
+            getFilterLabel(filter, value)
+          }}</span>
           <SvgoClose class="!mb-0 text-[1.5rem]" filled />
         </button>
       </template>

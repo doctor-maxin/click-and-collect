@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { NavigationRenderType, NavigationItemType } from "#gql/default";
+import { NavigationRenderType } from "#gql/default";
+import { useNavigationItemUrl } from "~/shared/lib/use-navigation-item-url";
 
 const { data: config } = useNuxtData("config");
 const { data: footerMenu } = await useAsyncData(
@@ -14,21 +15,7 @@ const { data: footerMenu } = await useAsyncData(
   },
 );
 
-const getItemUrl = (
-  type: NavigationItemType | undefined,
-  path: string | undefined | null,
-  typename: string | undefined,
-) => {
-  if (type === NavigationItemType.EXTERNAL) {
-    return `${path}`;
-  }
-  if (type === NavigationItemType.INTERNAL) {
-    if (typename === "Page") {
-      return `/pages/${path?.startsWith("/") ? path.slice(1) : path}`;
-    }
-  }
-  return `/${path?.startsWith("/") ? path.slice(1) : path}`;
-};
+const { getItemUrl } = useNavigationItemUrl();
 
 const socialLinks = computed(() =>
   footerMenu.value?.find((item) => item?.additionalFields?.isSocialMenu),

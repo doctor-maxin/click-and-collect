@@ -4,6 +4,7 @@ import type { IQuerySuggestion } from "../model/query-suggestion.model";
 import RecentQueries from "./recent-queries.vue";
 
 const query = ref("");
+const normalizeQuery = (value: string) => value.replace(/\s+/g, " ").trim();
 const searchClient = useSearchClient();
 const results = ref<IQuerySuggestion[]>([]);
 const searchStore = useSearchStore();
@@ -26,13 +27,15 @@ const categories = computed(() => {
 });
 
 const handleQuery = async () => {
-  if (query.value === "") {
+  const normalizedQuery = normalizeQuery(query.value);
+
+  if (!normalizedQuery) {
     results.value = [];
     return;
   }
   const response = await searchClient
     .index<IQuerySuggestion>("query_suggestions")
-    .search(query.value, {
+    .search(normalizedQuery, {
       hitsPerPage: 5,
     });
 
@@ -42,7 +45,10 @@ const handleQuery = async () => {
 watch(query, handleQuery);
 
 const selectCategory = (handle: string) => {
-  searchStore.addQuery(query.value);
+  const normalizedQuery = normalizeQuery(query.value);
+  if (normalizedQuery) {
+    searchStore.addQuery(normalizedQuery);
+  }
   router.push({
     path: `/category/${handle}`,
   });
@@ -51,12 +57,14 @@ const selectCategory = (handle: string) => {
 };
 
 const handleForm = () => {
-  if (!query.value) return;
-  searchStore.addQuery(query.value);
+  const normalizedQuery = normalizeQuery(query.value);
+  if (!normalizedQuery) return;
+
+  searchStore.addQuery(normalizedQuery);
   router.push({
     path: `/search`,
     query: {
-      q: query.value,
+      q: normalizedQuery,
     },
   });
   query.value = "";
@@ -65,7 +73,10 @@ const handleForm = () => {
 </script>
 
 <template>
-  <form class="flex flex-col w-full gap-9" @submit.prevent="handleForm">
+  <form
+    class="flex flex-col w-full mb-6 gap-6 lg:gap-9"
+    @submit.prevent="handleForm"
+  >
     <label class="flex items-center relative w-full">
       <input
         placeholder="ХОЧУ КУПИТЬ"
@@ -84,7 +95,7 @@ const handleForm = () => {
     </label>
 
     <div v-if="results?.length > 0">
-      <ul class="flex mb-19 flex-col gap-5">
+      <ul class="flex mb-6 lg:mb-19 flex-col gap-3 lg:gap-5">
         <li
           v-for="result in results"
           class="cursor-pointer"
@@ -97,14 +108,17 @@ const handleForm = () => {
       <ul class="flex flex-col gap-3">
         <li
           v-for="category of categories"
-          class="cursor-pointer text-2xl font-medium uppercase"
+          class="cursor-pointer text-base lg:text-2xl font-medium uppercase"
           @click="selectCategory(category.handle)"
         >
           {{ category.name }}
         </li>
       </ul>
     </div>
-    <RecentQueries v-else-if="query.length === 0" @select="query = $event" />
+    <RecentQueries
+      v-else-if="normalizeQuery(query).length === 0"
+      @select="query = $event"
+    />
   </form>
 </template>
 <style>

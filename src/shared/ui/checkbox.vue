@@ -22,7 +22,20 @@ const { handleBlur, handleChange, value } = useField(name, undefined, {
       :value="value"
       @input="handleChange"
       @blur="handleBlur" />
-    <span class="ui-checkbox-indicator" />
+    <svg
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      class="ui-checkbox-indicator"
+      :class="{ unchecked: !value }"
+    >
+      <path
+        d="M21.3333 0L2.66667 0C1.2 0 0 1.2 0 2.66667L0 21.3333C0 22.8 1.2 24 2.66667 24L21.3333 24C22.8 24 24 22.8 24 21.3333L24 2.66667C24 1.2 22.8 0 21.3333 0ZM10.28 17.72C9.76 18.24 8.92 18.24 8.4 17.72L3.61333 12.9333C3.09333 12.4133 3.09333 11.5733 3.61333 11.0533C4.13333 10.5333 4.97333 10.5333 5.49333 11.0533L9.33333 14.8933L18.5067 5.72C19.0267 5.2 19.8667 5.2 20.3867 5.72C20.9067 6.24 20.9067 7.08 20.3867 7.6L10.28 17.72Z"
+        fill="rgb(0,163,228)"
+        fill-rule="nonzero"
+      />
+    </svg>
     <span class="ui-checkbox-content"> <slot /></span
   ></label>
 </template>
@@ -39,21 +52,20 @@ const { handleBlur, handleChange, value } = useField(name, undefined, {
 }
 
 .ui-checkbox-indicator {
-  width: 2rem;
-  min-width: 2rem;
-  height: 2rem;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSIzMi4wMDAwMDAiIGhlaWdodD0iMzIuMDAwMDAwIiBmaWxsPSJub25lIj4KCTxyZWN0IGlkPSJDaGVjayBib3ggb3V0bGluZSBibGFuayIgd2lkdGg9IjMyLjAwMDAwMCIgaGVpZ2h0PSIzMi4wMDAwMDAiIHg9IjAuMDAwMDAwIiB5PSIwLjAwMDAwMCIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgZmlsbC1vcGFjaXR5PSIwIiAvPgoJPHBhdGggaWQ9IlZlY3RvciIgZD0iTTAgMEwzMiAwTDMyIDMyTDAgMzJMMCAwWiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPgoJPHBhdGggaWQ9IlZlY3RvciIgZD0iTTI0IDI1LjMzMzNMOCAyNS4zMzMzQzcuMjY2NjcgMjUuMzMzMyA2LjY2NjY3IDI0LjczMzMgNi42NjY2NyAyNEw2LjY2NjY3IDhDNi42NjY2NyA3LjI2NjY3IDcuMjY2NjcgNi42NjY2NyA4IDYuNjY2NjdMMjQgNi42NjY2N0MyNC43MzMzIDYuNjY2NjcgMjUuMzMzMyA3LjI2NjY3IDI1LjMzMzMgOEwyNS4zMzMzIDI0QzI1LjMzMzMgMjQuNzMzMyAyNC43MzMzIDI1LjMzMzMgMjQgMjUuMzMzM1pNMjUuMzMzMyA0TDYuNjY2NjcgNEM1LjIgNCA0IDUuMiA0IDYuNjY2NjdMNCAyNS4zMzMzQzQgMjYuOCA1LjIgMjggNi42NjY2NyAyOEwyNS4zMzMzIDI4QzI2LjggMjggMjggMjYuOCAyOCAyNS4zMzMzTDI4IDYuNjY2NjdDMjggNS4yIDI2LjggNCAyNS4zMzMzIDRaIiBmaWxsPSJyZ2IoMjU1LDI1NSwyNTUpIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+Cjwvc3ZnPg==");
-}
-
-.ui-checkbox:has(input:checked) .ui-checkbox-indicator {
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSIzMi4wMDAwMDAiIGhlaWdodD0iMzIuMDAwMDAwIiBmaWxsPSJub25lIj4KCTxyZWN0IGlkPSLRhNGA0LXQudC8IDcyNCIgd2lkdGg9IjMyLjAwMDAwMCIgaGVpZ2h0PSIzMi4wMDAwMDAiIHg9IjAuMDAwMDAwIiB5PSIwLjAwMDAwMCIgLz4KCTxwYXRoIGlkPSJWZWN0b3IiIGQ9Ik0yNS4zMzMzIDRMNi42NjY2NyA0QzUuMiA0IDQgNS4yIDQgNi42NjY2N0w0IDI1LjMzMzNDNCAyNi44IDUuMiAyOCA2LjY2NjY3IDI4TDI1LjMzMzMgMjhDMjYuOCAyOCAyOCAyNi44IDI4IDI1LjMzMzNMMjggNi42NjY2N0MyOCA1LjIgMjYuOCA0IDI1LjMzMzMgNFpNMTQuMjggMjEuNzJDMTMuNzYgMjIuMjQgMTIuOTIgMjIuMjQgMTIuNCAyMS43Mkw3LjYxMzMzIDE2LjkzMzNDNy4wOTMzMyAxNi40MTMzIDcuMDkzMzMgMTUuNTczMyA3LjYxMzMzIDE1LjA1MzNDOC4xMzMzMyAxNC41MzMzIDguOTczMzMgMTQuNTMzMyA5LjQ5MzMzIDE1LjA1MzNMMTMuMzMzMyAxOC44OTMzTDIyLjUwNjcgOS43MkMyMy4wMjY3IDkuMiAyMy44NjY3IDkuMiAyNC4zODY3IDkuNzJDMjQuOTA2NyAxMC4yNCAyNC45MDY3IDExLjA4IDI0LjM4NjcgMTEuNkwxNC4yOCAyMS43MloiIGZpbGw9InJnYigyNTUsMjU1LDI1NSkiIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9zdmc+Cg==");
+  min-width: 1.5rem;
 }
 
 .ui-checkbox-content {
   line-height: 1.25rem;
   box-sizing: border-box;
+}
+
+.unchecked path {
+  fill: transparent;
+}
+
+.unchecked {
+  border: 1px solid var(--color-blue);
+  border-radius: 4px;
 }
 </style>

@@ -9,6 +9,7 @@ const initialFilters: IFiltersStore = {
     size: null,
     ["metadata.subclass"]: null,
     ["metadata.class"]: null,
+    is_discounted: null,
   },
   appliedFilters: {},
   availableFilters: {
@@ -16,6 +17,7 @@ const initialFilters: IFiltersStore = {
     size: null,
     ["metadata.subclass"]: null,
     ["metadata.class"]: null,
+    is_discounted: null,
   },
 
   isOpen: false,

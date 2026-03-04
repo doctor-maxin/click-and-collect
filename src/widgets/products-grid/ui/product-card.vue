@@ -63,7 +63,7 @@ const link = computed(
 </script>
 <template>
   <article
-    class="product-card flex group flex-col gap-4 w-full"
+    class="product-card flex group flex-col gap-2 lg:gap-4 w-full"
     :data-id="product.id"
   >
     <div class="relative" @mousemove="onMouseOver">
@@ -116,7 +116,7 @@ const link = computed(
       />
     </div>
     <div class="flex flex-col gap-2">
-      <div class="text-base leading-4 uppercase font-medium">
+      <div class="text-xs leading-4 uppercase font-medium">
         {{ product.title }}
       </div>
       <ProductCardPrice
