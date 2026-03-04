@@ -21,6 +21,7 @@ if (!route.params.handle || route.params.handle === "undefined")
   });
 
 const { data: product, error } = await useAsyncData(
+  () => route.params.handle as string,
   () =>
     client.store.product.list({
       handle: route.params.handle as string,
@@ -29,6 +30,7 @@ const { data: product, error } = await useAsyncData(
     }),
   {
     transform: (r) => r.products?.[0],
+    watch: [route.params.handle as string],
   },
 );
 

@@ -52,6 +52,12 @@ const colorImages = computed(() =>
       variant.value?.metadata?.color?.toLowerCase(),
   ),
 );
+const activeImages = computed(() => {
+  if (colorImages.value && colorImages.value.length > 0) {
+    return colorImages.value;
+  }
+  return product.value?.images ?? [];
+});
 
 const onError = (event: Event) => {
   if (!event.target) return;
@@ -72,11 +78,37 @@ watch(
   () => variant.value?.metadata?.color,
   (colorString: string) => {
     if (mainImage.value?.metadata?.color !== colorString) {
-      mainImage.value = colorImages.value?.[0];
+      mainImage.value = activeImages.value?.[0];
     }
   },
   {
     immediate: true,
+  },
+);
+
+const containerRef = ref(null);
+const mobileImages = computed(() => activeImages.value ?? []);
+const mobilePagination = markRaw({
+  el: ".product-media-pagination",
+  type: "bullets",
+  clickable: true,
+});
+
+const swiper = useSwiper(containerRef, {
+  pagination: mobilePagination,
+  on: {
+    afterInit() {
+      if (!containerRef.value) return;
+      //@ts-ignore
+      containerRef.value.classList.add("swiper-initialized");
+    },
+  },
+});
+
+watch(
+  () => variant.value?.metadata?.color,
+  () => {
+    swiper.instance.value?.slideTo(0, 0);
   },
 );
 </script>
@@ -90,7 +122,7 @@ watch(
           class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-3"
         >
           <ProductImage
-            v-for="image of colorImages"
+            v-for="image of activeImages"
             :src="getThumbnailUrl(image)"
             alt="Product Image"
             :width="184"
@@ -125,15 +157,13 @@ watch(
     <div class="lg:hidden">
       <ClientOnly>
         <swiper-container
-          :pagination="{
-            el: '.product-card-pagination',
-            type: 'bullets',
-          }"
+          :init="false"
+          :pagination="mobilePagination"
           ref="containerRef"
           class="aspect-[15/18]"
         >
           <swiper-slide
-            v-for="image of product?.images"
+            v-for="(image, index) of mobileImages"
             :key="image.id"
             class="size-full"
           >
@@ -141,11 +171,12 @@ watch(
               class="object-cover object-center size-full"
               :src="image.url"
               :alt="product?.title as string"
+              :loading="index === 0 ? 'eager' : 'lazy'"
             />
           </swiper-slide>
           <div slot="container-end">
             <div
-              class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
+              class="product-media-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
             ></div>
           </div>
         </swiper-container>
@@ -154,13 +185,13 @@ watch(
   </div>
 </template>
 <style lang="css">
-.product-card-pagination .swiper-pagination-bullet {
+.product-media-pagination .swiper-pagination-bullet {
   width: 100%;
   height: 2px;
   border-radius: 4px;
   background-color: rgba(255, 255, 255, 0.6);
 }
-.product-card-pagination .swiper-pagination-bullet-active {
+.product-media-pagination .swiper-pagination-bullet-active {
   background-color: rgba(255, 255, 255, 1);
 }
 
