@@ -4,6 +4,7 @@ import { FeatureSearch } from "~/features/search";
 
 const isHeaderVisible = ref(true);
 const lastScrollY = ref(0);
+const route = useRoute();
 
 const onScroll = () => {
   const currentScrollY = window.scrollY;
@@ -31,6 +32,15 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", onScroll);
 });
+
+watch(
+  () => route.fullPath,
+  () => {
+    const currentScrollY = window.scrollY;
+    lastScrollY.value = currentScrollY;
+    isHeaderVisible.value = currentScrollY <= 40;
+  },
+);
 
 const client = useStrapiClient();
 await useAsyncData(

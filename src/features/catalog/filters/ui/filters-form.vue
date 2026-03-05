@@ -13,23 +13,12 @@ const route = useRoute();
 const { filtersList, appliedFilters, availableFilters } =
   storeToRefs(filtersStore);
 
-const options = computed(() => (key: string, type: "or" | "and") => {
-  const list = [];
-  for (const item of filtersList.value[key] ?? []) {
-    if (
-      availableFilters.value[key]?.some((v) => v.value === item.value) ||
-      type === "or"
-    ) {
-      list.push(item);
-    } else {
-      list.push({
-        ...item,
-        disabled: true,
-      });
-    }
-  }
-  return list;
-});
+const getFormFieldByFilterKey = (key: string) => {
+  if (key === "metadata.subclass") return "subclass";
+  if (key === "metadata.class") return "class";
+  return key;
+};
+
 const form = useForm<IFiltersForm>({
   validationSchema: yup.object({
     color: yup.array().of(yup.string()),
@@ -46,6 +35,32 @@ const form = useForm<IFiltersForm>({
     is_discounted:
       appliedFilters.value["is_discounted"]?.includes("true") ?? false,
   },
+});
+
+const options = computed(() => (key: string, type: "or" | "and") => {
+  const fieldName = getFormFieldByFilterKey(key) as keyof IFiltersForm;
+  const selectedValues = (form.values[fieldName] ?? []) as string[];
+  const hasSelectedValues = selectedValues.length > 0;
+  const list = [];
+
+  for (const item of filtersList.value[key] ?? []) {
+    const isSelected = selectedValues.includes(item.value);
+    const isAvailable = availableFilters.value[key]?.some(
+      (v) => v.value === item.value,
+    );
+
+    if (!hasSelectedValues || isSelected || isAvailable || type === "or") {
+      list.push(item);
+      continue;
+    }
+
+    list.push({
+      ...item,
+      disabled: true,
+    });
+  }
+
+  return list;
 });
 
 const handleForm = form.handleSubmit(async (values) => {
