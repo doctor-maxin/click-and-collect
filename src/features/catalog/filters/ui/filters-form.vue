@@ -14,29 +14,12 @@ const { filtersList, appliedFilters, availableFilters, lastAppliedInput } =
   storeToRefs(filtersStore);
 const lastAppliedField = ref<string | null>(null);
 
-const options = computed(() => (key: string, type: "or" | "and") => {
-  const list = [];
-  const isActiveInput = lastAppliedInput.value === key;
-  const selectedValues = new Set(appliedFilters.value[key] ?? []);
-  const availableValues = new Set(
-    (availableFilters.value[key] ?? []).map((item) => item.value),
-  );
+const getFormFieldByFilterKey = (key: string) => {
+  if (key === "metadata.subclass") return "subclass";
+  if (key === "metadata.class") return "class";
+  return key;
+};
 
-  for (const item of filtersList.value[key] ?? []) {
-    const isAvailable = availableValues.has(item.value);
-    const isSelected = selectedValues.has(item.value);
-
-    if (isAvailable || isSelected || isActiveInput) {
-      list.push(item);
-    } else if (type === "and" || type === "or") {
-      list.push({
-        ...item,
-        disabled: true,
-      });
-    }
-  }
-  return list;
-});
 const form = useForm<IFiltersForm>({
   validationSchema: yup.object({
     color: yup.array().of(yup.string()),
@@ -53,6 +36,32 @@ const form = useForm<IFiltersForm>({
     is_discounted:
       appliedFilters.value["is_discounted"]?.includes("true") ?? false,
   },
+});
+
+const options = computed(() => (key: string, type: "or" | "and") => {
+  const fieldName = getFormFieldByFilterKey(key) as keyof IFiltersForm;
+  const selectedValues = (form.values[fieldName] ?? []) as string[];
+  const hasSelectedValues = selectedValues.length > 0;
+  const list = [];
+
+  for (const item of filtersList.value[key] ?? []) {
+    const isSelected = selectedValues.includes(item.value);
+    const isAvailable = availableFilters.value[key]?.some(
+      (v) => v.value === item.value,
+    );
+
+    if (!hasSelectedValues || isSelected || isAvailable || type === "or") {
+      list.push(item);
+      continue;
+    }
+
+    list.push({
+      ...item,
+      disabled: true,
+    });
+  }
+
+  return list;
 });
 
 const handleForm = form.handleSubmit(async (values) => {
