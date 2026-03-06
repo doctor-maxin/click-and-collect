@@ -6,18 +6,30 @@ const isHeaderVisible = ref(true);
 const lastScrollY = ref(0);
 const route = useRoute();
 
+const TOP_OFFSET = 40;
+const TOGGLE_THRESHOLD = 12;
+
+const headerTranslateY = computed(() =>
+  isHeaderVisible.value ? "0%" : "-100%",
+);
+const headerOpacity = computed(() => (isHeaderVisible.value ? "1" : "0"));
+const headerPointerEvents = computed(() =>
+  isHeaderVisible.value ? "auto" : "none",
+);
+
 const onScroll = () => {
   const currentScrollY = window.scrollY;
+  const delta = currentScrollY - lastScrollY.value;
 
-  if (currentScrollY <= 40) {
+  if (currentScrollY <= TOP_OFFSET) {
     isHeaderVisible.value = true;
     lastScrollY.value = currentScrollY;
     return;
   }
 
-  if (currentScrollY > lastScrollY.value) {
+  if (delta > TOGGLE_THRESHOLD) {
     isHeaderVisible.value = false;
-  } else if (currentScrollY < lastScrollY.value) {
+  } else if (delta < -TOGGLE_THRESHOLD) {
     isHeaderVisible.value = true;
   }
 
@@ -25,7 +37,9 @@ const onScroll = () => {
 };
 
 onMounted(() => {
-  lastScrollY.value = window.scrollY;
+  const currentScrollY = window.scrollY;
+  lastScrollY.value = currentScrollY;
+  onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 });
 
@@ -38,7 +52,7 @@ watch(
   () => {
     const currentScrollY = window.scrollY;
     lastScrollY.value = currentScrollY;
-    isHeaderVisible.value = currentScrollY <= 40;
+    isHeaderVisible.value = currentScrollY <= TOP_OFFSET;
   },
 );
 
@@ -53,8 +67,7 @@ await useAsyncData(
 </script>
 <template>
   <div
-    class="fixed ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center transition-transform duration-200"
-    :class="isHeaderVisible ? 'translate-y-0' : '-translate-y-full'"
+    class="fixed ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center ui-header-shell"
   >
     <div
       class="container px-4 py-2 lg:py-5 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"
@@ -71,3 +84,15 @@ await useAsyncData(
     </div>
   </div>
 </template>
+
+<style scoped>
+.ui-header-shell {
+  transform: translate3d(0, v-bind(headerTranslateY), 0);
+  opacity: v-bind(headerOpacity);
+  pointer-events: v-bind(headerPointerEvents);
+  transition:
+    transform 200ms ease,
+    opacity 200ms ease;
+  will-change: transform, opacity;
+}
+</style>

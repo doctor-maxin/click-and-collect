@@ -19,7 +19,7 @@ const { data: page, error } = await useAsyncData(
     transform: (r) => {
       return r?.pages?.[0];
     },
-    watch: [route.params.handle as string],
+    watch: [() => route.params.handle as string],
   },
 );
 if (!page.value)

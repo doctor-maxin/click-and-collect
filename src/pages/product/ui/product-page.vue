@@ -30,7 +30,7 @@ const { data: product, error } = await useAsyncData(
     }),
   {
     transform: (r) => r.products?.[0],
-    watch: [route.params.handle as string],
+    watch: [() => route.params.handle as string],
   },
 );
 
