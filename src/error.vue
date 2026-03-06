@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { WidgetHeader } from "@/widgets/header";
-import { WidgetFooter } from "@/widgets/footer";
-import { WidgetScrollUp } from "@/widgets/scroll-up";
-import { WidgetCookieBanner } from "@/widgets/cookie-banner";
+import { WidgetHeader } from "~/widgets/header";
+import { WidgetFooter } from "~/widgets/footer";
+import { WidgetScrollUp } from "~/widgets/scroll-up";
+import { WidgetCookieBanner } from "~/widgets/cookie-banner";
 import type { NuxtError } from "#app";
 
 const props = defineProps<{

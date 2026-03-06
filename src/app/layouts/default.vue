@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { WidgetHeader } from "@/widgets/header";
-import { WidgetFooter } from "@/widgets/footer";
-import { WidgetScrollUp } from "@/widgets/scroll-up";
-import { WidgetCookieBanner } from "@/widgets/cookie-banner";
+import { WidgetHeader } from "~/widgets/header";
+import { WidgetFooter } from "~/widgets/footer";
+import { WidgetScrollUp } from "~/widgets/scroll-up";
+import { WidgetCookieBanner } from "~/widgets/cookie-banner";
 import { useAsyncData } from "#app";
 
 const client = useMedusaClient();
@@ -40,8 +40,12 @@ await useAsyncData("categories", () =>
     <KeepAlive>
       <WidgetHeader />
     </KeepAlive>
+
     <NuxtPage class="flex-1" />
-    <WidgetFooter />
+    <KeepAlive>
+      <WidgetFooter />
+    </KeepAlive>
+
     <WidgetScrollUp />
     <WidgetCookieBanner />
   </div>

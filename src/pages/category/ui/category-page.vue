@@ -266,25 +266,27 @@ const onPageChange = (nextPage: number) => {
 </script>
 
 <template>
-  <div class="mt-16 lg:mt-[8.125rem]">
-    <div v-if="category" class="px-4 container mx-auto">
-      <CategoryBreadCrumbs :category="category" />
-      <h1
-        class="font-serif font-medium mt-6 mb-4 lg:my-9 text-xl lg:text-[1.75rem] uppercase"
-      >
-        {{ category.name }}
-      </h1>
-      <CategoryLinks :category="category" />
-      <CategoryFilters :category="category" />
-      <WidgetProductsGrid
-        :products="products"
-        :has-more="page < totalPages"
-        :is-loading="status === 'pending'"
-        :current-page="page"
-        :total-pages="totalPages"
-        @load-more="onLoadMore"
-        @page-change="onPageChange"
-      />
+  <KeepAlive>
+    <div class="mt-16 lg:mt-[8.125rem]">
+      <div v-if="category" class="px-4 container mx-auto">
+        <CategoryBreadCrumbs :category="category" />
+        <h1
+          class="font-serif font-medium mt-6 mb-4 lg:my-9 text-xl lg:text-[1.75rem] uppercase"
+        >
+          {{ category.name }}
+        </h1>
+        <CategoryLinks :category="category" />
+        <CategoryFilters :category="category" />
+        <WidgetProductsGrid
+          :products="products"
+          :has-more="page < totalPages"
+          :is-loading="status === 'pending'"
+          :current-page="page"
+          :total-pages="totalPages"
+          @load-more="onLoadMore"
+          @page-change="onPageChange"
+        />
+      </div>
     </div>
-  </div>
+  </KeepAlive>
 </template>

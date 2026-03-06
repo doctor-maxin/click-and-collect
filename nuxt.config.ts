@@ -14,10 +14,6 @@ export default defineNuxtConfig({
     "pinia-plugin-persistedstate/nuxt",
     "@nuxtjs/seo",
   ],
-  alias: {
-    "@": "../src",
-    "@assets": "../src/app/assets",
-  },
   site: {
     url: process.env.NUXT_SITE_URL,
     name: process.env.NUXT_SITE_NAME,
@@ -29,7 +25,7 @@ export default defineNuxtConfig({
   },
   rootDir: ".",
   srcDir: "src",
-  css: ["./src/app/assets/styles/main.css"],
+  css: ["~/app/assets/styles/main.css"],
   ssr: true,
   image: {
     format: ["webp", "avif"],
