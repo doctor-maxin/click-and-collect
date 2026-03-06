@@ -5,6 +5,29 @@ const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
 const { product } = defineProps<{ product: StoreProduct }>();
 
+const toSentenceCase = (value?: string) =>
+  value ? `${value[0]?.toUpperCase()}${value.slice(1).toLowerCase()}` : "";
+
+const findCategoryPath = (
+  categories: StoreProductCategory[],
+  targetId: string,
+  trail: StoreProductCategory[] = [],
+): StoreProductCategory[] | null => {
+  for (const category of categories) {
+    const nextTrail = [...trail, category];
+    if (category.id === targetId) return nextTrail;
+
+    const childPath = findCategoryPath(
+      category.category_children ?? [],
+      targetId,
+      nextTrail,
+    );
+    if (childPath) return childPath;
+  }
+
+  return null;
+};
+
 const breadcrumbs = computed(() => {
   const list: { path: string; label: string }[] = [
     {
@@ -15,33 +38,35 @@ const breadcrumbs = computed(() => {
 
   if (!product.categories?.[0] || !product_categories.value) return list;
 
-  let largestCategory = product.categories?.[0];
-  let largestCategoryRank = product.categories?.[0]?.mpath?.split(".").length;
+  const menuRoot = product_categories.value.find(
+    (category) => category.handle === "menu",
+  );
+  if (!menuRoot) return list;
 
+  let largestPath: StoreProductCategory[] = [];
   for (const category of product.categories ?? []) {
-    const rank = category.mpath?.split(".").length;
-    if (rank > largestCategoryRank) {
-      largestCategory = category;
-      largestCategoryRank = rank;
+    const pathInMenu = findCategoryPath(
+      menuRoot.category_children ?? [],
+      category.id,
+    );
+    if (pathInMenu && pathInMenu.length > largestPath.length) {
+      largestPath = pathInMenu;
     }
   }
 
-  const paths = largestCategory.mpath?.split(".");
-  let parentCategory = product_categories.value;
-  for (const path of paths) {
-    const c = parentCategory.find((c) => c.id === path);
-    if (c?.parent_category_id) {
-      list.push({
-        path: `/catalog/` + c?.handle,
-        label: `${c?.name[0]?.toUpperCase()}${c?.name?.slice(1).toLowerCase()}`,
-      });
-    }
-    if (c) parentCategory = c.category_children;
+  if (!largestPath.length) return list;
+
+  for (const category of largestPath) {
+    if (!category.parent_category_id) continue;
+    list.push({
+      path: `/catalog/` + category.handle,
+      label: toSentenceCase(category.name),
+    });
   }
 
   list.push({
     path: `/products/${product.handle}`,
-    label: `${product.title?.[0]?.toUpperCase()}${product.title?.slice(1)?.toLowerCase()}`,
+    label: toSentenceCase(product.title),
   });
 
   return list;

@@ -120,7 +120,7 @@ const visiblePages = computed<(number | "...")[]>(() => {
       >{{
         emptyMessage ||
         (Object.keys(appliedFilters).length > 0
-          ? "Нет товаров По указанным фильтрам"
+          ? "Нет товаров по указанным фильтрам"
           : "Нет товаров")
       }}</span
     >
