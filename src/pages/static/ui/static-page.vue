@@ -19,6 +19,7 @@ const { data: page, error } = await useAsyncData(
     transform: (r) => {
       return r?.pages?.[0];
     },
+    watch: [route.params.handle as string],
   },
 );
 if (!page.value)
@@ -37,7 +38,7 @@ if (!page.value)
       >
         {{ page.title }}
       </h1>
-      <div v-if="page.preamble?.trim()" class="content max-w-[37rem] ml-auto">
+      <div v-if="page?.preamble?.length" class="content max-w-[37rem] ml-auto">
         <StrapiBlocks :content="page?.preamble as BlocksContent" />
       </div>
       <div v-if="page.content" class="content">
