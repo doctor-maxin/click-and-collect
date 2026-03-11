@@ -2,229 +2,291 @@
 @import "./fonts.css";
 
 @theme {
-  --font-sans: Euclid;
-  --font-serif: Euclid;
-  --color-orange: hsl(29, 84%, 55%);
-  --color-blue: hsl(197, 100%, 45%);
-  --color-white: hsl(0, 0%, 100%);
-  --color-gray: hsl(0, 0%, 75%);
-  --color-light-gray: hsl(0, 0%, 85%);
-  --color-red: hsl(0, 75%, 45%);
+    --font-sans: Euclid;
+    --font-serif: Euclid;
+    --color-orange: hsl(29, 84%, 55%);
+    --color-blue: hsl(197, 100%, 45%);
+    --color-white: hsl(0, 0%, 100%);
+    --color-gray: hsl(0, 0%, 75%);
+    --color-light-gray: hsl(0, 0%, 85%);
+    --color-red: hsl(0, 75%, 45%);
 }
 
 body {
-  font-family: var(--font-sans);
+    font-family: var(--font-sans);
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 .dialog-overlay[data-state="open"],
 .dialog-content[data-state="open"],
 .navigation-menu-viewport[data-state="open"] {
-  animation: fadeIn 150ms ease-out;
+    animation: fadeIn 150ms ease-out;
 }
 
 .dialog-overlay[data-state="closed"],
 .dialog-content[data-state="closed"],
 .navigation-menu-viewport[data-state="closed"] {
-  animation: fadeOut 100ms ease-in;
+    animation: fadeOut 100ms ease-in;
 }
 
 .navigation-menu-content {
-  @apply absolute left-0 top-0;
-  animation-duration: 250ms;
-  animation-timing-function: ease;
+    @apply absolute left-0 top-0;
+    animation-duration: 250ms;
+    animation-timing-function: ease;
 }
 
 .navigation-menu-content[data-motion="from-start"] {
-  animation-name: enterFromTop;
+    animation-name: enterFromTop;
 }
 .navigation-menu-content[data-motion="from-end"] {
-  animation-name: enterFromBottom;
+    animation-name: enterFromBottom;
 }
 .navigation-menu-content[data-motion="to-start"] {
-  animation-name: exitToTop;
+    animation-name: exitToTop;
 }
 .navigation-menu-content[data-motion="to-end"] {
-  animation-name: exitToBottom;
+    animation-name: exitToBottom;
 }
 
 .navigation-menu-viewport {
-  position: relative;
-  overflow: hidden;
-  width: var(--reka-navigation-menu-viewport-width);
-  height: var(--reka-navigation-menu-viewport-height);
-  top: var(--reka-navigation-menu-viewport-top);
-  transition:
-    width,
-    height,
-    250ms ease;
+    position: relative;
+    overflow: hidden;
+    width: var(--reka-navigation-menu-viewport-width);
+    height: var(--reka-navigation-menu-viewport-height);
+    top: var(--reka-navigation-menu-viewport-top);
+    transition:
+        width,
+        height,
+        250ms ease;
 }
 
 @keyframes enterFromBottom {
-  from {
-    opacity: 0;
-    transform: translateY(200px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(200px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes enterFromTop {
-  from {
-    opacity: 0;
-    transform: translateY(-200px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-200px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes exitToBottom {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(200px);
-  }
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(200px);
+    }
 }
 
 @keyframes exitToTop {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-200px);
-  }
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-200px);
+    }
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
+    opacity: 0;
 }
 
 .slide-right-enter-active,
 .slide-right-leave-active {
-  transform: translateX(0rem);
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+    transform: translateX(0rem);
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
 }
 
 .slide-right-enter-from,
 .slide-right-leave-to {
-  transform: translateX(1rem);
-  opacity: 0;
+    transform: translateX(1rem);
+    opacity: 0;
 }
 
 .slide-left-enter-active,
 .slide-left-leave-active {
-  transform: translateX(0rem);
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+    transform: translateX(0rem);
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
 }
 
 .slide-left-enter-from,
 .slide-left-leave-to {
-  transform: translateX(-1rem);
-  opacity: 0;
+    transform: translateX(-1rem);
+    opacity: 0;
 }
 
 .content {
-  @apply whitespace-pre-line;
-  font-size: 16px;
-  line-height: 24px;
+    @apply whitespace-pre-line;
+    font-size: 16px;
+    line-height: 24px;
 }
 .content :is(h2, h3, h4, h5, h6) {
-  margin-block: 1rem;
-  font-weight: bold;
-  text-align: center;
+    margin-block: 1rem;
+    font-weight: bold;
+    text-align: center;
 }
 .content ul {
-  list-style: disc;
-  list-style-position: inside;
+    list-style: disc;
+    list-style-position: inside;
 }
 
 .content ol {
-  list-style: decimal;
-  list-style-position: inside;
+    list-style: decimal;
+    list-style-position: inside;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 2px;
+    width: 2px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgb(175, 177, 182);
-  border-radius: 2px;
+    background-color: rgb(175, 177, 182);
+    border-radius: 2px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .layout:has(.home-page > section.carousel:first-of-type) .ui-header {
-  color: white;
-  background: linear-gradient(
-    0deg,
-    rgba(194, 195, 197, 0),
-    rgba(0, 0, 0, 0.7) 100%
-  );
-
-  a,
-  button {
     color: white;
-  }
+    background: linear-gradient(
+        0deg,
+        rgba(194, 195, 197, 0),
+        rgba(0, 0, 0, 0.7) 100%
+    );
+
+    a,
+    button {
+        color: white;
+    }
 }
 
 .wb {
-  background: linear-gradient(
-    30.88deg,
-    rgba(111, 1, 251, 1),
-    rgba(255, 73, 215, 1) 100%
-  );
-  color: white;
+    background: linear-gradient(
+        30.88deg,
+        rgba(111, 1, 251, 1),
+        rgba(255, 73, 215, 1) 100%
+    );
+    color: white;
+}
+
+.ui-image-shell {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: linear-gradient(
+        90deg,
+        rgba(235, 235, 235, 0.9) 0%,
+        rgba(245, 245, 245, 1) 50%,
+        rgba(235, 235, 235, 0.9) 100%
+    );
+    background-size: 200% 100%;
+    animation: imageSkeleton 1.2s ease-in-out infinite;
+}
+
+.ui-image-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        transparent 100%
+    );
+    transform: translateX(-100%);
+    animation: imageSkeletonShine 1.2s ease-in-out infinite;
+    transition: opacity 0.2s ease;
+}
+
+.ui-image-shell > img {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.ui-image-shell.is-loaded {
+    animation: none;
+}
+
+.ui-image-shell.is-loaded::before {
+    opacity: 0;
+    animation: none;
+}
+
+.ui-image-shell.is-loaded > img {
+    opacity: 1;
+}
+
+@keyframes imageSkeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes imageSkeletonShine {
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 .ozon {
-  color: white;
-  background-color: #005bff;
+    color: white;
+    background-color: #005bff;
 }
 
 .lamoda {
-  color: white;
-  background-color: #000000;
+    color: white;
+    background-color: #000000;
 }
