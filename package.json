@@ -47,6 +47,8 @@
     "vue-demi"
   ],
   "devDependencies": {
+    "@vueuse/core": "^14.2.1",
+    "@vueuse/nuxt": "^14.2.1",
     "vite-tsconfig-paths": "^6.1.1"
   }
 }
