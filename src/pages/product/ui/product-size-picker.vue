@@ -33,12 +33,12 @@ const options = computed(() => {
   <section class="flex flex-col gap-4 my-4 lg:my-9">
     <span>Размеры</span>
     <div
-      class="flex text-base leading-5 gap-y-4 gap-8 w-full max-w-full flex-wrap"
+      class="flex text-base leading-5 gap-y-4 gap-5 w-full max-w-full flex-wrap"
     >
       <label
         v-for="item of options"
         :key="item.id"
-        class="cursor-pointer border relative py-1 px-2"
+        class="cursor-pointer border rounded-[6px] relative px-[5px]"
         :class="{
           '  border-blue ': size?.id === item?.id,
           ' border-transparent': size?.id !== item?.id,
