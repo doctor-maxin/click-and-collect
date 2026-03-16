@@ -70,7 +70,7 @@ const visiblePages = computed<(number | "...")[]>(() => {
         <div v-if="hasMore" class="flex justify-center w-full my-9">
             <UiButton
                 variant="outline"
-                class="text-base cursor-pointer text-center lg:!h-9"
+                class="text-base cursor-pointer text-center !h-8 lg:!h-9"
                 @click="$emit('load-more')"
             >
                 Показать больше
