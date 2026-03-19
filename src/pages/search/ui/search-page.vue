@@ -18,6 +18,7 @@ const { limit, page, totalPages, appliedFilters, sort } =
 const products = ref<StoreProduct[]>([]);
 const shouldAppendProducts = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
+const isInternalUpdate = ref(false);
 
 const getPageFromQuery = () => {
     const rawPage = Array.isArray(route.query.page)
@@ -84,6 +85,7 @@ const { data: filtersResponse } = await useAsyncData(
 const { data: productsResponse, status } = await useAsyncData(
     () => query.value as string,
     () => {
+        isInternalUpdate.value = true;
         let filter: string[] = [];
         filter = prepareFilterQuery(filter, appliedFilters.value);
         return searchClient
@@ -91,8 +93,8 @@ const { data: productsResponse, status } = await useAsyncData(
             .search<StoreProduct>(query.value?.toString(), {
                 filter,
                 hitsPerPage: limit.value,
-                matchingStrategy: "all",
                 page: page.value,
+                matchingStrategy: "all",
                 sort: sort.value ? [sort.value] : [],
                 facets: [
                     "color",
@@ -106,26 +108,35 @@ const { data: productsResponse, status } = await useAsyncData(
     {
         deep: true,
         server: false,
-        watch: [page, appliedFilters, sort],
+        dedupe: "cancel",
+        watch: [page, sort, () => JSON.stringify(appliedFilters.value)],
     },
 );
 
-watchEffect(() => {
-    if (status.value === "success") {
-        if (page.value === 1 || !shouldAppendProducts.value) {
-            products.value = productsResponse.value?.hits ?? [];
-        } else {
-            products.value.push(...(productsResponse.value?.hits ?? []));
-        }
-        shouldAppendProducts.value = false;
+watch(
+    [() => productsResponse.value, () => status.value],
+    ([response, currentStatus]) => {
+        if (currentStatus !== "success" || !response) return;
+        if (status.value === "success") {
+            if (page.value === 1 || !shouldAppendProducts.value) {
+                products.value = productsResponse.value?.hits ?? [];
+            } else {
+                products.value.push(...(productsResponse.value?.hits ?? []));
+            }
+            shouldAppendProducts.value = false;
 
-        //@ts-ignore
-        filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
-        filtersStore.setAvailableFilters(
-            productsResponse.value?.facetDistribution,
-        );
-    }
-});
+            //@ts-ignore
+            filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
+            filtersStore.setAvailableFilters(
+                productsResponse.value?.facetDistribution,
+            );
+            isInternalUpdate.value = false;
+        }
+    },
+    {
+        immediate: true,
+    },
+);
 
 watchEffect(() => {
     filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
@@ -137,9 +148,15 @@ useSeoMeta({
 
 watch(
     () => query.value,
-    () => {
-        shouldAppendProducts.value = false;
-        pushPageToQuery(1, false);
+    (val, oldVal) => {
+        if (val && oldVal && val !== oldVal) {
+            filtersStore.setPage(1);
+            filtersStore.resetFilters();
+        }
+    },
+    {
+        immediate: true,
+        deep: true,
     },
 );
 
@@ -169,12 +186,7 @@ const onPageChange = (nextPage: number) => {
                 Товары по запросу "{{ query?.toString() ?? "" }}"
             </h1>
             <!-- <CategoryLinks :category="category" />-->
-            <SearchFilters
-                :class="{
-                    'hidden lg:block':
-                        status !== 'pending' && products.length === 0,
-                }"
-            />
+            <SearchFilters :class="{}" />
             <WidgetProductsGrid
                 :products="products"
                 :has-more="page < totalPages"
