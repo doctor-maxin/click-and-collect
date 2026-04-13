@@ -9,7 +9,7 @@ defineProps<{
 <template>
     <section
         v-if="data.items?.length"
-        class="container -mb-4 hide-scrollbar pb-4 lg:pb-0 px-4 lg:px-0 w-full mx-auto snap-x snap-mandatory scroll-mx-4 overflow-x-auto overflow-y-hidden mt-4 mb-6 lg:my-12 flex scroll-px-4 lg:justify-center gap-4 lg:gap-11"
+        class="container hide-scrollbar pb-4 lg:pb-0 px-4 lg:px-0 w-full mx-auto snap-x snap-mandatory scroll-mx-4 overflow-x-auto overflow-y-hidden mt-4 mb-6 lg:my-12 flex scroll-px-4 lg:justify-center gap-4 lg:gap-11"
     >
         <article
             v-for="(item, index) of data.items"
@@ -21,10 +21,10 @@ defineProps<{
         >
             <NuxtLink
                 :to="item.link"
-                class="flex max-w-[7.8rem] lg:max-w-[10rem] flex-col gap-3 items-center"
+                class="flex max-w-[7.8rem] lg:max-w-40 flex-col gap-3 items-center"
             >
                 <FeatureRenderMedia
-                    class="aspect-square w-[6rem] lg:w-[7.5rem]"
+                    class="aspect-square w-24 lg:w-30"
                     :media="item.image"
                     :mobile-media="item.image"
                 />

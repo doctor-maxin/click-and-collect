@@ -117,11 +117,11 @@ watch(
 <template>
     <div>
         <div
-            class="lg:grid items-start grid-cols-[5.75rem_1fr] hidden gap-4 w-full"
+            class="md:grid items-start grid-cols-[5.75rem_1fr] hidden gap-17.5 lg:gap-4 w-full"
         >
             <div class="h-152 overflow-y-hidden">
                 <div
-                    class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-3"
+                    class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-4 lg:gap-3"
                 >
                     <ProductImage
                         v-for="image of activeImages"
@@ -155,7 +155,7 @@ watch(
             </div>
         </div>
 
-        <div class="lg:hidden">
+        <div class="md:hidden">
             <ClientOnly>
                 <swiper-container
                     :init="false"
