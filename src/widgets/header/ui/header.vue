@@ -89,7 +89,7 @@ await useAsyncData(
 
             <NuxtLink to="/" class="mx-auto">
                 <SvgoLogo
-                    class="h-12 lg:h-[5.625rem] mx-auto"
+                    class="h-12 lg:h-22.5 mx-auto"
                     :fontControlled="false"
                 />
             </NuxtLink>

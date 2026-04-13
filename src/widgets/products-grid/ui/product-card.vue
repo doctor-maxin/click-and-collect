@@ -77,7 +77,7 @@ const link = computed(
                         }"
                         effect="fade"
                         ref="containerRef"
-                        class="aspect-[15/18]"
+                        class="aspect-15/18"
                     >
                         <swiper-slide
                             v-for="(image, index) of imageList"
@@ -93,7 +93,6 @@ const link = computed(
                                     product.title
                                 "
                                 :loading="index === 0 ? 'eager' : 'lazy'"
-                                format="webp"
                                 fetchpriority="high"
                                 sizes="(max-width: 768px) 350px, 540px"
                             />
@@ -103,7 +102,7 @@ const link = computed(
                         class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
                     ></div>
                 </template>
-                <div v-else class="aspect-[15/18]">
+                <div v-else class="aspect-15/18">
                     <ProductImage
                         alt="Product Image not found"
                         class="object-cover object-center size-full"

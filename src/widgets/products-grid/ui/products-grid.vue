@@ -70,7 +70,7 @@ const visiblePages = computed<(number | "...")[]>(() => {
         <div v-if="hasMore" class="flex justify-center w-full my-9">
             <UiButton
                 variant="outline"
-                class="text-base cursor-pointer text-center !h-8 lg:!h-9"
+                class="text-base cursor-pointer text-center h-8! lg:h-9!"
                 @click="$emit('load-more')"
             >
                 Показать больше
@@ -80,13 +80,13 @@ const visiblePages = computed<(number | "...")[]>(() => {
             <nav class="flex items-center gap-2">
                 <UiButton
                     variant="outline"
-                    class="text-base cursor-pointer text-center w-8 !h-8 lg:!h-9 min-w-8 lg:min-w-9 !px-3 !py-2 lg:w-9"
+                    class="text-base cursor-pointer text-center w-8 h-8! lg:h-9! min-w-8 lg:min-w-9 px-3! py-2! lg:w-9"
                     :disabled="currentPage <= 1"
                     @click="$emit('page-change', currentPage - 1)"
                 >
                     <SvgoChevron
                         filled
-                        class="min-w-4 lg:min-w-6 lg:text-2xl !mb-0 rotate-180"
+                        class="min-w-4 lg:min-w-6 lg:text-2xl mb-0! rotate-180"
                     />
                 </UiButton>
                 <template
@@ -101,7 +101,7 @@ const visiblePages = computed<(number | "...")[]>(() => {
                     <UiButton
                         v-else
                         :variant="page === currentPage ? 'default' : 'outline'"
-                        class="text-sm lg:text-base cursor-pointer text-center !h-8 lg:!h-9 min-w-8 lg:min-w-9 !px-0 !py-2 lg:w-9"
+                        class="text-sm lg:text-base cursor-pointer text-center h-8! lg:h-9! min-w-8 lg:min-w-9 px-0! py-2! lg:w-9"
                         @click="$emit('page-change', Number(page))"
                     >
                         {{ page }}
@@ -110,13 +110,13 @@ const visiblePages = computed<(number | "...")[]>(() => {
 
                 <UiButton
                     variant="outline"
-                    class="text-base cursor-pointer text-center !h-8 lg:!h-9 min-w-8 w-8 !px-3 !py-2 lg:w-9"
+                    class="text-base cursor-pointer text-center h-8! lg:h-9! min-w-8 w-8 px-3! py-2! lg:w-9"
                     :disabled="currentPage >= totalPages"
                     @click="$emit('page-change', currentPage + 1)"
                 >
                     <SvgoChevron
                         filled
-                        class="text-2xl !mb-0 lg:min-w-6 min-w-4 scroll-mb-0"
+                        class="text-2xl mb-0! lg:min-w-6 min-w-4 scroll-mb-0"
                     />
                 </UiButton>
             </nav>

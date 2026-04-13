@@ -11,7 +11,6 @@ interface Props {
     fetchpriority?: string;
     loading?: "lazy" | "eager";
     sizes?: string;
-    format?: "webp" | "avif" | "jpeg" | "jpg" | "png" | "svg" | "gif";
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -66,7 +65,6 @@ onMounted(() => {
         :width="width"
         :height="height"
         :loading="loading"
-        :format="format"
         provider="customS3"
         :fetchpriority="fetchpriority"
         :sizes="sizes"

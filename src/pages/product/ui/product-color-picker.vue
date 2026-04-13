@@ -15,7 +15,9 @@ const colorImage = (color: string) => {
     );
     const image = product.value?.images?.find(
         (i) =>
+            //@ts-ignore
             i.metadata?.color?.toLowerCase() ===
+            //@ts-ignore
             variant?.metadata?.color?.toLowerCase(),
     );
     if (!image) return "/not_found.png";
@@ -56,7 +58,7 @@ const colorImage = (color: string) => {
                 }"
             >
                 <img
-                    class="aspect-[23/28] object-cover max-w-[5.75rem]"
+                    class="aspect-23/28 object-cover max-w-23"
                     :src="colorImage(item.value)"
                     :alt="`Изображение товара ${item.value}`"
                 />

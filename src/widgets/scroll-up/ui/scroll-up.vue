@@ -19,10 +19,10 @@ function scrollToTop() {
         <button
             v-if="!isTop"
             type="button"
-            class="fixed size-12 aspect-square rounded-full z-[21] bg-black text-white lg:hidden bottom-3 right-4 flex justify-center items-center"
+            class="fixed size-12 aspect-square rounded-full z-21 bg-black text-white lg:hidden bottom-3 right-4 flex justify-center items-center"
             @click="scrollToTop"
         >
-            <SvgoArrowRight class="-rotate-90 text-[1.5rem] !mb-0" filled />
+            <SvgoArrowRight class="-rotate-90 text-[1.5rem] mb-0!" filled />
         </button>
     </Transition>
 </template>

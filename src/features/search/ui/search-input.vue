@@ -124,12 +124,12 @@ const handleForm = () => {
                 type="search"
                 required
                 v-model="query"
-                class="h-8 pr-[3.5rem] w-full outline-0 placeholder:text-[hsla(0,0%,62%,1)] appearance-none text-2xl placeholder:font-medium"
+                class="h-8 pr-14 w-full outline-0 placeholder:text-[hsla(0,0%,62%,1)] appearance-none text-2xl placeholder:font-medium"
             />
 
             <button type="submit" class="absolute cursor-pointer right-0">
                 <SvgoLongArray
-                    class="!mb-0 text-[hsla(0,0%,62%,1)] !w-[3.5rem] text-2xl"
+                    class="mb-0! text-[hsla(0,0%,62%,1)] w-14! text-2xl"
                     filled
                 />
             </button>
