@@ -90,10 +90,10 @@ useEventListener(import.meta.client ? window : undefined, "scroll", () => {
 
         <DialogPortal>
             <DialogOverlay
-                class="search-dialog-overlay fixed inset-0 z-[25] bg-white"
+                class="search-dialog-overlay fixed inset-0 z-25 bg-white"
             />
             <DialogContent
-                class="search-dialog fixed inset-x-0 bottom-0 z-[26] overflow-y-auto box-border py-6 lg:py-9 bg-white outline-none"
+                class="search-dialog fixed inset-x-0 bottom-0 z-26 overflow-y-auto box-border py-6 lg:py-9 bg-white outline-none"
                 :style="{ top: `${headerOffset}px` }"
             >
                 <VisuallyHidden as-child>
@@ -107,7 +107,7 @@ useEventListener(import.meta.client ? window : undefined, "scroll", () => {
                 <div
                     class="container px-4 grid grid-cols-1 lg:grid-cols-2 gap-4 mx-auto"
                 >
-                    <div class="order-1 lg:order-2 lg:pl-[7.75rem]">
+                    <div class="order-1 lg:order-2 lg:pl-31">
                         <SearchInput @close="closeSearch" />
                     </div>
                     <div class="order-2 lg:order-1">

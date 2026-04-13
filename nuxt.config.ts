@@ -1,5 +1,10 @@
 import tailwindcss from "@tailwindcss/vite";
 
+const IGNORED_BUILD_WARNINGS = [
+    "Sourcemap is likely to be incorrect",
+    "The 'this' keyword is equivalent to 'undefined' at the top level of an ES module",
+];
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
@@ -58,6 +63,11 @@ export default defineNuxtConfig({
     },
     svgo: {
         autoImportPath: "app/assets/icons",
+        global: false,
+    },
+    sourcemap: {
+        client: false,
+        server: false,
     },
     "graphql-client": {
         watch: true,
@@ -101,6 +111,30 @@ export default defineNuxtConfig({
     },
     vite: {
         plugins: [tailwindcss()],
+        build: {
+            chunkSizeWarningLimit: 650,
+            rollupOptions: {
+                onwarn(warning, defaultHandler) {
+                    const message =
+                        typeof warning === "string"
+                            ? warning
+                            : warning.message ?? "";
+                    const code =
+                        typeof warning === "string" ? undefined : warning.code;
+
+                    if (
+                        code === "CHUNK_SIZE_LIMIT" ||
+                        IGNORED_BUILD_WARNINGS.some((item) =>
+                            message.includes(item),
+                        )
+                    ) {
+                        return;
+                    }
+
+                    defaultHandler(warning);
+                },
+            },
+        },
         server: {
             allowedHosts: true,
         },

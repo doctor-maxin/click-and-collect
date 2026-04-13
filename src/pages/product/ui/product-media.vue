@@ -5,6 +5,7 @@ import { useProductStore } from "../lib/product-store";
 import { ClientOnly } from "#components";
 import { ZoomImg, Magnifier } from "vue3-zoomer";
 import ProductImage from "~/widgets/products-grid/ui/product-image.vue";
+import type { PaginationOptions } from "swiper/types";
 
 const productStore = useProductStore();
 const { product, variant } = storeToRefs(productStore);
@@ -49,6 +50,7 @@ const colorImages = computed(() =>
         (i) =>
             //@ts-ignore
             i.metadata?.color?.toLowerCase() ===
+            //@ts-ignore
             variant.value?.metadata?.color?.toLowerCase(),
     ),
 );
@@ -76,7 +78,7 @@ const changeMainImage = (image: StoreProductImage) => {
 
 watch(
     () => variant.value?.metadata?.color,
-    (colorString: string) => {
+    (colorString) => {
         if (mainImage.value?.metadata?.color !== colorString) {
             mainImage.value = activeImages.value?.[0];
         }
@@ -88,7 +90,7 @@ watch(
 
 const containerRef = ref(null);
 const mobileImages = computed(() => activeImages.value ?? []);
-const mobilePagination = markRaw({
+const mobilePagination = markRaw<PaginationOptions>({
     el: ".product-media-pagination",
     type: "bullets",
     clickable: true,
@@ -115,19 +117,18 @@ watch(
 <template>
     <div>
         <div
-            class="lg:grid items-start grid-cols-[5.75rem_1fr] hidden gap-4 w-full"
+            class="md:grid items-start grid-cols-[5.75rem_1fr] hidden gap-17.5 lg:gap-4 w-full"
         >
-            <div class="h-[38rem] overflow-y-hidden">
+            <div class="h-152 overflow-y-hidden">
                 <div
-                    class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-3"
+                    class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-4 lg:gap-3"
                 >
                     <ProductImage
                         v-for="image of activeImages"
                         :src="getThumbnailUrl(image)"
                         alt="Product Image"
                         :width="184"
-                        format="webp"
-                        class="max-w-[5.75rem] min-h-fit snap-start cursor-pointer aspect-[23/28] object-cover"
+                        class="max-w-23 min-h-fit snap-start cursor-pointer aspect-23/28 object-cover"
                         @click="changeMainImage(image)"
                         @error="onError"
                     />
@@ -154,13 +155,13 @@ watch(
             </div>
         </div>
 
-        <div class="lg:hidden">
+        <div class="md:hidden">
             <ClientOnly>
                 <swiper-container
                     :init="false"
                     :pagination="mobilePagination"
                     ref="containerRef"
-                    class="aspect-[15/18]"
+                    class="aspect-15/18"
                 >
                     <swiper-slide
                         v-for="(image, index) of mobileImages"

@@ -27,12 +27,14 @@ function clearedCategories(list: StoreProductCategory[]) {
 }
 
 const isCategoryActive = (categoryName: string) => {
-    const existingClass = filtersStore.appliedFilters["metadata.class"];
+    const existingClass: string | undefined | string[] =
+        filtersStore.appliedFilters["metadata.class"];
     if (Array.isArray(existingClass)) {
         return existingClass
             .map((c) => c?.trim())
             .includes(categoryName?.trim());
     }
+    //@ts-ignore
     return existingClass?.trim() === categoryName?.trim();
 };
 

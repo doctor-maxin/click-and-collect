@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SearchBreadCrumbs from "./search-bread-crumbs.vue";
 import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
@@ -36,7 +35,9 @@ const pushPageToQuery = (nextPage: number, append = false) => {
     if (nextPage <= 1 && !currentPageQuery) return;
     if (nextPage > 1 && currentPageQuery === String(nextPage)) return;
 
-    const nextQuery: Record<string, string | string[]> = { ...route.query };
+    const nextQuery: Record<string, string | string[]> = {
+        ...(route.query as Record<string, string | string[]>),
+    };
     if (nextPage <= 1) {
         delete nextQuery.page;
     } else {
@@ -177,7 +178,7 @@ const onPageChange = (nextPage: number) => {
 };
 </script>
 <template>
-    <div class="mt-16 lg:mt-[8.125rem]">
+    <div class="mt-16 lg:mt-32.5">
         <div class="px-4 container mx-auto">
             <!-- <SearchBreadCrumbs /> -->
             <h1
