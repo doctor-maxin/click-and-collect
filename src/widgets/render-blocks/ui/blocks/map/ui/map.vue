@@ -134,7 +134,7 @@ watch(viewMode, (mode) => {
         </header>
         <div
             v-if="viewMode === 'map'"
-            class="grid grid-cols-1 grid-rows-2 lg:grid-rows-1 lg:grid-cols-2"
+            class="grid grid-cols-1 grid-rows-1 lg:grid-cols-2"
         >
             <FeatureRenderMedia
                 :media="data.defaultMedia"
