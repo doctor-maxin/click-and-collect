@@ -1,62 +1,87 @@
 import { defineProvider } from "@nuxt/image/runtime";
 
+const CDN_DOMAIN = "bb600a4e-a27e-48b8-bc47-e6bcadae623a.selcdn.net";
+const CDN_BASE_URL = `https://${CDN_DOMAIN}`;
+
+function stripIossSegment(pathname: string) {
+  return pathname.replace(/^\/ioss\([^)]+\)(?=\/)/, "");
+}
+
+function buildResizeValue(width?: string | number, height?: string | number) {
+  if (!width && !height) {
+    return undefined;
+  }
+
+  return `${width ?? ""}x${height ?? ""}`;
+}
+
+function buildIossPath(
+  pathname: string,
+  modifiers: Record<string, string | number | undefined>,
+) {
+  const operations: string[] = [];
+  const resize = buildResizeValue(modifiers.width, modifiers.height);
+
+  if (resize) {
+    operations.push(`resize=${resize}`);
+  }
+
+  if (modifiers.quality) {
+    operations.push(`quality=${modifiers.quality}`);
+  }
+
+  if (!operations.length) {
+    return pathname;
+  }
+
+  return `/ioss(${operations.join(",")})${pathname}`;
+}
+
+function normalizeSourcePath(src: string) {
+  const url = new URL(src);
+
+  if (url.hostname === CDN_DOMAIN) {
+    return stripIossSegment(url.pathname);
+  }
+
+  const pathParts = url.pathname.split("/").filter(Boolean);
+  const relevantParts = [
+    pathParts[2],
+    pathParts[3],
+    pathParts[4],
+    pathParts[7],
+  ].filter(Boolean);
+
+  if (!relevantParts.length) {
+    return url.pathname;
+  }
+
+  const fileName = relevantParts[relevantParts.length - 1]!;
+  let cleanFileName = fileName.replace(/_\d+px(\.\w+)$/, "$1");
+  cleanFileName = cleanFileName.replace(/\.webp$/i, ".jpg");
+  relevantParts[relevantParts.length - 1] = cleanFileName;
+
+  return `/${relevantParts.join("/")}`;
+}
+
 export default defineProvider<{ baseURL?: string }>({
   getImage(src: string, { modifiers = {} }) {
     try {
-      // Если уже облачный URL, возвращаем как есть
-      if (src.includes("bb600a4e-a27e-48b8-bc47-e6bcadae623a.selcdn.net")) {
-        return {
-          url: src,
-        };
+      if (!src.startsWith("http://") && !src.startsWith("https://")) {
+        return { url: src };
       }
 
-      // Парсим URL
-      const url = new URL(src);
-
-      const pathParts = url.pathname.split("/").filter(Boolean);
-
-      // Получаем нужные части пути после сезона
-      const relevantParts = [
-        pathParts[2],
-        pathParts[3],
-        pathParts[4],
-        pathParts[7],
-      ];
-
-      // Очищаем имя файла от постфиксов (_500px, _1000px и подобные) и меняем расширение на jpg
-      const fileName = relevantParts[relevantParts.length - 1]!;
-      let cleanFileName = fileName.replace(/_\d+px(\.\w+)$/, "$1");
-      cleanFileName = cleanFileName.replace(/\.webp$/, ".jpg");
-
-      // Заменяем имя файла на очищенное
-      relevantParts[relevantParts.length - 1] = cleanFileName;
-
-      // Собираем новый путь
-      const newPath = "/" + relevantParts.join("/");
-
-      // Формируем новый URL с облачным доменом
-      const newUrl = `https://bb600a4e-a27e-48b8-bc47-e6bcadae623a.selcdn.net${newPath}`;
-
-      const params = new URLSearchParams();
-
-      if (Object.keys(modifiers).length) {
-        if (modifiers.width) params.set("width", modifiers.width.toString());
-        if (modifiers.height) params.set("height", modifiers.height.toString());
-        if (modifiers.format) params.set("fmt", modifiers.format.toString());
-        if (modifiers.fit) params.set("fit", modifiers.fit.toString());
-        if (modifiers.quality)
-          params.set("quality", modifiers.quality.toString());
-
-        return {
-          url: newUrl + "?" + params.toString(),
-        };
-      }
+      const normalizedPath = normalizeSourcePath(src);
+      const pathname = buildIossPath(normalizedPath, {
+        width: modifiers.width?.toString(),
+        height: modifiers.height?.toString(),
+        quality: modifiers.quality?.toString(),
+      });
 
       return {
-        url: newUrl,
+        url: `${CDN_BASE_URL}${pathname}`,
       };
-    } catch (error) {
-      // При ошибке возвращаем исходный URL
+    } catch {
       return {
         url: src,
       };
