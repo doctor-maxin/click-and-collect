@@ -31,11 +31,9 @@ function getDefaultUrl(image?: StoreProductImage, original?: boolean) {
               original
                   ? {
                         width: 1200,
-                        height: 1800,
                     }
                   : {
                         width: 400,
-                        height: 600,
                     },
               {
                   //@ts-ignore

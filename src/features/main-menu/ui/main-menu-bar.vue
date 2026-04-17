@@ -97,7 +97,7 @@ const toSentenceCase = (value: string) => {
 </script>
 
 <template>
-    <div class="sm:hidden w-full overflow-hidden">
+    <div class="sm:hidden w-full overflow-x-hidden overflow-y-auto">
         <div
             class="flex w-[200%] transition-transform duration-300 ease-out"
             :class="activeMobileItem ? '-translate-x-1/2' : 'translate-x-0'"
