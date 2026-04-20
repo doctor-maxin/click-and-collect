@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
+import type { StoreProductCategory } from "@medusajs/types";
+import type { SearchProductDocument } from "~/shared/types/search-product-document";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
 import SearchFilters from "./search-filters.vue";
@@ -14,10 +15,11 @@ const query = computed(() => route.query.q?.toString() ?? "");
 
 const { limit, page, totalPages, appliedFilters, sort } =
     storeToRefs(filtersStore);
-const products = ref<StoreProduct[]>([]);
+const products = ref<SearchProductDocument[]>([]);
 const shouldAppendProducts = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 const isInternalUpdate = ref(false);
+const searchableProductAttributes = ["coloredTitle", "metadata.model"];
 
 const getPageFromQuery = () => {
     const rawPage = Array.isArray(route.query.page)
@@ -68,9 +70,9 @@ const { data: filtersResponse } = await useAsyncData(
     () => {
         return searchClient
             .index("cards")
-            .search<StoreProduct>(query.value?.toString(), {
+            .search<SearchProductDocument>(query.value?.toString(), {
                 hitsPerPage: 0,
-                attributesToSearchOn: ["coloredTitle"],
+                attributesToSearchOn: searchableProductAttributes,
                 distinct: "id",
                 facets: [
                     "color",
@@ -91,10 +93,11 @@ const { data: productsResponse, status } = await useAsyncData(
         filter = prepareFilterQuery(filter, appliedFilters.value);
         return searchClient
             .index("cards")
-            .search<StoreProduct>(query.value?.toString(), {
+            .search<SearchProductDocument>(query.value?.toString(), {
                 filter,
                 hitsPerPage: limit.value,
                 page: page.value,
+                attributesToSearchOn: searchableProductAttributes,
                 matchingStrategy: "all",
                 sort: sort.value ? [sort.value] : [],
                 facets: [

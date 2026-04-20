@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useRoute } from "#app";
-import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
+import type { StoreProductCategory } from "@medusajs/types";
 import { useFiltersStore } from "~/shared/lib/filters.store";
+import type { SearchProductDocument } from "~/shared/types/search-product-document";
 import { getCategoryFromTree } from "~/shared/lib/utils/get-category-from-tree";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
@@ -51,7 +52,7 @@ if (!category.value)
         data: route.params,
     });
 
-const products = ref<StoreProduct[]>([]);
+const products = ref<SearchProductDocument[]>([]);
 const isInternalUpdate = ref(false);
 const shouldAppendProducts = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
@@ -103,7 +104,7 @@ watch(
 const { data: filtersResponse } = await useAsyncData(
     () => `filters-${category.value?.id}`,
     () => {
-        return searchClient.index("cards").search<StoreProduct>(null, {
+        return searchClient.index("cards").search<SearchProductDocument>(null, {
             filter: [`category_ids IN ['${category.value?.id}']`],
             hitsPerPage: 0,
             facets: [
@@ -123,7 +124,7 @@ const { data: productsResponse, status } = await useAsyncData(
         let filter = [`category_ids IN ['${category.value?.id}']`];
         console.log("RE INDEDX", appliedFilters.value);
         filter = prepareFilterQuery(filter, appliedFilters.value);
-        return searchClient.index("cards").search<StoreProduct>(null, {
+        return searchClient.index("cards").search<SearchProductDocument>(null, {
             filter,
             hitsPerPage: limit.value,
             page: page.value,
