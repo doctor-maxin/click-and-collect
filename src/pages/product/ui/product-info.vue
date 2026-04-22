@@ -10,7 +10,7 @@ const { product, variant, price } = storeToRefs(productStore);
 const router = useRouter();
 const sku = computed(() => {
     if (variant.value?.sku?.includes("-")) {
-        return variant.value?.sku?.split("-").slice(0, -1).join("-");
+        return variant.value?.sku?.split("-").slice(2, -1).join("-");
     }
     return variant.value?.sku;
 });

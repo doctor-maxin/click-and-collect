@@ -1,8 +1,5 @@
 import { defineProvider } from "@nuxt/image/runtime";
 
-const CDN_DOMAIN = process.env.NUXT_PUBLIC_CDN_DOMAIN;
-const CDN_BASE_URL = `https://${CDN_DOMAIN}`;
-
 function stripIossSegment(pathname: string) {
     return pathname.replace(/^\/ioss\([^)]+\)(?=\/)/, "");
 }
@@ -37,10 +34,10 @@ function buildIossPath(
     return `/ioss(${operations.join(",")})${pathname}`;
 }
 
-function normalizeSourcePath(src: string) {
+function normalizeSourcePath(src: string, cdnDomain?: string) {
     const url = new URL(src);
-    if (url.hostname === CDN_DOMAIN) {
-        console.log(url.hostname, CDN_DOMAIN);
+
+    if (cdnDomain && url.hostname === cdnDomain) {
         return stripIossSegment(url.pathname);
     }
 
@@ -71,7 +68,10 @@ export default defineProvider<{ baseURL?: string }>({
                 return { url: src };
             }
 
-            const normalizedPath = normalizeSourcePath(src);
+            const { public: publicConfig } = useRuntimeConfig();
+            const cdnDomain = publicConfig?.cdnDomain as string | undefined;
+            const cdnBaseUrl = cdnDomain ? `https://${cdnDomain}` : "";
+            const normalizedPath = normalizeSourcePath(src, cdnDomain);
             const pathname = buildIossPath(normalizedPath, {
                 width: modifiers.width?.toString(),
                 height: modifiers.height?.toString(),
@@ -79,7 +79,7 @@ export default defineProvider<{ baseURL?: string }>({
             });
 
             return {
-                url: `${CDN_BASE_URL}${pathname}`,
+                url: cdnBaseUrl ? `${cdnBaseUrl}${pathname}` : src,
             };
         } catch {
             return {

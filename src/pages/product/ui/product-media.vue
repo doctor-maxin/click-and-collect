@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { StoreProductImage } from "@medusajs/types";
-import { FeatureZoomImage } from "~/features/zoom-image";
 import { useProductStore } from "../lib/product-store";
 import { ClientOnly } from "#components";
-import { ZoomImg, Magnifier } from "vue3-zoomer";
+import { ZoomImg } from "vue3-zoomer";
 import ProductImage from "~/widgets/products-grid/ui/product-image.vue";
 import type { PaginationOptions } from "swiper/types";
 
@@ -30,7 +29,7 @@ function getDefaultUrl(image?: StoreProductImage, original?: boolean) {
               image.url,
               original
                   ? {
-                        width: 1200,
+                        width: 2400,
                     }
                   : {
                         width: 400,
@@ -142,7 +141,15 @@ watch(
                         :zoom-scale="3"
                         :src="getDefaultUrl(mainImage, true)"
                         @error="onErrorZoomImg"
-                    />
+                    >
+                        <template #loading>
+                            <NuxtImg
+                                class="h-full"
+                                :src="getDefaultUrl(mainImage, false)"
+                            />
+                            <!-- Write your content here -->
+                        </template>
+                    </ZoomImg>
                 </ClientOnly>
                 <img
                     v-if="isError"

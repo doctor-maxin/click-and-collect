@@ -102,6 +102,7 @@ export default defineNuxtConfig({
             medusaToken: process.env.NUXT_MEDUSA_TOKEN,
             searchApiKey: process.env.NUXT_SEARCH_API_KEY,
             searchUrl: process.env.NUXT_SEARCH_URL,
+            cdnDomain: process.env.NUXT_PUBLIC_CDN_DOMAIN,
         },
     },
     router: {
