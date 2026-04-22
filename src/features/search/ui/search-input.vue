@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { StoreProductCategory } from "@medusajs/types";
+import { getCategoryTreeIdsByHandle } from "~/shared/lib/utils/get-category-tree-ids";
 import { useSearchStore } from "../lib/search.store";
 import type { IQuerySuggestion } from "../model/query-suggestion.model";
 import RecentQueries from "./recent-queries.vue";
@@ -16,34 +17,15 @@ const emit = defineEmits<{
     (e: "close"): void;
 }>();
 
-const collectDescendantIds = (categories: StoreProductCategory[]) => {
-    const ids = new Set<string>();
-
-    for (const category of categories) {
-        ids.add(category.id);
-
-        for (const childId of collectDescendantIds(
-            category.category_children ?? [],
-        )) {
-            ids.add(childId);
-        }
-    }
-
-    return ids;
-};
-
 const allowedCategoryIds = computed(() => {
     const ids = new Set<string>();
+    if (!productCategories.value?.length) return ids;
 
     for (const rootHandle of ["menu", "open"]) {
-        const rootCategory = productCategories.value?.find(
-            (category) => category.handle === rootHandle,
-        );
-
-        if (!rootCategory?.category_children?.length) continue;
-
-        for (const childId of collectDescendantIds(
-            rootCategory.category_children,
+        for (const childId of getCategoryTreeIdsByHandle(
+            productCategories.value,
+            rootHandle,
+            false,
         )) {
             ids.add(childId);
         }

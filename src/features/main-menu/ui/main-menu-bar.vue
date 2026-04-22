@@ -14,12 +14,30 @@ import type { StoreProductCategory } from "@medusajs/types";
 
 const { data: product_categories } =
     useNuxtData<StoreProductCategory[]>("categories");
-
-const categoriesTree = computed(
-    () =>
-        product_categories.value?.find((c) => c.handle === "menu")
-            ?.category_children || [],
+const { data: availableCategories } = useNuxtData<string[]>(
+    "available-categories",
 );
+
+const filterAvailableCategories = (
+    categories: StoreProductCategory[],
+): StoreProductCategory[] => {
+    return categories
+        .filter((category) => availableCategories.value?.includes(category.id))
+        .map((category) => ({
+            ...category,
+            category_children: filterAvailableCategories(
+                category.category_children ?? [],
+            ),
+        }));
+};
+
+const categoriesTree = computed(() => {
+    const menuCategories =
+        product_categories.value?.find((c) => c.handle === "menu")
+            ?.category_children ?? [];
+
+    return filterAvailableCategories(menuCategories);
+});
 
 const props = defineProps<{
     menu: NavigationMenu;
@@ -75,6 +93,10 @@ const activeMobileItemId = ref<string | null>(null);
 const activeMobileItem = computed(() =>
     mobileMenuItems.value.find((item) => item.id === activeMobileItemId.value),
 );
+const activeTabletItemId = ref<string | null>(null);
+const activeTabletItem = computed(() =>
+    mobileMenuItems.value.find((item) => item.id === activeTabletItemId.value),
+);
 
 const openMobileSubmenu = (itemId: string) => {
     activeMobileItemId.value = itemId;
@@ -86,7 +108,13 @@ const closeMobileSubmenu = () => {
 
 const closeMenu = () => {
     activeMobileItemId.value = null;
+    activeTabletItemId.value = null;
     emit("close");
+};
+
+const toggleTabletSubmenu = (itemId: string) => {
+    activeTabletItemId.value =
+        activeTabletItemId.value === itemId ? null : itemId;
 };
 
 const toSentenceCase = (value: string) => {
@@ -180,7 +208,66 @@ const toSentenceCase = (value: string) => {
         </div>
     </div>
 
-    <NavigationMenuRoot orientation="vertical" class="hidden sm:flex w-full">
+    <div class="hidden sm:flex lg:hidden w-full gap-8 items-start">
+        <ul class="flex flex-col w-56 shrink-0">
+            <li
+                v-for="item of mobileMenuItems"
+                :key="item.id"
+                class="py-2 text-xl leading-5"
+            >
+                <div class="flex items-start gap-3">
+                    <NuxtLink
+                        :to="item.path"
+                        class="uppercase flex-1 block cursor-pointer font-semibold"
+                        :style="{ color: item.color ?? 'inherit' }"
+                        @click="closeMenu"
+                    >
+                        {{ item.title }}
+                    </NuxtLink>
+                    <button
+                        v-if="item.children.length"
+                        type="button"
+                        class="cursor-pointer shrink-0"
+                        :aria-expanded="activeTabletItemId === item.id"
+                        @click="toggleTabletSubmenu(item.id)"
+                    >
+                        <SvgoArrowRight filled class="text-xl !mb-0" />
+                    </button>
+                </div>
+            </li>
+        </ul>
+
+        <ul
+            v-if="activeTabletItem?.children?.length"
+            class="flex flex-col min-w-36"
+        >
+            <li class="py-2 text-xl leading-5">
+                <NuxtLink
+                    :to="activeTabletItem.path"
+                    class="w-full block font-medium"
+                    :style="{ color: activeTabletItem.color ?? 'inherit' }"
+                    @click="closeMenu"
+                >
+                    Смотреть {{ activeTabletItem.title.toLowerCase() }}
+                </NuxtLink>
+            </li>
+            <li
+                v-for="childItem of activeTabletItem.children"
+                :key="childItem.id"
+                class="py-2 text-xl leading-5"
+            >
+                <NuxtLink
+                    :to="childItem.path"
+                    class="w-full block font-medium"
+                    @click="closeMenu"
+                >
+                    {{ toSentenceCase(childItem.title) }}
+                </NuxtLink>
+            </li>
+        </ul>
+    </div>
+
+    <NavigationMenuRoot orientation="vertical" class="hidden lg:flex w-full">
         <NavigationMenuList class="flex flex-col min-w-[9rem]">
             <NavigationMenuItem
                 v-for="category of categoriesTree"
