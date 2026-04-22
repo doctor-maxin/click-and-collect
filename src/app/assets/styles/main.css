@@ -59,6 +59,50 @@ body {
     }
 }
 
+@keyframes sideDrawerIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0.7;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bottomSheetIn {
+    from {
+        transform: translateY(100%);
+        opacity: 0.7;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bottomSheetOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0.7;
+    }
+}
+
+@keyframes sideDrawerOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0.7;
+    }
+}
+
 .dialog-overlay[data-state="open"],
 .dialog-content[data-state="open"],
 .navigation-menu-viewport[data-state="open"] {
@@ -69,6 +113,32 @@ body {
 .dialog-content[data-state="closed"],
 .navigation-menu-viewport[data-state="closed"] {
     animation: fadeOut 100ms ease-in;
+}
+
+.side-drawer-overlay[data-state="open"] {
+    animation: fadeIn 200ms ease-out;
+}
+
+.side-drawer-overlay[data-state="closed"] {
+    animation: fadeOut 150ms ease-in;
+}
+
+.side-drawer-content[data-state="open"] {
+    animation: bottomSheetIn 220ms ease-out;
+}
+
+.side-drawer-content[data-state="closed"] {
+    animation: bottomSheetOut 180ms ease-in;
+}
+
+@media (width >= 40rem) {
+    .side-drawer-content[data-state="open"] {
+        animation: sideDrawerIn 220ms ease-out;
+    }
+
+    .side-drawer-content[data-state="closed"] {
+        animation: sideDrawerOut 180ms ease-in;
+    }
 }
 
 .navigation-menu-content {

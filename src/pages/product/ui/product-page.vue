@@ -25,7 +25,7 @@ const { data: product, error } = await useAsyncData(
     () =>
         client.store.product.list({
             handle: route.params.handle as string,
-            fields: "title,handle,variants.*,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*",
+            fields: "title,handle,description,variants.*,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*",
         }),
     {
         transform: (r) => r.products?.[0],
@@ -85,7 +85,7 @@ watch(
         <div class="container px-4 mx-auto">
             <ProductBreadCrumbs :product="product" />
             <div class="grid gap-4 md:gap-8 grid-cols-1 lg:grid-cols-2">
-                <ProductMedia class="lg:max-w-131" :product="product" />
+                <ProductMedia class="" :product="product" />
                 <ProductInfo class="lg:max-w-106" :product="product" />
             </div>
             <ClientOnly>

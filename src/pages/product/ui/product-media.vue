@@ -136,7 +136,7 @@ watch(
                     <ZoomImg
                         v-if="!isError"
                         ref="zoomImgRef"
-                        class="h-full"
+                        class="h-full object-cover"
                         trigger="hover"
                         :zoom-scale="3"
                         :src="getDefaultUrl(mainImage, true)"
@@ -144,7 +144,7 @@ watch(
                     >
                         <template #loading>
                             <NuxtImg
-                                class="h-full"
+                                class="h-full w-full object-cover"
                                 :src="getDefaultUrl(mainImage, false)"
                             />
                             <!-- Write your content here -->

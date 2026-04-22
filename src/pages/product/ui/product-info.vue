@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { StoreProduct } from "@medusajs/types";
 import { useProductStore } from "../lib/product-store";
+import { PRODUCT_CHARACTERISTICS_MAP } from "../lib/product-characteristics-map";
 import ProductColorPicker from "./product-color-picker.vue";
 import ProductSizePicker from "./product-size-picker.vue";
+import ProductDescriptionDrawer from "./product-description-drawer.vue";
+import ProductCharacteristicsDrawer from "./product-characteristics-drawer.vue";
 import { UiWbButton } from "#components";
 
 const productStore = useProductStore();
@@ -26,6 +29,42 @@ const marketplaces = computed(
             provider: string;
         }[],
 );
+
+const hasDescription = computed(() => {
+    const variantDescription = variant.value?.metadata?.description as
+        | string
+        | undefined;
+    const productDescription = product.value?.description;
+    const metadataDescription = product.value?.metadata?.description as
+        | string
+        | undefined;
+
+    return Boolean(
+        variantDescription?.trim() ||
+            productDescription?.trim() ||
+            metadataDescription?.trim(),
+    );
+});
+
+const hasCharacteristics = computed(() => {
+    const metadata = {
+        ...(product.value?.metadata ?? {}),
+        ...(variant.value?.metadata ?? {}),
+    } as Record<string, unknown>;
+
+    return PRODUCT_CHARACTERISTICS_MAP.some(({ key }) => {
+        const value = metadata[key];
+        if (
+            typeof value !== "string" &&
+            typeof value !== "number" &&
+            typeof value !== "boolean"
+        ) {
+            return false;
+        }
+
+        return Boolean(String(value).trim());
+    });
+});
 
 watch(
     variant,
@@ -64,22 +103,24 @@ watch(
                 })
             }}</span
         >
-        <span class="text-base block my-3 lg:my-9 leading-5"
-            >Состав:
-            <span class="capitalize">
-                {{ product?.metadata?.composition?.toLowerCase() }}</span
-            ></span
-        >
+
         <ProductColorPicker />
         <ProductSizePicker />
+        <span class="text-gray text-base leading-5"
+            >Данная цена может отличаться от цены в магазинах и на
+            маркетплейсах</span
+        >
+        <div
+            v-if="hasDescription || hasCharacteristics"
+            class="my-6 flex flex-col gap-4"
+        >
+            <ProductDescriptionDrawer v-if="hasDescription" />
+            <ProductCharacteristicsDrawer v-if="hasCharacteristics" />
+        </div>
         <div
             v-if="marketplaces?.length"
             class="my-6 gap-6 w-full flex flex-col"
         >
-            <span class="text-gray text-base leading-5"
-                >Данная цена может отличаться от цены в магазинах и на
-                маркетплейсах</span
-            >
             <template v-for="item of marketplaces" :key="item.provider">
                 <UiWbButton :item="item" v-if="item.provider === 'WB'" />
                 <UiOzonButton :item="item" v-if="item.provider === 'OZON'" />
