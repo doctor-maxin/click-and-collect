@@ -1,26 +1,47 @@
 <script setup lang="ts">
+import type { StoreProductCategory } from "@medusajs/types";
+import type { SearchProductDocument } from "~/shared/types/search-product-document";
 import { ProductCard } from "~/widgets/products-grid";
 
-const client = useMedusaClient();
+const { title = "Популярные товары" } = defineProps<{
+  title?: string;
+}>();
+
+const searchClient = useSearchClient();
+const { data: productCategories } =
+  useNuxtData<StoreProductCategory[]>("categories");
+
+const menuCategoryId = computed(
+  () =>
+    productCategories.value?.find((category) => category.handle === "menu")
+      ?.id,
+);
+
 const { data } = await useAsyncData("popular-products", () =>
-  client.store.product.list({
-    limit: 4,
-    order: "updated_at",
+  searchClient.index("cards").search<SearchProductDocument>(null, {
+      hitsPerPage: 4,
+    filter: menuCategoryId.value
+      ? [`category_ids IN ['${menuCategoryId.value}']`]
+      : [],
   }),
+  {
+    watch: [menuCategoryId],
+    transform: (response) => response.hits ?? [],
+  },
 );
 defineEmits<{
   (e: "close"): void;
 }>();
 </script>
 <template>
-  <div class="w-full flex flex-col gap-9">
-    <h3 class="text-[1.75rem] font-medium leading-9 uppercase">
-      Популярные товары
+  <div class="w-full flex flex-col gap-4 lg:gap-9">
+    <h3 class="text-base lg:text-[1.75rem] font-medium lg:leading-9 uppercase">
+      {{ title }}
     </h3>
-    <div class="grid gap-y-9 gap-x-4 grid-cols-2">
+    <div class="grid gap-y-4 lg:gap-y-9 gap-x-4 grid-cols-2">
       <ProductCard
         :product="product"
-        v-for="product in data?.products"
+        v-for="product in data"
         :key="product.id"
         @click="$emit('close')"
       />

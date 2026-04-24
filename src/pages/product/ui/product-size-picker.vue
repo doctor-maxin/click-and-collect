@@ -6,47 +6,52 @@ const productStore = useProductStore();
 const { size, color, product } = storeToRefs(productStore);
 
 const sizeOption = computed(() => {
-  return product.value?.options?.find((o) => o.title.toLowerCase() === "size");
+    return product.value?.options?.find(
+        (o) => o.title.toLowerCase() === "size",
+    );
 });
 const colorOption = computed(() => {
-  return product.value?.options?.find((o) => o.title.toLowerCase() === "color");
+    return product.value?.options?.find(
+        (o) => o.title.toLowerCase() === "color",
+    );
 });
 
 const options = computed(() => {
-  const list =
-    product.value?.variants
-      ?.filter(
-        (variant) =>
-          variant.options?.find((o) => o.option_id === colorOption.value?.id)
-            ?.value === color.value?.value,
-      )
-      ?.map((variant) => {
-        return variant.options?.find(
-          (o) => o.option_id === sizeOption.value?.id,
-        )!;
-      }) ?? [];
+    const list =
+        product.value?.variants
+            ?.filter(
+                (variant) =>
+                    variant.options?.find(
+                        (o) => o.option_id === colorOption.value?.id,
+                    )?.value === color.value?.value,
+            )
+            ?.map((variant) => {
+                return variant.options?.find(
+                    (o) => o.option_id === sizeOption.value?.id,
+                )!;
+            }) ?? [];
 
-  return sortSizeOptions(list, product.value?.variants ?? []);
+    return sortSizeOptions(list, product.value?.variants ?? []);
 });
 </script>
 <template>
-  <section class="flex flex-col gap-4 my-4 lg:my-9">
-    <span>Размеры</span>
-    <div
-      class="flex text-base leading-5 gap-y-4 gap-8 w-full max-w-full flex-wrap"
-    >
-      <label
-        v-for="item of options"
-        :key="item.id"
-        class="cursor-pointer border relative py-1 px-2"
-        :class="{
-          '  border-blue ': size?.id === item?.id,
-          ' border-transparent': size?.id !== item?.id,
-        }"
-        @click="productStore.selectSize(item)"
-      >
-        {{ item.value }}
-      </label>
-    </div>
-  </section>
+    <section class="flex flex-col gap-4 my-4 lg:my-5">
+        <span class="text-black/50">Размеры</span>
+        <div
+            class="flex text-base leading-5 gap-y-4 gap-5 w-full max-w-full flex-wrap"
+        >
+            <label
+                v-for="item of options"
+                :key="item.id"
+                class="cursor-pointer border rounded-[6px] relative px-[5px]"
+                :class="{
+                    '  border-blue ': size?.id === item?.id,
+                    ' border-transparent': size?.id !== item?.id,
+                }"
+                @click="productStore.selectSize(item)"
+            >
+                {{ item.value }}
+            </label>
+        </div>
+    </section>
 </template>

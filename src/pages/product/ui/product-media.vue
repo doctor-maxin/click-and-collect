@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { StoreProductImage } from "@medusajs/types";
-import { FeatureZoomImage } from "~/features/zoom-image";
 import { useProductStore } from "../lib/product-store";
 import { ClientOnly } from "#components";
-import { ZoomImg, Magnifier } from "vue3-zoomer";
+import { ZoomImg } from "vue3-zoomer";
 import ProductImage from "~/widgets/products-grid/ui/product-image.vue";
+import type { PaginationOptions } from "swiper/types";
 
 const productStore = useProductStore();
 const { product, variant } = storeToRefs(productStore);
@@ -16,155 +16,192 @@ const appConfig = useAppConfig();
 const isS3 = computed(() => appConfig.provider === "s3");
 
 function getThumbnailUrl(image?: StoreProductImage) {
-  if (!image?.url?.trim()) return "/not_found.png";
+    if (!image?.url?.trim()) return "/not_found.png";
 
-  return image.url.replace("500px", "100px");
+    return image.url.replace("500px", "100px");
 }
 
 function getDefaultUrl(image?: StoreProductImage, original?: boolean) {
-  if (!image?.url?.trim()) return "/not_found.png";
+    if (!image?.url?.trim()) return "/not_found.png";
 
-  return isS3.value
-    ? img(
-        image.url,
-        original
-          ? {
-              width: 1200,
-              height: 1800,
-            }
-          : {
-              width: 400,
-              height: 600,
-            },
-        {
-          //@ts-ignore
-          provider: "customS3",
-        },
-      )
-    : image.url.replace("500px", "1400px");
+    return isS3.value
+        ? img(
+              image.url,
+              original
+                  ? {
+                        width: 2400,
+                    }
+                  : {
+                        width: 400,
+                    },
+              {
+                  //@ts-ignore
+                  provider: "customS3",
+              },
+          )
+        : image.url.replace("500px", "1400px");
 }
 
 const colorImages = computed(() =>
-  product.value?.images?.filter(
-    (i) =>
-      //@ts-ignore
-      i.metadata?.color?.toLowerCase() ===
-      variant.value?.metadata?.color?.toLowerCase(),
-  ),
+    product.value?.images?.filter(
+        (i) =>
+            //@ts-ignore
+            i.metadata?.color?.toLowerCase() ===
+            //@ts-ignore
+            variant.value?.metadata?.color?.toLowerCase(),
+    ),
 );
+const activeImages = computed(() => {
+    if (colorImages.value && colorImages.value.length > 0) {
+        return colorImages.value;
+    }
+    return product.value?.images ?? [];
+});
 
 const onError = (event: Event) => {
-  if (!event.target) return;
-  const target = event.target as HTMLImageElement;
-  target.src = "/not_found.png";
+    if (!event.target) return;
+    const target = event.target as HTMLImageElement;
+    target.src = "/not_found.png";
 };
 const zoomImgRef = useTemplateRef("zoomImgRef");
 const onErrorZoomImg = () => {
-  if (!zoomImgRef.value) return;
-  isError.value = true;
+    if (!zoomImgRef.value) return;
+    isError.value = true;
 };
 const changeMainImage = (image: StoreProductImage) => {
-  mainImage.value = image;
-  isError.value = false;
+    mainImage.value = image;
+    isError.value = false;
 };
 
 watch(
-  () => variant.value?.metadata?.color,
-  (colorString: string) => {
-    if (mainImage.value?.metadata?.color !== colorString) {
-      mainImage.value = colorImages.value?.[0];
-    }
-  },
-  {
-    immediate: true,
-  },
+    () => variant.value?.metadata?.color,
+    (colorString) => {
+        if (mainImage.value?.metadata?.color !== colorString) {
+            mainImage.value = activeImages.value?.[0];
+        }
+    },
+    {
+        immediate: true,
+    },
+);
+
+const containerRef = ref(null);
+const mobileImages = computed(() => activeImages.value ?? []);
+const mobilePagination = markRaw<PaginationOptions>({
+    el: ".product-media-pagination",
+    type: "bullets",
+    clickable: true,
+});
+
+const swiper = useSwiper(containerRef, {
+    pagination: mobilePagination,
+    on: {
+        afterInit() {
+            if (!containerRef.value) return;
+            //@ts-ignore
+            containerRef.value.classList.add("swiper-initialized");
+        },
+    },
+});
+
+watch(
+    () => variant.value?.metadata?.color,
+    () => {
+        swiper.instance.value?.slideTo(0, 0);
+    },
 );
 </script>
 <template>
-  <div>
-    <div
-      class="lg:grid items-start grid-cols-[5.75rem_1fr] hidden gap-4 w-full"
-    >
-      <div class="h-[38rem] overflow-y-hidden">
+    <div>
         <div
-          class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-3"
+            class="md:grid items-start grid-cols-[5.75rem_1fr] hidden gap-17.5 lg:gap-4 w-full"
         >
-          <ProductImage
-            v-for="image of colorImages"
-            :src="getThumbnailUrl(image)"
-            alt="Product Image"
-            :width="184"
-            format="webp"
-            class="max-w-[5.75rem] snap-start cursor-pointer aspect-[23/28] object-cover"
-            @click="changeMainImage(image)"
-            @error="onError"
-          />
+            <div class="h-152 overflow-y-hidden">
+                <div
+                    class="w-full h-full hide-scrollbar flex flex-col overflow-y-auto snap-mandatory snap-y gap-4 lg:gap-3"
+                >
+                    <ProductImage
+                        v-for="image of activeImages"
+                        :src="getThumbnailUrl(image)"
+                        alt="Product Image"
+                        :width="184"
+                        class="max-w-23 min-h-fit snap-start cursor-pointer aspect-23/28 object-cover"
+                        @click="changeMainImage(image)"
+                        @error="onError"
+                    />
+                </div>
+            </div>
+            <div class="relative h-full desktop-media">
+                <ClientOnly>
+                    <ZoomImg
+                        v-if="!isError"
+                        ref="zoomImgRef"
+                        class="h-full object-cover"
+                        trigger="hover"
+                        :zoom-scale="3"
+                        :src="getDefaultUrl(mainImage, true)"
+                        @error="onErrorZoomImg"
+                    >
+                        <template #loading>
+                            <NuxtImg
+                                class="h-full w-full object-cover"
+                                :src="getDefaultUrl(mainImage, false)"
+                            />
+                            <!-- Write your content here -->
+                        </template>
+                    </ZoomImg>
+                </ClientOnly>
+                <img
+                    v-if="isError"
+                    src="/not_found.png"
+                    alt="Product Image"
+                    class="h-full object-cover"
+                />
+            </div>
         </div>
-      </div>
-      <div class="relative h-full desktop-media">
-        <ClientOnly>
-          <ZoomImg
-            v-if="!isError"
-            ref="zoomImgRef"
-            class="h-full"
-            trigger="hover"
-            :zoom-scale="3"
-            :src="getDefaultUrl(mainImage, true)"
-            @error="onErrorZoomImg"
-          />
-        </ClientOnly>
-        <img
-          v-if="isError"
-          src="/not_found.png"
-          alt="Product Image"
-          class="h-full object-cover"
-        />
-      </div>
-    </div>
 
-    <div class="lg:hidden">
-      <ClientOnly>
-        <swiper-container
-          :pagination="{
-            el: '.product-card-pagination',
-            type: 'bullets',
-          }"
-          ref="containerRef"
-          class="aspect-[15/18]"
-        >
-          <swiper-slide
-            v-for="image of product?.images"
-            :key="image.id"
-            class="size-full"
-          >
-            <ProductImage
-              class="object-cover object-center size-full"
-              :src="image.url"
-              :alt="product?.title as string"
-            />
-          </swiper-slide>
-          <div slot="container-end">
-            <div
-              class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
-            ></div>
-          </div>
-        </swiper-container>
-      </ClientOnly>
+        <div class="md:hidden">
+            <ClientOnly>
+                <swiper-container
+                    :init="false"
+                    :pagination="mobilePagination"
+                    ref="containerRef"
+                    class="aspect-15/18"
+                >
+                    <swiper-slide
+                        v-for="(image, index) of mobileImages"
+                        :key="image.id"
+                        class="size-full"
+                    >
+                        <ProductImage
+                            class="object-cover object-center size-full"
+                            :src="image.url"
+                            :alt="product?.title as string"
+                            :loading="index === 0 ? 'eager' : 'lazy'"
+                        />
+                    </swiper-slide>
+                    <div slot="container-end">
+                        <div
+                            class="product-media-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
+                        ></div>
+                    </div>
+                </swiper-container>
+            </ClientOnly>
+        </div>
     </div>
-  </div>
 </template>
 <style lang="css">
-.product-card-pagination .swiper-pagination-bullet {
-  width: 100%;
-  height: 2px;
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.6);
+.product-media-pagination .swiper-pagination-bullet {
+    width: 100%;
+    height: 2px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.6);
 }
-.product-card-pagination .swiper-pagination-bullet-active {
-  background-color: rgba(255, 255, 255, 1);
+.product-media-pagination .swiper-pagination-bullet-active {
+    background-color: rgba(255, 255, 255, 1);
 }
 
 .desktop-media .vz-zoomimg-img {
-  object-fit: cover;
+    object-fit: cover;
 }
 </style>

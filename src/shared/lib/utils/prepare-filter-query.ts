@@ -3,6 +3,7 @@ export const allowedFacets = [
   "size",
   "metadata.subclass",
   "metadata.class",
+  "is_discounted",
 ];
 
 export function prepareFilterQuery(
@@ -13,6 +14,13 @@ export function prepareFilterQuery(
     if (key === "subclass") key = "metadata.subclass";
     if (key === "class") key = "metadata.class";
     if (value.length === 0 || !allowedFacets.includes(key)) continue;
+
+    if (key === "is_discounted") {
+      if (value.includes("true")) {
+        input.push("is_discounted = true");
+      }
+      continue;
+    }
 
     let str = value.map((s) => `'${s}'`);
     input.push(`${key} IN [${str.join(",")}]`);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getHomePage } from "../api/get-home-page";
-import { WidgetRenderBlocks } from "@/widgets/render-blocks";
+import { WidgetRenderBlocks } from "~/widgets/render-blocks";
 const { data: homePage, error } = await useAsyncData("home-page", () =>
   getHomePage(),
 );

@@ -4,9 +4,9 @@
     font-weight: 300;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Light.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Light.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Light.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Light.ttf")
             format("truetype");
 }
 
@@ -16,9 +16,9 @@
     font-weight: 300;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Light\ Italic.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Light%20Italic.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Light\ Italic.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Light%20Italic.ttf")
             format("truetype");
 }
 
@@ -28,9 +28,9 @@
     font-weight: 400;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Regular.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Regular.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Regular.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Regular.ttf")
             format("truetype");
 }
 
@@ -40,9 +40,9 @@
     font-weight: 400;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Italic.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Italic.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Italic.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Italic.ttf")
             format("truetype");
 }
 
@@ -52,9 +52,9 @@
     font-weight: 500;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Medium.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Medium.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Medium.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Medium.ttf")
             format("truetype");
 }
 
@@ -64,9 +64,9 @@
     font-weight: 500;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Medium\ Italic.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Medium%20Italic.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Medium\ Italic.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Medium%20Italic.ttf")
             format("truetype");
 }
 
@@ -76,9 +76,9 @@
     font-weight: 600;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ SemiBold.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20SemiBold.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ SemiBold.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20SemiBold.ttf")
             format("truetype");
 }
 
@@ -88,9 +88,9 @@
     font-weight: 600;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ SemiBold\ Italic.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20SemiBold%20Italic.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ SemiBold\ Italic.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20SemiBold%20Italic.ttf")
             format("truetype");
 }
 
@@ -100,9 +100,9 @@
     font-weight: 700;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Bold.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Bold.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Bold.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Bold.ttf")
             format("truetype");
 }
 
@@ -112,8 +112,8 @@
     font-weight: 700;
     font-display: swap;
     src:
-        url("/fonts/euclid-woff2/Euclid\ Circular\ B\ Bold\ Italic.woff2")
+        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Bold%20Italic.woff2")
             format("woff2"),
-        url("/fonts/euclid-ttf/Euclid\ Circular\ B\ Bold\ Italic.ttf")
+        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Bold%20Italic.ttf")
             format("truetype");
 }

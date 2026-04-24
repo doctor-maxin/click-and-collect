@@ -8,33 +8,55 @@ const { category } = defineProps<{
 const { data: product_categories } =
   useNuxtData<StoreProductCategory[]>("categories");
 
+const toSentenceCase = (value?: string) =>
+  value ? `${value[0]?.toUpperCase()}${value.slice(1).toLowerCase()}` : "";
+
+const findCategoryPath = (
+  categories: StoreProductCategory[],
+  targetId: string,
+  trail: StoreProductCategory[] = [],
+): StoreProductCategory[] | null => {
+  for (const category of categories) {
+    const nextTrail = [...trail, category];
+    if (category.id === targetId) return nextTrail;
+
+    const childPath = findCategoryPath(
+      category.category_children ?? [],
+      targetId,
+      nextTrail,
+    );
+    if (childPath) return childPath;
+  }
+
+  return null;
+};
+
 const breadcrumbs = computed(() => {
-  const list = [];
-  let c: StoreProductCategory | null = category;
+  const list: { path: string; label: string }[] = [];
 
   if (!product_categories.value) return list;
-
-  // @ts-ignore
-  const mpath = c.mpath.split(".");
-  let tmpCat: StoreProductCategory | undefined;
 
   list.push({
     path: `/`,
     label: "Главная",
   });
 
-  for (const id of mpath) {
-    if (tmpCat) {
-      tmpCat = tmpCat.category_children.find((child) => child.id === id);
-    } else {
-      tmpCat = product_categories.value.find((c) => c.id === id);
-    }
-    if (!tmpCat) continue;
+  const menuRoot = product_categories.value.find(
+    (category) => category.handle === "menu",
+  );
+  if (!menuRoot) return list;
 
-    if (tmpCat.name === "SINSAY") continue;
+  const pathInMenu = findCategoryPath(
+    menuRoot.category_children ?? [],
+    category.id,
+  );
+  if (!pathInMenu?.length) return list;
+
+  for (const item of pathInMenu) {
+    if (!item.parent_category_id) continue;
     list.push({
-      path: `/catalog/` + tmpCat.handle,
-      label: `${tmpCat.name[0]?.toUpperCase()}${tmpCat.name.slice(1).toLowerCase()}`,
+      path: `/catalog/` + item.handle,
+      label: toSentenceCase(item.name),
     });
   }
 
@@ -42,7 +64,7 @@ const breadcrumbs = computed(() => {
 });
 </script>
 <template>
-  <div class="my-9">
+  <div class="hidden lg:block my-9">
     <UiBreadcrumbs :items="breadcrumbs" />
   </div>
 </template>
