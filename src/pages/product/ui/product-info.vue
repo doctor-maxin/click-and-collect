@@ -128,7 +128,7 @@ watch(
                     target="_blank"
                     class="max-w-70"
                     variant="outline"
-                    >Купить на сарте партнера</UiButton
+                    >Купить на сайте партнера</UiButton
                 >
             </template>
         </div>
