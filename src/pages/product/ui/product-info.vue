@@ -41,8 +41,8 @@ const hasDescription = computed(() => {
 
     return Boolean(
         variantDescription?.trim() ||
-            productDescription?.trim() ||
-            metadataDescription?.trim(),
+        productDescription?.trim() ||
+        metadataDescription?.trim(),
     );
 });
 
@@ -122,12 +122,14 @@ watch(
             class="my-6 gap-6 w-full flex flex-col"
         >
             <template v-for="item of marketplaces" :key="item.provider">
-                <UiWbButton :item="item" v-if="item.provider === 'WB'" />
-                <UiOzonButton :item="item" v-if="item.provider === 'OZON'" />
-                <UiLamodaButton
-                    :item="item"
-                    v-if="item.provider === 'Lamoda'"
-                />
+                <UiButton
+                    is-link
+                    :to="item.link"
+                    target="_blank"
+                    class="max-w-70"
+                    variant="outline"
+                    >Купить на сарте партнера</UiButton
+                >
             </template>
         </div>
         <span v-else class="text-[1.25rem] leading-6 my-0"

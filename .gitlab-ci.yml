@@ -43,8 +43,8 @@ deploy_staging:
   script:
     - set -euo pipefail
     - echo "$DEV_ENV" > .env
-    - ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22} $DEPLOY_USER_PROD@$DEPLOY_HOST_PROD "mkdir -p '$DEPLOY_PATH_PROD'"
-    - rsync -az --delete --exclude='.git' -e "ssh -o BatchMode=yes -p ${SSH_PORT_PROD:-22}" . "$DEPLOY_USER_PROD@$DEPLOY_HOST_PROD:$DEPLOY_PATH_PROD/"
+    - ssh -o BatchMode=yes -p ${SSH_PORT:-22} $DEPLOY_USER@$DEPLOY_HOST "mkdir -p '$DEPLOY_PATH'"
+    - rsync -az --delete --exclude='.git' -e "ssh -o BatchMode=yes -p ${SSH_PORT:-22}" . "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
     - echo "Build uploaded to $DEPLOY_HOST:$DEPLOY_PATH"
     - ssh -o BatchMode=yes -p ${SSH_PORT:-22} $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && bash deploy.sh"
   environment:
