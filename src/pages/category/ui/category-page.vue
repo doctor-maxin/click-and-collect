@@ -53,6 +53,7 @@ if (!category.value)
     });
 
 const products = ref<SearchProductDocument[]>([]);
+const count = ref(0);
 const isInternalUpdate = ref(false);
 const shouldAppendProducts = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
@@ -240,6 +241,11 @@ watchEffect(() => {
     filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
 });
 
+watchEffect(() => {
+    //@ts-ignore
+    count.value = productsResponse.value?.totalHits ?? 0;
+});
+
 watch(
     () => route.params.handle,
     (val, oldVal) => {
@@ -269,6 +275,16 @@ const onPageChange = (nextPage: number) => {
     shouldAppendProducts.value = false;
     pushPageToQuery(nextPage, false);
 };
+
+const getProductsCountLabel = (value: number) => {
+    const absValue = Math.abs(value) % 100;
+    const lastDigit = absValue % 10;
+
+    if (absValue >= 11 && absValue <= 14) return "товаров";
+    if (lastDigit === 1) return "товар";
+    if (lastDigit >= 2 && lastDigit <= 4) return "товара";
+    return "товаров";
+};
 </script>
 
 <template>
@@ -276,11 +292,18 @@ const onPageChange = (nextPage: number) => {
         <div class="mt-16 lg:mt-32.5">
             <div v-if="category" class="px-4 container mx-auto">
                 <CategoryBreadCrumbs :category="category" />
-                <h1
-                    class="font-serif font-medium mt-6 mb-4 lg:my-9 text-xl lg:text-[1.75rem] uppercase"
-                >
-                    {{ category.name }}
-                </h1>
+                <div class="flex items-center gap-4 mt-6 mb-4 lg:my-9">
+                    <h1
+                        class="font-serif font-medium text-xl lg:text-[1.75rem] uppercase"
+                    >
+                        {{ category.name }}
+                    </h1>
+                    <span
+                        v-if="status === 'success' && count > 0"
+                        class="text-gray"
+                        >{{ count }} {{ getProductsCountLabel(count) }}</span
+                    >
+                </div>
                 <CategoryLinks :category="category" />
                 <CategoryFilters :category="category" />
                 <WidgetProductsGrid

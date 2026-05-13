@@ -20,6 +20,7 @@ const shouldAppendProducts = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 const isInternalUpdate = ref(false);
 const searchableProductAttributes = ["coloredTitle", "metadata.model"];
+const count = ref(0);
 
 const getPageFromQuery = () => {
     const rawPage = Array.isArray(route.query.page)
@@ -117,6 +118,11 @@ const { data: productsResponse, status } = await useAsyncData(
     },
 );
 
+watchEffect(() => {
+    //@ts-ignore
+    count.value = productsResponse.value?.totalHits ?? 0;
+});
+
 watch(
     [() => productsResponse.value, () => status.value],
     ([response, currentStatus]) => {
@@ -179,16 +185,29 @@ const onPageChange = (nextPage: number) => {
     shouldAppendProducts.value = false;
     pushPageToQuery(nextPage, false);
 };
+
+const getProductsCountLabel = (value: number) => {
+    const absValue = Math.abs(value) % 100;
+    const lastDigit = absValue % 10;
+
+    if (absValue >= 11 && absValue <= 14) return "товаров";
+    if (lastDigit === 1) return "товар";
+    if (lastDigit >= 2 && lastDigit <= 4) return "товара";
+    return "товаров";
+};
 </script>
 <template>
     <div class="mt-16 lg:mt-32.5">
         <div class="px-4 container mx-auto">
             <!-- <SearchBreadCrumbs /> -->
-            <h1
-                class="font-serif font-medium mt-6 mb-4 lg:my-9 text-xl lg:text-[1.75rem]"
-            >
-                Товары по запросу "{{ query?.toString() ?? "" }}"
-            </h1>
+            <div class="flex items-center gap-4 mt-6 mb-4 lg:my-9">
+                <h1 class="font-serif font-medium text-xl lg:text-[1.75rem]">
+                    Товары по запросу "{{ query?.toString() ?? "" }}"
+                </h1>
+                <span v-if="status === 'success' && count > 0" class="text-gray"
+                    >{{ count }} {{ getProductsCountLabel(count) }}</span
+                >
+            </div>
             <!-- <CategoryLinks :category="category" />-->
             <SearchFilters :class="{}" />
             <WidgetProductsGrid

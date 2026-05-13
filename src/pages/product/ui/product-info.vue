@@ -80,6 +80,19 @@ watch(
         deep: true,
     },
 );
+
+const isAvailableProduct = computed(() => {
+    if (!marketplaces.value?.length) return false;
+
+    const someVariant = product.value?.variants?.some(
+        (v) =>
+            v.manage_inventory &&
+            !v.allow_backorder &&
+            v.inventory_quantity > 0,
+    );
+
+    return someVariant;
+});
 </script>
 <template>
     <div class="w-full">
@@ -106,7 +119,12 @@ watch(
 
         <ProductColorPicker />
         <ProductSizePicker />
-        <span class="text-gray text-base leading-5"
+        <span
+            v-if="!isAvailableProduct"
+            class="text-base leading-5 leading-6 my-3 block"
+            >Товар доступен только в розничных магазинах</span
+        >
+        <span class="text-gray block text-base leading-5"
             >Данная цена может отличаться от цены в магазинах и на
             маркетплейсах</span
         >
@@ -117,10 +135,7 @@ watch(
             <ProductDescriptionDrawer v-if="hasDescription" />
             <ProductCharacteristicsDrawer v-if="hasCharacteristics" />
         </div>
-        <div
-            v-if="marketplaces?.length"
-            class="my-6 gap-6 w-full flex flex-col"
-        >
+        <div v-if="isAvailableProduct" class="my-6 gap-6 w-full flex flex-col">
             <template v-for="item of marketplaces" :key="item.provider">
                 <UiButton
                     is-link
@@ -132,8 +147,5 @@ watch(
                 >
             </template>
         </div>
-        <span v-else class="text-[1.25rem] leading-6 my-0"
-            >Товар доступен только в розничных магазинах</span
-        >
     </div>
 </template>
