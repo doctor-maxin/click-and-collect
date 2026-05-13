@@ -20,7 +20,7 @@ const { name, form, options } = defineProps<{
     options: IFilterValue[];
 }>();
 const emit = defineEmits<{
-  (e: "applied", name: string): void;
+    (e: "applied", name: string): void;
 }>();
 
 const { handleChange, value } = useField<IFilterValue["value"][]>(
@@ -172,7 +172,7 @@ const reset = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink"
                             width="24"
-                            class="group-[[data-disabled]]:opacity-40"
+                            class="min-w-6 size-6 group-[[data-disabled]]:opacity-40"
                             height="24"
                         >
                             <path

@@ -165,12 +165,14 @@ watch(
         const queryClass = getQueryValue("metadata.class");
         const queryColor = getQueryValue("color");
         const querySize = getQueryValue("size");
+        const queryCategoryIds = getQueryValue("category_ids");
         const queryIsDiscounted = getQueryValue("is_discounted");
 
         const filterSubclass = getFilterValue("subclass");
         const filterClass = getFilterValue("class");
         const filterColor = getFilterValue("color");
         const filterSize = getFilterValue("size");
+        const filterCategoryIds = getFilterValue("category_ids");
         const filterIsDiscounted = getFilterValue("is_discounted");
 
         if (
@@ -178,11 +180,13 @@ watch(
             queryClass !== filterClass ||
             queryColor !== filterColor ||
             querySize !== filterSize ||
+            queryCategoryIds !== filterCategoryIds ||
             queryIsDiscounted !== filterIsDiscounted
         ) {
             const allowedFacets = [
                 "color",
                 "size",
+                "category_ids",
                 "metadata.subclass",
                 "metadata.class",
                 "is_discounted",

@@ -59,6 +59,7 @@ type MobileMenuItem = {
 };
 
 const mobileMenuItems = computed<MobileMenuItem[]>(() => {
+    console.log(categoriesTree.value);
     const categoryItems: MobileMenuItem[] = categoriesTree.value.map(
         (category) => ({
             id: `category-${category.id}`,

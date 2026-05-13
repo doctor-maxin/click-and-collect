@@ -6,7 +6,7 @@ const route = useRoute();
 const count = computed(() => Object.values(appliedFilters.value).length || 0);
 const filterEntries = computed(() =>
     Object.entries(appliedFilters.value).filter(
-        ([key]) => key !== "metadata.class",
+        ([key]) => key !== "metadata.class" && key !== "category_ids",
     ),
 );
 const getFilterLabel = (filter: string, value: string) => {

@@ -26,34 +26,30 @@ function clearedCategories(list: StoreProductCategory[]) {
     return uniqueList.values();
 }
 
-const isCategoryActive = (categoryName: string) => {
-    const existingClass: string | undefined | string[] =
-        filtersStore.appliedFilters["metadata.class"];
-    if (Array.isArray(existingClass)) {
-        return existingClass
-            .map((c) => c?.trim())
-            .includes(categoryName?.trim());
+const isCategoryActive = (categoryId: string) => {
+    const existingCategoryIds: string | undefined | string[] =
+        filtersStore.appliedFilters.category_ids;
+    if (Array.isArray(existingCategoryIds)) {
+        return existingCategoryIds
+            .map((id) => id?.trim())
+            .includes(categoryId?.trim());
     }
-    //@ts-ignore
-    return existingClass?.trim() === categoryName?.trim();
+    return existingCategoryIds?.trim() === categoryId?.trim();
 };
 
 const handleCategoryClick = (category: StoreProductCategory) => {
-    const existingClass = filtersStore.appliedFilters["metadata.class"];
-
-    if (isCategoryActive(category.name)) {
-        filtersStore.removeFilterValue("metadata.class", category.name?.trim());
+    if (isCategoryActive(category.id)) {
+        filtersStore.removeFilterValue("category_ids", category.id.trim());
     } else {
-        filtersStore.setFilterValue("metadata.class", category.name?.trim());
+        filtersStore.setFilterValue("category_ids", category.id.trim());
     }
 
     const newQuery = { ...route.query };
 
-    if (filtersStore.appliedFilters["metadata.class"]) {
-        newQuery["metadata.class"] =
-            filtersStore.appliedFilters["metadata.class"];
+    if (filtersStore.appliedFilters.category_ids) {
+        newQuery.category_ids = filtersStore.appliedFilters.category_ids;
     } else {
-        delete newQuery["metadata.class"];
+        delete newQuery.category_ids;
     }
 
     delete newQuery.page;
@@ -75,7 +71,7 @@ const handleCategoryClick = (category: StoreProductCategory) => {
             :key="subCategory.id"
             @click="handleCategoryClick(subCategory)"
         >
-            <UiBadge :active="isCategoryActive(subCategory.name)">{{
+            <UiBadge :active="isCategoryActive(subCategory.id)">{{
                 subCategory.name
             }}</UiBadge>
         </div>

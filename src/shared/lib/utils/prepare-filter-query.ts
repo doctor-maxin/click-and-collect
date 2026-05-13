@@ -1,6 +1,7 @@
 export const allowedFacets = [
   "color",
   "size",
+  "category_ids",
   "metadata.subclass",
   "metadata.class",
   "is_discounted",
