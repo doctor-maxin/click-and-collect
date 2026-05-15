@@ -83,15 +83,11 @@ watch(
 
 const isAvailableProduct = computed(() => {
     if (!marketplaces.value?.length) return false;
-
-    const someVariant = product.value?.variants?.some(
-        (v) =>
-            v.manage_inventory &&
-            !v.allow_backorder &&
-            v.inventory_quantity > 0,
+    return (
+        variant.value?.manage_inventory &&
+        !variant.value?.allow_backorder &&
+        variant.value?.inventory_quantity > 0
     );
-
-    return someVariant;
 });
 </script>
 <template>
