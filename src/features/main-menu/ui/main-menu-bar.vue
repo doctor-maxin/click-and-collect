@@ -303,7 +303,7 @@ const toSentenceCase = (value: string) => {
                 </NavigationMenuLink>
                 <NavigationMenuContent
                     v-if="category.category_children?.length"
-                    class="pl-[6rem] navigation-menu-content"
+                    class="pl-28 navigation-menu-content"
                 >
                     <NavigationMenuSub>
                         <NavigationMenuList class="flex flex-col min-w-[15rem]">

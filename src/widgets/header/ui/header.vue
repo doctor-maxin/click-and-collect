@@ -80,7 +80,7 @@ await useAsyncData(
 </script>
 <template>
     <div
-        class="fixed ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center ui-header-shell"
+        class="fixed ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center"
     >
         <div
             class="container px-4 py-2 lg:py-5 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"
