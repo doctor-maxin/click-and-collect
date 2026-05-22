@@ -99,6 +99,10 @@ await useAsyncData(
 </template>
 
 <style scoped>
+.ui-header {
+    position: absolute;
+}
+
 .ui-header-shell {
     transform: translate3d(0, v-bind(headerTranslateY), 0);
     opacity: v-bind(headerOpacity);
