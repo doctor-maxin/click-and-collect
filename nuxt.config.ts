@@ -20,6 +20,14 @@ export default defineNuxtConfig({
         "@nuxtjs/seo",
         "@vueuse/nuxt",
     ],
+    $production: {
+        routeRules: {
+            "/": { swr: 300 },
+            "/product/**": { swr: 120 },
+            "/catalog/**": { swr: 120 },
+            "/pages/**": { swr: 300 },
+        },
+    },
     site: {
         url: process.env.NUXT_SITE_URL,
         name: process.env.NUXT_SITE_NAME,
@@ -54,6 +62,16 @@ export default defineNuxtConfig({
     },
     imports: {
         dirs: ["shared/lib"],
+    },
+    app: {
+        head: {
+            // update Nuxt defaults
+            charset: "utf-16",
+            viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+            htmlAttrs: {
+                lang: "ru",
+            },
+        },
     },
     dir: {
         app: "app",
@@ -119,7 +137,7 @@ export default defineNuxtConfig({
                     const message =
                         typeof warning === "string"
                             ? warning
-                            : warning.message ?? "";
+                            : (warning.message ?? "");
                     const code =
                         typeof warning === "string" ? undefined : warning.code;
 
