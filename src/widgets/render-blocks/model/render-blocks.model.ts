@@ -1,110 +1,111 @@
 import type { IMedia } from "#shared/types/media";
 
 export interface ICarouselSlide {
-  id: number;
-  text: string;
-  textHPosition: "Center" | "Left" | "Right";
-  textVPosition: "Top" | "Center" | "Bottom";
-  showText: boolean;
-  media: IMedia;
-  mobileMedia: IMedia;
-  textColor?: string;
+    id: number;
+    text: string;
+    textHPosition: "Center" | "Left" | "Right";
+    textVPosition: "Top" | "Center" | "Bottom";
+    showText: boolean;
+    media: IMedia;
+    mobileMedia: IMedia;
+    textColor?: string;
+    link?: string;
 }
 
 export interface IBannerDetailedItem {
-  id: number;
-  showLinkButton?: boolean;
-  linkButtonText?: string;
-  link?: string;
-  description?: string;
-  media: IMedia;
-  mobileMedia: IMedia;
+    id: number;
+    showLinkButton?: boolean;
+    linkButtonText?: string;
+    link?: string;
+    description?: string;
+    media: IMedia;
+    mobileMedia: IMedia;
 }
 
 export interface IBannerItem {
-  id: number;
-  title: string;
-  showLinkButton?: boolean;
-  link?: string;
-  media: IMedia;
-  mobileMedia: IMedia;
+    id: number;
+    title: string;
+    showLinkButton?: boolean;
+    link?: string;
+    media: IMedia;
+    mobileMedia: IMedia;
 }
 
 export interface IDepartmentItem {
-  id: number;
-  name: string;
-  link: string;
-  image: IMedia;
+    id: number;
+    name: string;
+    link: string;
+    image: IMedia;
 }
 
 export interface IThematicItem {
-  id: number;
-  text: string;
-  textColor: string | null;
-  link: string;
-  image: IMedia;
+    id: number;
+    text: string;
+    textColor: string | null;
+    link: string;
+    image: IMedia;
 }
 
 export interface ICarouselBlock {
-  id: number;
-  autoplay: boolean;
-  autoplayDelay: number;
-  __typename: "ComponentBlocksCarousel";
-  slides: ICarouselSlide[];
+    id: string;
+    autoplay: boolean;
+    autoplayDelay: number;
+    __typename: "ComponentBlocksCarousel";
+    slides: ICarouselSlide[];
 }
 
 export interface IAnnouncementBarBlock {
-  id: number;
-  text: string;
-  isRunning: boolean;
-  textColor?: string;
-  link?: string;
-  bgColor?: string;
-  __typename: "ComponentBlocksAnnouncementBar";
+    id: number;
+    text: string;
+    isRunning: boolean;
+    textColor?: string;
+    link?: string;
+    bgColor?: string;
+    __typename: "ComponentBlocksAnnouncementBar";
 }
 
 export interface IThematicsBlocks {
-  id: number;
-  __typename: "ComponentBlocksTemy";
-  items: IThematicItem[];
+    id: number;
+    __typename: "ComponentBlocksTemy";
+    items: IThematicItem[];
 }
 
 export interface IDepartmentsBlocks {
-  id: number;
-  __typename: "ComponentBlocksDepartments";
-  items: IDepartmentItem[];
+    id: number;
+    __typename: "ComponentBlocksDepartments";
+    items: IDepartmentItem[];
 }
 
 export interface IBannersBlock {
-  id: number;
-  __typename: "ComponentBlocksBanners";
-  items: IBannerItem[];
-  detailedItems: IBannerDetailedItem[];
+    id: number;
+    __typename: "ComponentBlocksBanners";
+    items: IBannerItem[];
+    detailedItems: IBannerDetailedItem[];
 }
 
 export interface ISubscriptionBlock {
-  id: number;
-  __typename: "ComponentBlocksSubscriptionForm";
-  text: string;
-  header: string;
-  bg: IMedia;
-  mobileBg: IMedia;
+    id: number;
+    __typename: "ComponentBlocksSubscriptionForm";
+    text: string;
+    header: string;
+    bg: IMedia;
+    mobileBg: IMedia;
 }
 
 export interface ISharedMap {
-  id: number;
-  __typename: "ComponentSharedMap";
-  header: string;
-  defaultMedia: IMedia;
-  defaultMobileMedia: IMedia;
+    id: number;
+    __typename: "ComponentSharedMap";
+    header: string;
+    defaultMedia: IMedia;
+    defaultMobileMedia: IMedia;
 }
 
 export type IUiBlock =
-  | ICarouselBlock
-  | IAnnouncementBarBlock
-  | IThematicsBlocks
-  | IDepartmentsBlocks
-  | IBannersBlock
-  | ISubscriptionBlock
-  | ISharedMap;
+    | ICarouselBlock
+    | IAnnouncementBarBlock
+    | IThematicsBlocks
+    | IDepartmentsBlocks
+    | IBannersBlock
+    | ISubscriptionBlock
+    | ISharedMap;
 export type IUiBlocks = Array<IUiBlock>;

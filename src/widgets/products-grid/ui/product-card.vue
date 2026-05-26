@@ -140,15 +140,15 @@ const link = computed(
     background-color: rgba(255, 255, 255, 1);
 }
 
-swiper-container,
-swiper-container swiper-slide {
+.product-card swiper-container,
+.product-card swiper-container swiper-slide {
     display: block;
 }
-swiper-slide .ui-image-shell {
+.product-card swiper-slide .ui-image-shell {
     display: none;
 }
-swiper-slide:first-child .ui-image-shell,
-.swiper-initialized .ui-image-shell {
+.product-card swiper-slide:first-child .ui-image-shell,
+.product-card .swiper-initialized .ui-image-shell {
     display: block;
 }
 </style>

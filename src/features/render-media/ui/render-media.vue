@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IMedia } from "#shared/types/media";
 
-const { media, mobileMedia } = defineProps<{
+const { media, mobileMedia, loading } = defineProps<{
     media: IMedia;
     mobileMedia: IMedia;
     loading?: HTMLImageElement["loading"];
@@ -57,7 +57,6 @@ onMounted(() => {
                 v-if="isImage"
                 custom
                 provider="strapi"
-                :loading="loading"
                 :src="media.url"
                 v-slot="{ src, imgAttrs }"
             >
@@ -69,6 +68,7 @@ onMounted(() => {
                         ref="desktopImageRef"
                         v-bind="imgAttrs"
                         :src="src"
+                        :loading="loading"
                         @load="desktopLoaded = true"
                     />
                 </div>
@@ -77,6 +77,7 @@ onMounted(() => {
                 v-else
                 :src="formatVideo(media.url, undefined, { provider: 'strapi' })"
                 playsinline
+                :loading="loading"
                 autoplay
                 muted
                 loop
@@ -87,7 +88,6 @@ onMounted(() => {
                 v-if="isImageMobile"
                 custom
                 provider="strapi"
-                :loading="loading"
                 :src="mobileMedia.url"
                 v-slot="{ src, imgAttrs }"
             >
@@ -98,6 +98,7 @@ onMounted(() => {
                     <img
                         ref="mobileImageRef"
                         v-bind="imgAttrs"
+                        :loading="loading"
                         :src="src"
                         @load="mobileLoaded = true"
                     />
