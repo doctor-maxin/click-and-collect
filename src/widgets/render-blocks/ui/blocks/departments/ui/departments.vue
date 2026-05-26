@@ -21,7 +21,12 @@ defineProps<{
                 class="flex justify-center items-center relative aspect-3/4"
             >
                 <h3
-                    class="absolute max-w-[95%] text-center uppercase font-bold z-10 text-[1.75rem] leading-9 text-white"
+                    :style="{
+                        '--text-color': item.textColor
+                            ? item.textColor
+                            : 'white',
+                    }"
+                    class="absolute text-(--text-color) max-w-[95%] text-center uppercase font-bold z-10 text-[1.75rem] leading-9"
                 >
                     {{ item.name }}
                 </h3>

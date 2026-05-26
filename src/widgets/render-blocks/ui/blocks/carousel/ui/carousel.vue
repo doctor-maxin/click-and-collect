@@ -6,7 +6,6 @@ import { NuxtLink } from "#components";
 const { data } = defineProps<{
     data: ICarouselBlock;
 }>();
-
 const instanceId = `carousel-${data.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 const nextButtonClass = `${instanceId}-next`;
 const prevButtonClass = `${instanceId}-prev`;
@@ -76,11 +75,11 @@ const _swiper = useSwiper(containerRef, {
         </swiper-container>
         <div
             v-if="data.slides.length > 1"
-            class="container z-20 hidden lg:flex items-center justify-between h-full absolute left-1/2 top-0 -translate-x-1/2"
+            class="container z-20 pointer-events-none hidden lg:flex items-center justify-between h-full absolute left-1/2 top-0 -translate-x-1/2"
         >
             <button
                 :class="[
-                    'bg-black/25 rotate-180 cursor-pointer rounded-full',
+                    'bg-black/25 rotate-180 pointer-events-auto cursor-pointer rounded-full',
                     prevButtonClass,
                 ]"
             >
@@ -88,7 +87,7 @@ const _swiper = useSwiper(containerRef, {
             </button>
             <button
                 :class="[
-                    'bg-black/25 cursor-pointer rounded-full',
+                    'bg-black/25 cursor-pointer pointer-events-auto rounded-full',
                     nextButtonClass,
                 ]"
             >

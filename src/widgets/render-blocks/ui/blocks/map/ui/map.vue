@@ -52,7 +52,6 @@ const cities = computed(() => {
         return [];
     }
     points.value.forEach((item) => list.add(item.city));
-    console.log(list);
 
     return Array.from(list).map((city) => ({
         label: city,
@@ -81,7 +80,6 @@ const centerToCity = async () => {
             duration: 300,
             center,
         });
-        console.log("changed center");
     } else {
         const coords = cityPoints.value.map(
             (point) =>

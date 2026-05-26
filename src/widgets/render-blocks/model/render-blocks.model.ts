@@ -36,6 +36,7 @@ export interface IDepartmentItem {
     name: string;
     link: string;
     image: IMedia;
+    textColor?: string;
 }
 
 export interface IThematicItem {

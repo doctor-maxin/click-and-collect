@@ -25,7 +25,6 @@ if (!route.params.handle || route.params.handle === "undefined")
         fatal: true,
         data: route.params,
     });
-console.log("PAGE RLOEADED");
 const { data: product_categories } =
     useNuxtData<StoreProductCategory[]>("categories");
 const category = ref<(StoreProductCategory & { mpath: string }) | null>(null);
@@ -35,7 +34,6 @@ watch(
     () => {
         if (!product_categories.value) return null;
         const handle = route.params.handle as string;
-        console.log("ROUTE CHANGED", handle);
 
         category.value = getCategoryFromTree(handle, product_categories.value);
     },
@@ -123,7 +121,6 @@ const { data: productsResponse, status } = await useAsyncData(
     () => {
         isInternalUpdate.value = true;
         let filter = [`category_ids IN ['${category.value?.id}']`];
-        console.log("RE INDEDX", appliedFilters.value);
         filter = prepareFilterQuery(filter, appliedFilters.value);
         return searchClient.index("cards").search<SearchProductDocument>(null, {
             filter,

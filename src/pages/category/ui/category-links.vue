@@ -10,7 +10,6 @@ const route = useRoute();
 const router = useRouter();
 const filtersStore = useFiltersStore();
 
-console.log("category", level.value);
 const { data: availableCategories } = useNuxtData<string[]>(
     "available-categories",
 );

@@ -21,7 +21,6 @@ const swiper = useSwiper(containerRef, {
             if (!containerRef.value) return;
             //@ts-ignore
             containerRef.value.classList.add("swiper-initialized");
-            console.log("Swiper initialized");
         },
     },
 });

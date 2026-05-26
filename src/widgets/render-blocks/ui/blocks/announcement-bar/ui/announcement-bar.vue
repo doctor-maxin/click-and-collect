@@ -16,6 +16,7 @@ const {
         bgColor: "black",
         isRunning: false,
         text: "example",
+        link: null,
     },
 } = defineProps<{
     data: IAnnouncementBarBlock;
@@ -101,7 +102,7 @@ watch(
 
 <template>
     <div
-        class="w-full text-base lg:text-[1.25rem] leading-5 lg:leading-6 py-2 lg:py-3 overflow-hidden text-[var(--text-color)] bg-[var(--bg-color)]"
+        class="w-full text-base lg:text-[1.25rem] leading-5 lg:leading-6 py-2 lg:py-3 overflow-hidden text-(--text-color) bg-[var(--bg-color)]"
         :style="wrapperStyle"
         role="presentation"
     >

@@ -70,6 +70,7 @@ query GetHomePage {
                         url
                     }
                     link
+                    textColor
                 }
             }
             ... on ComponentBlocksCarousel {
@@ -99,6 +100,7 @@ query GetHomePage {
                     textHPosition
                     textVPosition
                     showText
+                    link
                     textColor
                 }
                 autoplay
