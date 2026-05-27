@@ -69,12 +69,22 @@ export interface IThematicsBlocks {
     id: number;
     __typename: "ComponentBlocksTemy";
     items: IThematicItem[];
+    isCarousel: boolean;
+    visibleCols: number;
+    autoplayDuration: number;
+    autoplayDelay: number;
+    mobileVisibleCols: number;
 }
 
 export interface IDepartmentsBlocks {
     id: number;
     __typename: "ComponentBlocksDepartments";
     items: IDepartmentItem[];
+    isCarousel: boolean;
+    visibleCols: number;
+    autoplayDuration: number;
+    autoplayDelay: number;
+    mobileVisibleCols: number;
 }
 
 export interface IBannersBlock {

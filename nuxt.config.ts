@@ -84,8 +84,8 @@ export default defineNuxtConfig({
         global: false,
     },
     sourcemap: {
-        client: false,
-        server: false,
+        client: true,
+        server: true,
     },
     "graphql-client": {
         watch: true,

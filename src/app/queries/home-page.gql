@@ -29,6 +29,11 @@ query GetHomePage {
                     }
                     id
                 }
+                isCarousel
+                visibleCols
+                autoplayDuration
+                autoplayDelay
+                mobileVisibleCols
             }
             ... on ComponentBlocksSubscriptionForm {
                 id
@@ -72,6 +77,11 @@ query GetHomePage {
                     link
                     textColor
                 }
+                isCarousel
+                visibleCols
+                autoplayDuration
+                autoplayDelay
+                mobileVisibleCols
             }
             ... on ComponentBlocksCarousel {
                 id
