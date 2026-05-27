@@ -87,12 +87,14 @@ const pushPageToQuery = (nextPage: number, append = false) => {
         delete nextQuery._append;
     }
     router.push({ query: nextQuery });
+    console.log("pushPageToQuery");
 };
 
 watch(
     () => route.query.page,
-    () => {
+    (val) => {
         const nextPage = getPageFromQuery();
+        console.log("ON WATCH ROUTE QUERY PAGE", nextPage, val);
         if (page.value === nextPage) return;
         filtersStore.setPage(nextPage);
         if (nextPage === 1) shouldAppendProducts.value = false;
@@ -116,9 +118,18 @@ const { data: filtersResponse } = await useAsyncData(
         });
     },
 );
+const asyncDataKey = computed(() =>
+    [
+        category.value?.id,
+        page.value,
+        sort.value,
+        JSON.stringify(appliedFilters.value),
+    ].join(":"),
+);
 const { data: productsResponse, status } = await useAsyncData(
-    () => category.value?.id as string,
+    asyncDataKey,
     () => {
+        console.log("useAsyncData worked");
         isInternalUpdate.value = true;
         let filter = [`category_ids IN ['${category.value?.id}']`];
         filter = prepareFilterQuery(filter, appliedFilters.value);
@@ -136,13 +147,10 @@ const { data: productsResponse, status } = await useAsyncData(
             ],
         });
     },
-    {
-        watch: [page, sort, () => JSON.stringify(appliedFilters.value)],
-        deep: true,
-        dedupe: "cancel",
-    },
 );
-
+watch(page, (val) => {
+    console.log("PAGE WAS UPDATED", val);
+});
 watch(
     () => route.query,
     () => {
@@ -267,6 +275,7 @@ watch(sort, () => {
 });
 
 const onLoadMore = () => {
+    console.log("onLoadMore");
     shouldAppendProducts.value = true;
     pushPageToQuery(page.value + 1, true);
 };
