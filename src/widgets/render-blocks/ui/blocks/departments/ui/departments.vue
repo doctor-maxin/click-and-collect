@@ -128,7 +128,7 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
         >
             <button
                 :class="[
-                    'bg-black/25 rotate-180 pointer-events-auto cursor-pointer rounded-full',
+                    'bg-black/25 -translate-x-[calc(100%+16px)] rotate-180 pointer-events-auto cursor-pointer rounded-full',
                     prevButtonClass,
                 ]"
             >
@@ -136,7 +136,7 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
             </button>
             <button
                 :class="[
-                    'bg-black/25 cursor-pointer pointer-events-auto rounded-full',
+                    'bg-black/25 translate-x-[calc(100%+16px)] cursor-pointer pointer-events-auto rounded-full',
                     nextButtonClass,
                 ]"
             >
