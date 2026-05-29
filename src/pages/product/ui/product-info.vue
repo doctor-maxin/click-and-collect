@@ -103,7 +103,7 @@ const isAvailableProduct = computed(() => {
             >Арт. {{ sku }}</span
         >
         <div class="my-6 items-center flex gap-4">
-            <template v-if="oldPrice">
+            <template v-if="oldPrice && price !== oldPrice">
                 <span
                     v-if="typeof price === 'number'"
                     class="text-red text-2xl font-medium"
