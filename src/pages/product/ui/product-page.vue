@@ -69,10 +69,16 @@ watch(
     variant,
     async (value) => {
         if (!value) return;
-        const { price } = await client.client.fetch<{ price: number }>(
-            `/store/variants/${value.id}/price`,
-        );
+        const { price, compare_at_price, discount } =
+            await client.client.fetch<{
+                price: number;
+                compare_at_price: number;
+                discount: number;
+                code: number;
+            }>(`/store/variants/${value.id}/price`);
         productStore.setPrice(price);
+        if (compare_at_price) productStore.setOldPrice(compare_at_price);
+        if (discount) productStore.setDiscount(discount);
     },
     {
         deep: true,

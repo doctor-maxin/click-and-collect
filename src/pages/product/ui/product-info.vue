@@ -9,7 +9,8 @@ import ProductCharacteristicsDrawer from "./product-characteristics-drawer.vue";
 import { UiWbButton } from "#components";
 
 const productStore = useProductStore();
-const { product, variant, price } = storeToRefs(productStore);
+const { product, variant, price, oldPrice, discount } =
+    storeToRefs(productStore);
 const router = useRouter();
 const sku = computed(() => {
     if (variant.value?.sku?.includes("-")) {
@@ -101,18 +102,50 @@ const isAvailableProduct = computed(() => {
             class="text-base block mb-3 md:mb-4 lg:mb-6 leading-5 text-[hsl(216,64%,15%)]/50"
             >Арт. {{ sku }}</span
         >
-        <span
-            v-if="typeof price === 'number'"
-            class="my-6 text-2xl font-medium"
-            >{{
-                price.toLocaleString("ru-RU", {
-                    style: "currency",
-                    currency: "RUB",
-                    maximumFractionDigits: 0,
-                })
-            }}</span
-        >
-
+        <div class="my-6 items-center flex gap-4">
+            <template v-if="oldPrice">
+                <span
+                    v-if="typeof price === 'number'"
+                    class="text-red text-2xl font-medium"
+                    >{{
+                        price.toLocaleString("ru-RU", {
+                            style: "currency",
+                            currency: "RUB",
+                            maximumFractionDigits: 0,
+                        })
+                    }}</span
+                >
+                <span
+                    v-if="typeof oldPrice === 'number'"
+                    class="text-2xl text-gray line-through"
+                    >{{
+                        oldPrice.toLocaleString("ru-RU", {
+                            style: "currency",
+                            currency: "RUB",
+                            maximumFractionDigits: 0,
+                        })
+                    }}</span
+                >
+                <span
+                    v-if="typeof discount === 'number'"
+                    class="text-red text-2xl"
+                    >-{{ discount }}%</span
+                >
+            </template>
+            <template v-else>
+                <span
+                    v-if="typeof price === 'number'"
+                    class="my-6 text-2xl font-medium"
+                    >{{
+                        price.toLocaleString("ru-RU", {
+                            style: "currency",
+                            currency: "RUB",
+                            maximumFractionDigits: 0,
+                        })
+                    }}</span
+                ></template
+            >
+        </div>
         <ProductColorPicker />
         <ProductSizePicker />
         <span

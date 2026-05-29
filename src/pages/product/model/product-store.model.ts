@@ -1,12 +1,14 @@
 import type {
-  StoreProduct,
-  StoreProductVariant,
-  StoreProductOptionValue,
+    StoreProduct,
+    StoreProductVariant,
+    StoreProductOptionValue,
 } from "@medusajs/types";
 
 export interface IProductState {
-  product: StoreProduct | null;
-  color: StoreProductOptionValue | null;
-  size: StoreProductOptionValue | null;
-  price: number | null;
+    product: StoreProduct | null;
+    color: StoreProductOptionValue | null;
+    size: StoreProductOptionValue | null;
+    price: number | null;
+    discount: number | null;
+    oldPrice: number | null;
 }

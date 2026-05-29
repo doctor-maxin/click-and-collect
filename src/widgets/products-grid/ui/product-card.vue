@@ -66,7 +66,7 @@ const link = computed(
         :data-id="product.id"
     >
         <div class="relative" @mousemove="onMouseOver">
-            <NuxtLink class="contents" :to="link">
+            <NuxtLink class="block" :to="link">
                 <template v-if="imageList?.length">
                     <swiper-container
                         :init="false"
