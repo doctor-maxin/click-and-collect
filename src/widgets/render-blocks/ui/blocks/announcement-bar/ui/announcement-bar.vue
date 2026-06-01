@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { NuxtLink } from "#components";
 import {
     ref,
     computed,
@@ -101,8 +102,10 @@ watch(
 </script>
 
 <template>
-    <div
-        class="w-full text-base lg:text-[1.25rem] leading-5 lg:leading-6 py-2 lg:py-3 overflow-hidden text-(--text-color) bg-[var(--bg-color)]"
+    <component
+        :is="data.link ? NuxtLink : 'div'"
+        :to="data.link"
+        class="w-full block text-base lg:text-[1.25rem] leading-5 lg:leading-6 py-2 lg:py-3 overflow-hidden text-(--text-color) bg-[var(--bg-color)]"
         :style="wrapperStyle"
         role="presentation"
     >
@@ -141,7 +144,7 @@ watch(
                 </div>
             </div>
         </div>
-    </div>
+    </component>
 </template>
 
 <style scoped>
