@@ -11,6 +11,7 @@ import {
     NavigationMenuViewport,
 } from "reka-ui";
 import type { StoreProductCategory } from "@medusajs/types";
+import type { CSSProperties } from "vue";
 
 const { data: product_categories } =
     useNuxtData<StoreProductCategory[]>("categories");
@@ -38,7 +39,6 @@ const categoriesTree = computed(() => {
 
     return filterAvailableCategories(menuCategories);
 });
-
 const props = defineProps<{
     menu: NavigationMenu;
 }>();
@@ -46,31 +46,81 @@ const emit = defineEmits<{
     (e: "close"): void;
 }>();
 
+type CategoryMenuItemSettings = {
+    color?: string;
+    fontWeight?: string;
+    hasBottomSpacing?: boolean;
+};
+
+type CategoryWithMenuSettings = StoreProductCategory & {
+    metadata?: {
+        menuItemSettings?: CategoryMenuItemSettings;
+    };
+};
+
 type MobileMenuItem = {
     id: string;
     title: string;
     path: string;
     color?: string;
+    fontWeight?: string;
+    hasBottomSpacing?: boolean;
     children: {
         id: string;
         title: string;
         path: string;
+        color?: string;
+        fontWeight?: string;
+        hasBottomSpacing?: boolean;
     }[];
 };
 
+const getCategoryMenuItemSettings = (
+    category: StoreProductCategory,
+): CategoryMenuItemSettings => {
+    const typedCategory = category as CategoryWithMenuSettings;
+    return typedCategory.metadata?.menuItemSettings ?? {};
+};
+
+const getMenuItemStyle = (
+    settings?: CategoryMenuItemSettings,
+): CSSProperties => ({
+    color: settings?.color ?? "inherit",
+    fontWeight: settings?.fontWeight ?? undefined,
+});
+
+const getMenuItemSpacingClass = (settings?: CategoryMenuItemSettings) => ({
+    "mb-4": settings?.hasBottomSpacing,
+});
+
 const mobileMenuItems = computed<MobileMenuItem[]>(() => {
     const categoryItems: MobileMenuItem[] = categoriesTree.value.map(
-        (category) => ({
-            id: `category-${category.id}`,
-            title: category.name,
-            path: `/catalog/${category.handle}`,
-            children:
-                category.category_children?.map((subCategory) => ({
-                    id: `subcategory-${subCategory.id}`,
-                    title: subCategory.name,
-                    path: `/catalog/${subCategory.handle}`,
-                })) ?? [],
-        }),
+        (category) => {
+            const settings = getCategoryMenuItemSettings(category);
+
+            return {
+                id: `category-${category.id}`,
+                title: category.name,
+                path: `/catalog/${category.handle}`,
+                color: settings.color,
+                fontWeight: settings.fontWeight,
+                hasBottomSpacing: settings.hasBottomSpacing,
+                children:
+                    category.category_children?.map((subCategory) => {
+                        const childSettings =
+                            getCategoryMenuItemSettings(subCategory);
+
+                        return {
+                            id: `subcategory-${subCategory.id}`,
+                            title: subCategory.name,
+                            path: `/catalog/${subCategory.handle}`,
+                            color: childSettings.color,
+                            fontWeight: childSettings.fontWeight,
+                            hasBottomSpacing: childSettings.hasBottomSpacing,
+                        };
+                    }) ?? [],
+            };
+        },
     );
 
     const navigationItems: MobileMenuItem[] = props.menu.map((item) => ({
@@ -136,12 +186,13 @@ const toSentenceCase = (value: string) => {
                         v-for="item of mobileMenuItems"
                         :key="item.id"
                         class="py-2 text-xl leading-5"
+                        :class="getMenuItemSpacingClass(item)"
                     >
                         <button
                             v-if="item.children.length"
                             type="button"
                             class="uppercase w-full cursor-pointer font-semibold text-left flex items-center justify-between gap-4"
-                            :style="{ color: item.color ?? 'inherit' }"
+                            :style="getMenuItemStyle(item)"
                             @click="openMobileSubmenu(item.id)"
                         >
                             <span>{{ item.title }}</span>
@@ -154,7 +205,7 @@ const toSentenceCase = (value: string) => {
                             v-else
                             :to="item.path"
                             class="uppercase w-full block cursor-pointer font-semibold"
-                            :style="{ color: item.color ?? 'inherit' }"
+                            :style="getMenuItemStyle(item)"
                             @click="closeMenu"
                         >
                             {{ item.title }}
@@ -181,10 +232,12 @@ const toSentenceCase = (value: string) => {
                         v-for="childItem of activeMobileItem.children"
                         :key="childItem.id"
                         class="py-2 text-xl leading-5"
+                        :class="getMenuItemSpacingClass(childItem)"
                     >
                         <NuxtLink
                             :to="childItem.path"
                             class="w-full block font-medium"
+                            :style="getMenuItemStyle(childItem)"
                             @click="closeMenu"
                         >
                             {{ toSentenceCase(childItem.title) }}
@@ -214,12 +267,13 @@ const toSentenceCase = (value: string) => {
                 v-for="item of mobileMenuItems"
                 :key="item.id"
                 class="py-2 text-xl leading-5"
+                :class="getMenuItemSpacingClass(item)"
             >
                 <div class="flex items-start gap-3">
                     <NuxtLink
                         :to="item.path"
                         class="uppercase flex-1 block cursor-pointer font-semibold"
-                        :style="{ color: item.color ?? 'inherit' }"
+                        :style="getMenuItemStyle(item)"
                         @click="closeMenu"
                     >
                         {{ item.title }}
@@ -255,10 +309,12 @@ const toSentenceCase = (value: string) => {
                 v-for="childItem of activeTabletItem.children"
                 :key="childItem.id"
                 class="py-2 text-xl leading-5"
+                :class="getMenuItemSpacingClass(childItem)"
             >
                 <NuxtLink
                     :to="childItem.path"
                     class="w-full block font-medium"
+                    :style="getMenuItemStyle(childItem)"
                     @click="closeMenu"
                 >
                     {{ toSentenceCase(childItem.title) }}
@@ -273,10 +329,18 @@ const toSentenceCase = (value: string) => {
                 v-for="category of categoriesTree"
                 :key="category.id"
                 class="group"
+                :class="
+                    getMenuItemSpacingClass(
+                        getCategoryMenuItemSettings(category),
+                    )
+                "
             >
                 <NavigationMenuTrigger
                     v-if="category.category_children?.length"
                     class="uppercase main-menu-bar-link relative py-2 text-left font-semibold text-xl leading-5 w-full"
+                    :style="
+                        getMenuItemStyle(getCategoryMenuItemSettings(category))
+                    "
                 >
                     <NavigationMenuLink as-child>
                         <NuxtLink
@@ -292,6 +356,9 @@ const toSentenceCase = (value: string) => {
                     as-child
                     v-else
                     class="uppercase block text-left py-2 gap-4 font-semibold text-xl leading-5 w-full"
+                    :style="
+                        getMenuItemStyle(getCategoryMenuItemSettings(category))
+                    "
                 >
                     <NuxtLink
                         :to="'/catalog/' + category.handle"
@@ -311,6 +378,20 @@ const toSentenceCase = (value: string) => {
                                 :value="subCategory.handle"
                                 :key="subCategory.id"
                                 class="uppercase py-2 items-center gap-4 font-medium text-xl leading-5 flex justify-between w-full"
+                                :class="
+                                    getMenuItemSpacingClass(
+                                        getCategoryMenuItemSettings(
+                                            subCategory,
+                                        ),
+                                    )
+                                "
+                                :style="
+                                    getMenuItemStyle(
+                                        getCategoryMenuItemSettings(
+                                            subCategory,
+                                        ),
+                                    )
+                                "
                             >
                                 <NavigationMenuLink>
                                     <NuxtLink
