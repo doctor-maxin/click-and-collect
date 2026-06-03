@@ -42,6 +42,23 @@ function getDefaultUrl(image?: StoreProductImage, original?: boolean) {
         : image.url.replace("500px", "1400px");
 }
 
+function getPreviewUrl(image?: StoreProductImage) {
+    if (!image?.url?.trim()) return "/not_found.png";
+
+    return isS3.value
+        ? img(
+              image.url,
+              {
+                  width: 800,
+              },
+              {
+                  //@ts-ignore
+                  provider: "customS3",
+              },
+          )
+        : image.url;
+}
+
 const colorImages = computed(() =>
     product.value?.images?.filter(
         (i) =>
@@ -131,31 +148,42 @@ watch(
                     />
                 </div>
             </div>
-            <div class="relative h-full desktop-media">
-                <ClientOnly>
-                    <ZoomImg
-                        v-if="!isError"
-                        ref="zoomImgRef"
-                        class="h-full object-cover"
-                        trigger="hover"
-                        :zoom-scale="3"
-                        :src="getDefaultUrl(mainImage, true)"
-                        @error="onErrorZoomImg"
-                    >
-                        <template #loading>
-                            <NuxtImg
+            <div
+                class="relative h-full overflow-hidden desktop-media aspect-3/4"
+            >
+                <div v-if="!isError" class="absolute inset-0">
+                    <ClientOnly>
+                        <ZoomImg
+                            :key="mainImage?.id ?? mainImage?.url"
+                            ref="zoomImgRef"
+                            class="h-full w-full object-cover"
+                            trigger="hover"
+                            :zoom-scale="3"
+                            :src="getDefaultUrl(mainImage, true)"
+                            @error="onErrorZoomImg"
+                        >
+                            <template #loading>
+                                <ProductImage
+                                    :src="getPreviewUrl(mainImage)"
+                                    :alt="product?.title as string"
+                                    class="h-full w-full object-cover"
+                                />
+                            </template>
+                        </ZoomImg>
+                        <template #fallback>
+                            <ProductImage
+                                :src="getPreviewUrl(mainImage)"
+                                :alt="product?.title as string"
                                 class="h-full w-full object-cover"
-                                :src="getDefaultUrl(mainImage, false)"
                             />
-                            <!-- Write your content here -->
                         </template>
-                    </ZoomImg>
-                </ClientOnly>
+                    </ClientOnly>
+                </div>
                 <img
                     v-if="isError"
                     src="/not_found.png"
                     alt="Product Image"
-                    class="h-full object-cover"
+                    class="absolute inset-0 h-full w-full object-cover"
                 />
             </div>
         </div>

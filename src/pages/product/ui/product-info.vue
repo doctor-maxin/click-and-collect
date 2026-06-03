@@ -135,7 +135,7 @@ const isAvailableProduct = computed(() => {
             <template v-else>
                 <span
                     v-if="typeof price === 'number'"
-                    class="my-6 text-2xl font-medium"
+                    class="text-2xl font-medium"
                     >{{
                         price.toLocaleString("ru-RU", {
                             style: "currency",
