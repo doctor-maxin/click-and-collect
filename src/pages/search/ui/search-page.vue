@@ -19,7 +19,12 @@ const products = ref<SearchProductDocument[]>([]);
 const shouldAppendProducts = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 const isInternalUpdate = ref(false);
-const searchableProductAttributes = ["coloredTitle", "metadata.model"];
+const searchableProductAttributes = [
+    "coloredTitle",
+    "metadata.model",
+    "external_id",
+    "variants.sku",
+];
 const count = ref(0);
 
 const getPageFromQuery = () => {
