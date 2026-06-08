@@ -5,7 +5,7 @@ import type {
     StoreProductOptionValue,
     StoreProductVariant,
 } from "@medusajs/types";
-import type { SearchProductDocument } from "~/shared/types/search-product-document";
+import type { SearchProductDocument } from "#shared/types/search-product-document";
 import { useProductStore } from "../lib/product-store";
 
 const productStore = useProductStore();

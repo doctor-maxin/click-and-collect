@@ -3,6 +3,25 @@ query GetStaticPage($status: PublicationStatus, $filters: PageFiltersInput) {
     title
     handle
     publishedAt
+    seo {
+      metaTitle
+      metaDescription
+      canonicalURL
+      keywords
+      metaRobots
+      metaImage {
+        url
+      }
+      openGraph {
+        ogTitle
+        ogDescription
+        ogUrl
+        ogType
+        ogImage {
+          url
+        }
+      }
+    }
     content
     preamble
   }

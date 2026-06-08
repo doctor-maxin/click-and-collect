@@ -2,18 +2,46 @@
 import { useRoute } from "#app";
 import type { StoreProductCategory } from "@medusajs/types";
 import { useFiltersStore } from "~/shared/lib/filters.store";
-import type { SearchProductDocument } from "~/shared/types/search-product-document";
+import {
+    hasMeaningfulQueryValue,
+    INDEXABLE_ROBOTS,
+    NOINDEX_FOLLOW_ROBOTS,
+} from "#shared/lib/seo";
+import { resolveSeoMeta, truncateDescription } from "#shared/lib/seo-meta";
+import type { SearchProductDocument } from "#shared/types/search-product-document";
 import { getCategoryFromTree } from "~/shared/lib/utils/get-category-from-tree";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
 import CategoryBreadCrumbs from "./category-breadcrumbs.vue";
 import CategoryFilters from "./category-filters.vue";
 import CategoryLinks from "./category-links.vue";
+import { toAbsoluteSiteUrl } from "~~/shared/lib";
 
 const route = useRoute();
 const router = useRouter();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
+const {
+    public: { siteUrl, siteName },
+} = useRuntimeConfig();
+const canonicalPath = computed(
+    () => `/catalog/${route.params.handle as string}`,
+);
+const canonicalUrl = computed(() =>
+    toAbsoluteSiteUrl(siteUrl as string, canonicalPath.value),
+);
+const isIndexableCategoryPage = computed(
+    () =>
+        !Object.entries(route.query).some(([key, value]) => {
+            if (key === "_append") return false;
+            if (key === "page") {
+                const pageValue = Array.isArray(value) ? value[0] : value;
+                return Number(pageValue) > 1;
+            }
+
+            return hasMeaningfulQueryValue(value);
+        }),
+);
 
 const { limit, sort, page, totalPages, appliedFilters } =
     storeToRefs(filtersStore);
@@ -49,6 +77,42 @@ if (!category.value)
         fatal: true,
         data: route.params,
     });
+
+const categoryMeta = computed(() =>
+    resolveSeoMeta({
+        canonical: canonicalUrl.value,
+        title: category.value?.name
+            ? `${category.value.name} - купить в ${siteName as string}`
+            : (siteName as string),
+        description: truncateDescription(
+            category.value?.name
+                ? `${category.value.name} в каталоге ${siteName as string}. Подбор моделей, актуальные предложения и удобный поиск по параметрам.`
+                : undefined,
+        ),
+        robots: isIndexableCategoryPage.value
+            ? INDEXABLE_ROBOTS
+            : NOINDEX_FOLLOW_ROBOTS,
+    }),
+);
+
+useHead(() => ({
+    link: [
+        {
+            rel: "canonical",
+            href: categoryMeta.value.canonical,
+        },
+    ],
+}));
+
+useSeoMeta({
+    title: () => categoryMeta.value.title,
+    description: () => categoryMeta.value.description,
+    robots: () => categoryMeta.value.robots,
+    ogTitle: () => categoryMeta.value.ogTitle,
+    ogDescription: () => categoryMeta.value.ogDescription,
+    ogUrl: () => categoryMeta.value.ogUrl,
+    ogType: "website",
+});
 
 const products = ref<SearchProductDocument[]>([]);
 const count = ref(0);

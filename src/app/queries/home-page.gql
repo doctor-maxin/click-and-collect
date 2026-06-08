@@ -1,6 +1,25 @@
 query GetHomePage {
     homePage {
         H1
+        seo {
+            metaTitle
+            metaDescription
+            canonicalURL
+            keywords
+            metaRobots
+            metaImage {
+                url
+            }
+            openGraph {
+                ogTitle
+                ogDescription
+                ogUrl
+                ogType
+                ogImage {
+                    url
+                }
+            }
+        }
         content {
             ... on ComponentBlocksAnnouncementBar {
                 __typename

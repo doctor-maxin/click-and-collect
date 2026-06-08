@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { StoreProductCategory } from "@medusajs/types";
-import type { SearchProductDocument } from "~/shared/types/search-product-document";
+import type { SearchProductDocument } from "#shared/types/search-product-document";
+import { NOINDEX_FOLLOW_ROBOTS } from "#shared/lib/seo";
+import { resolveSeoMeta, truncateDescription } from "#shared/lib/seo-meta";
+import { toAbsoluteSiteUrl } from "#shared/lib/site-url";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
 import SearchFilters from "./search-filters.vue";
@@ -10,8 +13,26 @@ const route = useRoute();
 const router = useRouter();
 const searchClient = useSearchClient();
 const filtersStore = useFiltersStore();
+const siteConfig = useSiteConfig();
+const canonicalUrl = computed(() =>
+    toAbsoluteSiteUrl(siteConfig.url, "/search"),
+);
 
 const query = computed(() => route.query.q?.toString() ?? "");
+const searchMeta = computed(() =>
+    resolveSeoMeta({
+        canonical: canonicalUrl.value,
+        title: query.value
+            ? `${query.value} - поиск по каталогу | ${siteConfig.name}`
+            : `Поиск по каталогу | ${siteConfig.name}`,
+        description: truncateDescription(
+            query.value
+                ? `Результаты поиска по запросу "${query.value}" в каталоге ${siteConfig.name}.`
+                : `Поиск товаров по каталогу ${siteConfig.name}.`,
+        ),
+        robots: NOINDEX_FOLLOW_ROBOTS,
+    }),
+);
 
 const { limit, page, totalPages, appliedFilters, sort } =
     storeToRefs(filtersStore);
@@ -157,8 +178,23 @@ watchEffect(() => {
     filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
 });
 
+useHead(() => ({
+    link: [
+        {
+            rel: "canonical",
+            href: searchMeta.value.canonical,
+        },
+    ],
+}));
+
 useSeoMeta({
-    title: `Товары по запросу ${query.value?.toString() ?? ""}`,
+    title: () => searchMeta.value.title,
+    description: () => searchMeta.value.description,
+    robots: () => searchMeta.value.robots,
+    ogTitle: () => searchMeta.value.ogTitle,
+    ogDescription: () => searchMeta.value.ogDescription,
+    ogUrl: () => searchMeta.value.ogUrl,
+    ogType: "website",
 });
 
 watch(

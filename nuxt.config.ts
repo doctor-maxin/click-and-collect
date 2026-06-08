@@ -9,6 +9,9 @@ const IGNORED_BUILD_WARNINGS = [
 export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
     devtools: { enabled: true },
+    routeRules: {
+        "/search": { robots: false },
+    },
     modules: [
         "nuxt-svgo",
         "nuxt-swiper",
@@ -33,6 +36,22 @@ export default defineNuxtConfig({
         name: process.env.NUXT_SITE_NAME,
         description: process.env.NUXT_SITE_DESCRIPTION,
         defaultLocale: process.env.NUXT_DEFAULT_LOCALE,
+    },
+    sitemap: {
+        sources: ["/api/__sitemap__/urls"],
+        exclude: ["/search"],
+    },
+    robots: {
+        blockNonSeoBots: true,
+        cacheControl: "max-age=14400, must-revalidate",
+        sitemap: ["/sitemap.xml"],
+    },
+    schemaOrg: {
+        identity: {
+            type: "Organization",
+            name: process.env.NUXT_SITE_NAME,
+            logo: "/apple-touch-icon.png",
+        },
     },
     yandexMaps: {
         apikey: process.env.NUXT_YANDEX_API_KEY,
@@ -132,6 +151,8 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
+            siteUrl: process.env.NUXT_SITE_URL,
+            siteName: process.env.NUXT_SITE_NAME,
             strapiUrl: process.env.STRAPI_URL,
             strapiToken: process.env.STRAPI_TOKEN,
             medusaUrl: process.env.NUXT_MEDUSA_URL,
