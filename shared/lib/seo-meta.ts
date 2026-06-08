@@ -33,6 +33,16 @@ type SeoInput = {
 
 const cleanText = (value?: string | null) => value?.trim() || undefined;
 
+const resolveAbsoluteUrl = (value: string | undefined, base: string) => {
+    if (!value) return undefined;
+
+    try {
+        return new URL(value, base).toString();
+    } catch {
+        return value;
+    }
+};
+
 export const resolveSeoMeta = (input: SeoInput) => {
     const { seo } = input;
 
@@ -48,6 +58,7 @@ export const resolveSeoMeta = (input: SeoInput) => {
         cleanText(seo?.openGraph?.ogImage?.url) ||
         cleanText(seo?.metaImage?.url) ||
         cleanText(input.image);
+    const ogImage = resolveAbsoluteUrl(image, canonical);
 
     return {
         title,
@@ -59,7 +70,7 @@ export const resolveSeoMeta = (input: SeoInput) => {
         ogDescription,
         ogUrl,
         ogType: cleanText(seo?.openGraph?.ogType) || "website",
-        ogImage: image,
+        ogImage,
     };
 };
 

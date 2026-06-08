@@ -92,7 +92,11 @@ const productMeta = computed(() =>
         title: product.value?.title
             ? `${product.value.title} - купить в ${siteConfig.name}`
             : siteConfig.name,
-        description: truncateDescription(product.value?.description),
+        description: truncateDescription(
+            product.value?.title
+                ? `Купить ${product.value.title} в интернет-магазине ${siteConfig.name}. Актуальные цены, описание, характеристики и удобная доставка.`
+                : product.value?.description,
+        ),
         image: product.value?.images?.[0]?.url,
         robots: isIndexableProductPage.value
             ? INDEXABLE_ROBOTS
@@ -191,6 +195,10 @@ useSeoMeta({
     ogUrl: () => productMeta.value.ogUrl,
     ogType: "product",
     ogImage: () => productMeta.value.ogImage,
+    twitterCard: "summary_large_image",
+    twitterTitle: () => productMeta.value.ogTitle,
+    twitterDescription: () => productMeta.value.ogDescription,
+    twitterImage: () => productMeta.value.ogImage,
 });
 
 useSchemaOrg([

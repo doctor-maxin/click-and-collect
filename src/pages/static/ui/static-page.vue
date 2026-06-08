@@ -77,6 +77,10 @@ useSeoMeta({
     ogUrl: () => staticMeta.value.ogUrl,
     ogType: () => staticMeta.value.ogType,
     ogImage: () => staticMeta.value.ogImage,
+    twitterCard: "summary_large_image",
+    twitterTitle: () => staticMeta.value.ogTitle,
+    twitterDescription: () => staticMeta.value.ogDescription,
+    twitterImage: () => staticMeta.value.ogImage,
 });
 
 const breadcrumbItems = computed(() => [

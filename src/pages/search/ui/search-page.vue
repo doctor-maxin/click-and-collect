@@ -195,6 +195,9 @@ useSeoMeta({
     ogDescription: () => searchMeta.value.ogDescription,
     ogUrl: () => searchMeta.value.ogUrl,
     ogType: "website",
+    twitterCard: "summary",
+    twitterTitle: () => searchMeta.value.ogTitle,
+    twitterDescription: () => searchMeta.value.ogDescription,
 });
 
 watch(

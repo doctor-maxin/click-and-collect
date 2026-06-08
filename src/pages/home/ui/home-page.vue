@@ -50,6 +50,10 @@ useSeoMeta({
     ogDescription: () => homeMeta.value.ogDescription,
     ogUrl: () => homeMeta.value.ogUrl,
     ogImage: () => homeMeta.value.ogImage,
+    twitterCard: "summary_large_image",
+    twitterTitle: () => homeMeta.value.ogTitle,
+    twitterDescription: () => homeMeta.value.ogDescription,
+    twitterImage: () => homeMeta.value.ogImage,
 });
 </script>
 <template>

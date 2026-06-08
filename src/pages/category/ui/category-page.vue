@@ -112,6 +112,9 @@ useSeoMeta({
     ogDescription: () => categoryMeta.value.ogDescription,
     ogUrl: () => categoryMeta.value.ogUrl,
     ogType: "website",
+    twitterCard: "summary",
+    twitterTitle: () => categoryMeta.value.ogTitle,
+    twitterDescription: () => categoryMeta.value.ogDescription,
 });
 
 const products = ref<SearchProductDocument[]>([]);
