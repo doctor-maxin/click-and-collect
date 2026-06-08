@@ -49,7 +49,7 @@ export default defineNuxtConfig({
     schemaOrg: {
         identity: {
             type: "Organization",
-            name: process.env.NUXT_SITE_NAME,
+            name: process.env.NUXT_SITE_NAME!,
             logo: "/apple-touch-icon.png",
         },
     },

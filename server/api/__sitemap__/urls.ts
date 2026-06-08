@@ -1,7 +1,7 @@
-import { getSdk, type GetHomePageQuery } from "#gql/default";
 import { defineSitemapEventHandler } from "#imports";
 import { GraphQLClient } from "graphql-request";
 import { joinURL } from "ufo";
+import { SITEMAP_HOME_PAGE_QUERY } from "../../utils/sitemap-queries";
 
 const MEDUSA_PAGE_SIZE = 100;
 const STRAPI_PAGE_SIZE = 100;
@@ -54,6 +54,12 @@ type StrapiPagesResponse = {
         pages?: StrapiPage[];
     };
     errors?: Array<{ message?: string }>;
+};
+
+type StrapiHomePageResponse = {
+    homePage?: {
+        content?: unknown;
+    } | null;
 };
 
 const toIsoDate = (value?: string | null) => {
@@ -161,7 +167,6 @@ export default defineSitemapEventHandler(async () => {
             Authorization: `Bearer ${strapiToken}`,
         },
     });
-    const strapiSdk = getSdk(strapiClient);
 
     const products: SitemapEntry[] = [];
     let offset = 0;
@@ -221,10 +226,12 @@ export default defineSitemapEventHandler(async () => {
             lastmod: toIsoDate(category.updated_at),
         }));
 
-    let homePageResponse: GetHomePageQuery;
+    let homePageResponse: StrapiHomePageResponse;
 
     try {
-        homePageResponse = await strapiSdk.GetHomePage();
+        homePageResponse = await strapiClient.request<StrapiHomePageResponse>(
+            SITEMAP_HOME_PAGE_QUERY,
+        );
     } catch (error) {
         throw createError({
             statusCode: 500,
