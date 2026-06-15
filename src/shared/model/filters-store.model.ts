@@ -2,6 +2,7 @@ import type { IFilterValue } from "#shared/types/autocomplete.js";
 
 export interface IFiltersStore {
   limit: number;
+  enableAutoload: boolean;
   page: number;
   totalPages: number;
   isOpen: boolean;

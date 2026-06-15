@@ -1,13 +1,18 @@
 query GetConfig {
-  config {
-    address
-    documentId
-    email
-    phone
-    yandexMapKey
-    cookieBanner {
-      header
-      content
+    config {
+        address
+        documentId
+        email
+        phone
+        yandexMapKey
+        cookieBanner {
+            header
+            content
+        }
+        catalogSettings {
+            enableAutoload
+            pageSize
+            id
+        }
     }
-  }
 }

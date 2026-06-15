@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "#app";
 import type { StoreProductCategory } from "@medusajs/types";
+import { useIntersectionObserver } from "@vueuse/core";
 import { useFiltersStore } from "~/shared/lib/filters.store";
 import {
     hasMeaningfulQueryValue,
@@ -43,7 +44,7 @@ const isIndexableCategoryPage = computed(
         }),
 );
 
-const { limit, sort, page, totalPages, appliedFilters } =
+const { limit, enableAutoload, sort, page, totalPages, appliedFilters } =
     storeToRefs(filtersStore);
 
 if (!route.params.handle || route.params.handle === "undefined")
@@ -337,9 +338,39 @@ watch(sort, () => {
 });
 
 const onLoadMore = () => {
+    if (
+        status.value === "pending" ||
+        shouldAppendProducts.value ||
+        page.value >= totalPages.value
+    ) {
+        return;
+    }
+
     shouldAppendProducts.value = true;
     pushPageToQuery(page.value + 1, true);
 };
+
+const autoloadTriggerRef = ref<HTMLElement | null>(null);
+const isAutoloadTriggerVisible = ref(false);
+
+useIntersectionObserver(
+    autoloadTriggerRef,
+    ([entry]) => {
+        isAutoloadTriggerVisible.value = entry?.isIntersecting ?? false;
+    },
+    {
+        rootMargin: "0px 0px 400px 0px",
+    },
+);
+
+watch(
+    [isAutoloadTriggerVisible, enableAutoload, status, page, totalPages],
+    ([isVisible, isEnabled, currentStatus]) => {
+        if (!isVisible || !isEnabled || currentStatus !== "success") return;
+        onLoadMore();
+    },
+    { immediate: true },
+);
 
 const onPageChange = (nextPage: number) => {
     if (nextPage === page.value) return;
@@ -385,6 +416,12 @@ const getProductsCountLabel = (value: number) => {
                     :total-pages="totalPages"
                     @load-more="onLoadMore"
                     @page-change="onPageChange"
+                />
+                <div
+                    v-if="enableAutoload && page < totalPages"
+                    ref="autoloadTriggerRef"
+                    class="h-px w-full"
+                    aria-hidden="true"
                 />
             </div>
         </div>

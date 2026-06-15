@@ -7,8 +7,10 @@ import { useAsyncData } from "#app";
 
 const client = useMedusaClient();
 const searchClient = useSearchClient();
+const filtersStore = useFiltersStore();
 
-await useAsyncData("config", () => GqlGetConfig());
+const { data: config } = await useAsyncData("config", () => GqlGetConfig());
+filtersStore.setCatalogSettings(config.value?.config?.catalogSettings);
 await useAsyncData(
   "available-categories",
   () =>

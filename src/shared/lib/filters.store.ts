@@ -24,12 +24,29 @@ const initialFilters: IFiltersStore = {
   sort: null,
   lastAppliedInput: null,
   limit: 8,
+  enableAutoload: false,
   page: 1,
   totalPages: 1,
 };
 export const useFiltersStore = defineStore("filters", {
   state: (): IFiltersStore => ({ ...initialFilters }),
   actions: {
+    setCatalogSettings(settings?: {
+      enableAutoload?: boolean | null;
+      pageSize?: number | null;
+    } | null) {
+      if (!settings) return;
+
+      this.enableAutoload = settings.enableAutoload ?? false;
+
+      if (
+        typeof settings.pageSize === "number" &&
+        Number.isFinite(settings.pageSize) &&
+        settings.pageSize > 0
+      ) {
+        this.limit = Math.floor(settings.pageSize);
+      }
+    },
     normalizeFilterKey(key: string) {
       if (key === "subclass") return "metadata.subclass";
       if (key === "class") return "metadata.class";
