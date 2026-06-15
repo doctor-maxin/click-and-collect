@@ -24,6 +24,9 @@ export default defineNuxtConfig({
         "@vueuse/nuxt",
         "nuxt-anchorscroll",
     ],
+    anchorscroll: {
+        hooks: [],
+    },
     $production: {
         routeRules: {
             // "/": { swr: 5 },

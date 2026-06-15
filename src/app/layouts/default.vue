@@ -43,7 +43,13 @@ await useAsyncData("categories", () =>
       <WidgetHeader />
     </KeepAlive>
 
-    <NuxtPage class="flex-1" />
+    <NuxtPage
+      class="flex-1"
+      :keepalive="{
+        include: ['CatalogRoutePage'],
+        max: 10,
+      }"
+    />
     <KeepAlive>
       <WidgetFooter />
     </KeepAlive>

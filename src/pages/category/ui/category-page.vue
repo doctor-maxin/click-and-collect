@@ -22,11 +22,14 @@ const route = useRoute();
 const router = useRouter();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
+const categoryPath = route.path;
+const categoryHandle = route.params.handle as string;
+const isCategoryRouteActive = () => route.path === categoryPath;
 const {
     public: { siteUrl, siteName },
 } = useRuntimeConfig();
 const canonicalPath = computed(
-    () => `/catalog/${route.params.handle as string}`,
+    () => `/catalog/${categoryHandle}`,
 );
 const canonicalUrl = computed(() =>
     toAbsoluteSiteUrl(siteUrl as string, canonicalPath.value),
@@ -47,7 +50,7 @@ const isIndexableCategoryPage = computed(
 const { limit, enableAutoload, sort, page, totalPages, appliedFilters } =
     storeToRefs(filtersStore);
 
-if (!route.params.handle || route.params.handle === "undefined")
+if (!categoryHandle || categoryHandle === "undefined")
     throw createError({
         message: "Категория не найдена",
         statusCode: 404,
@@ -56,19 +59,10 @@ if (!route.params.handle || route.params.handle === "undefined")
     });
 const { data: product_categories } =
     useNuxtData<StoreProductCategory[]>("categories");
-const category = ref<(StoreProductCategory & { mpath: string }) | null>(null);
-
-watch(
-    () => route.params.handle,
-    () => {
-        if (!product_categories.value) return null;
-        const handle = route.params.handle as string;
-
-        category.value = getCategoryFromTree(handle, product_categories.value);
-    },
-    {
-        immediate: true,
-    },
+const category = ref<(StoreProductCategory & { mpath: string }) | null>(
+    product_categories.value
+        ? getCategoryFromTree(categoryHandle, product_categories.value)
+        : null,
 );
 
 if (!category.value)
@@ -134,6 +128,8 @@ const getPageFromQuery = () => {
 };
 
 const pushPageToQuery = (nextPage: number, append = false) => {
+    if (!isCategoryRouteActive()) return;
+
     const currentPageQuery = Array.isArray(route.query.page)
         ? route.query.page[0]
         : route.query.page;
@@ -160,6 +156,8 @@ const pushPageToQuery = (nextPage: number, append = false) => {
 watch(
     () => route.query.page,
     (val) => {
+        if (!isCategoryRouteActive()) return;
+
         const nextPage = getPageFromQuery();
         if (page.value === nextPage) return;
         filtersStore.setPage(nextPage);
@@ -184,7 +182,7 @@ const { data: filtersResponse } = await useAsyncData(
         });
     },
 );
-const asyncDataKey = computed(() =>
+const productsRequestKey = computed(() =>
     [
         category.value?.id,
         page.value,
@@ -192,8 +190,12 @@ const asyncDataKey = computed(() =>
         JSON.stringify(appliedFilters.value),
     ].join(":"),
 );
-const { data: productsResponse, status } = await useAsyncData(
-    asyncDataKey,
+const {
+    data: productsResponse,
+    status,
+    refresh: refreshProducts,
+} = await useAsyncData(
+    `category-products-${category.value.id}`,
     () => {
         isInternalUpdate.value = true;
         let filter = [`category_ids IN ['${category.value?.id}']`];
@@ -212,12 +214,20 @@ const { data: productsResponse, status } = await useAsyncData(
             ],
         });
     },
+    {
+        watch: false,
+    },
 );
+
+watch(productsRequestKey, (nextKey, previousKey) => {
+    if (!isCategoryRouteActive() || nextKey === previousKey) return;
+    void refreshProducts();
+});
 
 watch(
     () => route.query,
     () => {
-        if (isInternalUpdate.value) return;
+        if (!isCategoryRouteActive() || isInternalUpdate.value) return;
 
         const getQueryValue = (key: string) => {
             const v = route.query[key];
@@ -318,21 +328,8 @@ watchEffect(() => {
     count.value = productsResponse.value?.totalHits ?? 0;
 });
 
-watch(
-    () => route.params.handle,
-    (val, oldVal) => {
-        if (val && oldVal && val !== oldVal) {
-            filtersStore.setPage(1);
-            filtersStore.resetFilters();
-        }
-    },
-    {
-        immediate: true,
-        deep: true,
-    },
-);
-
 watch(sort, () => {
+    if (!isCategoryRouteActive()) return;
     shouldAppendProducts.value = false;
     pushPageToQuery(1);
 });
@@ -390,9 +387,8 @@ const getProductsCountLabel = (value: number) => {
 </script>
 
 <template>
-    <KeepAlive>
-        <div class="mt-16 lg:mt-32.5">
-            <div v-if="category" class="px-4 container mx-auto">
+    <div class="mt-16 lg:mt-32.5">
+        <div v-if="category" class="px-4 container mx-auto">
                 <CategoryBreadCrumbs :category="category" />
                 <div class="flex items-center gap-4 mt-6 mb-4 lg:my-9">
                     <h1
@@ -423,7 +419,6 @@ const getProductsCountLabel = (value: number) => {
                     class="h-px w-full"
                     aria-hidden="true"
                 />
-            </div>
         </div>
-    </KeepAlive>
+    </div>
 </template>

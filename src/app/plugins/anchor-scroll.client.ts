@@ -38,4 +38,9 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     nuxtApp.hook("page:finish", scrollToRouteAnchor);
     nuxtApp.hook("app:mounted", scrollToRouteAnchor);
+
+    nuxtApp.$router.afterEach((to, from) => {
+        if (!to.hash || to.path !== from.path || to.hash === from.hash) return;
+        void scrollToRouteAnchor();
+    });
 });
