@@ -70,14 +70,18 @@ onUnmounted(() => {
 function scrollLeft() {
     if (!optionsScrollbar.value) return;
 
-    optionsScrollbar.value.firstElementChild?.scrollIntoView({
+    optionsScrollbar.value.scrollTo({
+        left: 0,
         behavior: "smooth",
     });
 }
 function scrollRight() {
     if (!optionsScrollbar.value) return;
 
-    optionsScrollbar.value.lastElementChild?.scrollIntoView({
+    optionsScrollbar.value.scrollTo({
+        left:
+            optionsScrollbar.value.scrollWidth -
+            optionsScrollbar.value.clientWidth,
         behavior: "smooth",
     });
 }

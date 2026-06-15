@@ -22,6 +22,7 @@ export default defineNuxtConfig({
         "pinia-plugin-persistedstate/nuxt",
         "@nuxtjs/seo",
         "@vueuse/nuxt",
+        "nuxt-anchorscroll",
     ],
     $production: {
         routeRules: {

@@ -113,6 +113,7 @@ watch(viewMode, (mode) => {
 </script>
 <template>
     <section id="stores" class="pt-6 lg:pt-9 container lg:max-w-none mx-auto">
+        <a name="stores" />
         <h2 class="font-bold mb-6 lg:mb-13 text-xl lg:text-[2rem] text-center">
             {{ data.header }}
         </h2>
