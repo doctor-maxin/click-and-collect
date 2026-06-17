@@ -84,6 +84,10 @@ export const useFiltersStore = defineStore("filters", {
         setIsOpen(val: boolean) {
             this.isOpen = val;
         },
+        resetToggles() {
+            this.isOnlineEnabled = false;
+            this.isOfflineEnabled = false;
+        },
         setLastAppliedInput(key: string | null) {
             this.lastAppliedInput = key ? this.normalizeFilterKey(key) : null;
         },
