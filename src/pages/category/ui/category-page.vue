@@ -378,6 +378,11 @@ watch(
 
 const onPageChange = (nextPage: number) => {
     if (nextPage === page.value) return;
+    window.scroll({
+        left: 0,
+        top: 0,
+        behavior: "smooth",
+    });
     shouldAppendProducts.value = false;
     pushPageToQuery(nextPage, false);
 };
