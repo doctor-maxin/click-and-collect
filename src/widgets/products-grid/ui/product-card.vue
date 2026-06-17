@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { StoreProduct } from "@medusajs/types";
-import { FeatureRenderMedia } from "~/features/render-media";
 import ProductCardOptions from "./product-card-options.vue";
 import ProductCardPrice from "./product-card-price.vue";
 import ProductImage from "./product-image.vue";

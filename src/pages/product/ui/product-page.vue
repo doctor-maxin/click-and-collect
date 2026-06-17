@@ -164,7 +164,10 @@ const breadcrumbItems = computed(() => {
     for (const category of largestPath) {
         if (!category.parent_category_id) continue;
         list.push({
-            item: toAbsoluteSiteUrl(siteConfig.url, `/catalog/${category.handle}`),
+            item: toAbsoluteSiteUrl(
+                siteConfig.url,
+                `/catalog/${category.handle}`,
+            ),
             name: category.name,
         });
     }
@@ -177,67 +180,67 @@ const breadcrumbItems = computed(() => {
     return list;
 });
 
-useHead(() => ({
-    link: [
-        {
-            rel: "canonical",
-            href: productMeta.value.canonical,
-        },
-    ],
-}));
+// useHead(() => ({
+//     link: [
+//         {
+//             rel: "canonical",
+//             href: productMeta.value.canonical,
+//         },
+//     ],
+// }));
 
-useSeoMeta({
-    title: () => productMeta.value.title,
-    description: () => productMeta.value.description,
-    robots: () => productMeta.value.robots,
-    ogTitle: () => productMeta.value.ogTitle,
-    ogDescription: () => productMeta.value.ogDescription,
-    ogUrl: () => productMeta.value.ogUrl,
-    ogType: "product",
-    ogImage: () => productMeta.value.ogImage,
-    twitterCard: "summary_large_image",
-    twitterTitle: () => productMeta.value.ogTitle,
-    twitterDescription: () => productMeta.value.ogDescription,
-    twitterImage: () => productMeta.value.ogImage,
-});
+// useSeoMeta({
+//     title: () => productMeta.value.title,
+//     description: () => productMeta.value.description,
+//     robots: () => productMeta.value.robots,
+//     ogTitle: () => productMeta.value.ogTitle,
+//     ogDescription: () => productMeta.value.ogDescription,
+//     ogUrl: () => productMeta.value.ogUrl,
+//     ogType: "product",
+//     ogImage: () => productMeta.value.ogImage,
+//     twitterCard: "summary_large_image",
+//     twitterTitle: () => productMeta.value.ogTitle,
+//     twitterDescription: () => productMeta.value.ogDescription,
+//     twitterImage: () => productMeta.value.ogImage,
+// });
 
-useSchemaOrg([
-    defineBreadcrumb({
-        itemListElement: () =>
-            breadcrumbItems.value.map((item, index) => ({
-                "@type": "ListItem",
-                position: index + 1,
-                name: item.name,
-                item: item.item,
-            })),
-    }),
-    defineProduct({
-        name: () => productTitle.value,
-        description: () => product.value?.description,
-        image: () =>
-            product.value?.images
-                ?.map((image) => image.url)
-                .filter((image): image is string => Boolean(image)) ?? [],
-        sku: () => sku.value,
-        brand: () => ({
-            "@type": "Brand",
-            name: siteConfig.name,
-        }),
-        url: () => productMeta.value.canonical,
-        offers: () =>
-            typeof price.value === "number"
-                ? {
-                      "@type": "Offer",
-                      price: price.value,
-                      priceCurrency: "RUB",
-                      availability: isAvailable.value
-                          ? "https://schema.org/InStock"
-                          : "https://schema.org/OutOfStock",
-                      url: productMeta.value.canonical,
-                  }
-                : undefined,
-    }),
-]);
+// useSchemaOrg([
+//     defineBreadcrumb({
+//         itemListElement: () =>
+//             breadcrumbItems.value.map((item, index) => ({
+//                 "@type": "ListItem",
+//                 position: index + 1,
+//                 name: item.name,
+//                 item: item.item,
+//             })),
+//     }),
+//     defineProduct({
+//         name: () => productTitle.value,
+//         description: () => product.value?.description,
+//         image: () =>
+//             product.value?.images
+//                 ?.map((image) => image.url)
+//                 .filter((image): image is string => Boolean(image)) ?? [],
+//         sku: () => sku.value,
+//         brand: () => ({
+//             "@type": "Brand",
+//             name: siteConfig.name,
+//         }),
+//         url: () => productMeta.value.canonical,
+//         offers: () =>
+//             typeof price.value === "number"
+//                 ? {
+//                       "@type": "Offer",
+//                       price: price.value,
+//                       priceCurrency: "RUB",
+//                       availability: isAvailable.value
+//                           ? "https://schema.org/InStock"
+//                           : "https://schema.org/OutOfStock",
+//                       url: productMeta.value.canonical,
+//                   }
+//                 : undefined,
+//     }),
+// ]);
 
 productStore.setProduct(product.value);
 

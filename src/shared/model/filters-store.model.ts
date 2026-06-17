@@ -1,15 +1,18 @@
 import type { IFilterValue } from "#shared/types/autocomplete.js";
 
 export interface IFiltersStore {
-  limit: number;
-  enableAutoload: boolean;
-  page: number;
-  totalPages: number;
-  isOpen: boolean;
-  sort: string | null;
-  lastAppliedInput: string | null;
+    limit: number;
+    enableAutoload: boolean;
+    page: number;
+    totalPages: number;
+    isOpen: boolean;
+    sort: string | null;
+    lastAppliedInput: string | null;
 
-  availableFilters: Record<string, IFilterValue[] | null>;
-  filtersList: Record<string, IFilterValue[] | null>;
-  appliedFilters: Record<string, string[]>;
+    isOnlineEnabled: boolean;
+    isOfflineEnabled: boolean;
+
+    availableFilters: Record<string, IFilterValue[] | null>;
+    filtersList: Record<string, IFilterValue[] | null>;
+    appliedFilters: Record<string, string[]>;
 }

@@ -149,7 +149,7 @@ watch(
                 </div>
             </div>
             <div
-                class="relative h-full overflow-hidden desktop-media aspect-3/4"
+                class="relative h-full overflow-hidden desktop-media max-w-full aspect-3/4"
             >
                 <div v-if="!isError" class="absolute inset-0">
                     <ClientOnly>

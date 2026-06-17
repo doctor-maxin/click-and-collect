@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import type { StoreProductCategory } from "@medusajs/types";
 
-const { category } = defineProps<{
+const { category, someProduct = false } = defineProps<{
     category: StoreProductCategory & { mpath: string };
+    someProduct: boolean;
 }>();
 
 const level = computed(() => category?.mpath?.split(".")?.length);
 const route = useRoute();
 const router = useRouter();
 const filtersStore = useFiltersStore();
+
+const { isOnlineEnabled, isOfflineEnabled } = storeToRefs(filtersStore);
 
 const { data: availableCategories } = useNuxtData<string[]>(
     "available-categories",
@@ -74,5 +77,14 @@ const handleCategoryClick = (category: StoreProductCategory) => {
                 subCategory.name
             }}</UiBadge>
         </div>
+
+        <template v-if="someProduct">
+            <button type="button" @click="filtersStore.toggleOnline()">
+                <UiBadge :active="isOnlineEnabled">Доступно онлайн</UiBadge>
+            </button>
+            <button type="button" @click="filtersStore.toggleOffline()">
+                <UiBadge :active="isOfflineEnabled">Доступно офлайн</UiBadge>
+            </button>
+        </template>
     </div>
 </template>

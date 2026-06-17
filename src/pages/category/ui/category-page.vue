@@ -45,8 +45,16 @@ const isIndexableCategoryPage = computed(
         }),
 );
 
-const { limit, enableAutoload, sort, page, totalPages, appliedFilters } =
-    storeToRefs(filtersStore);
+const {
+    limit,
+    enableAutoload,
+    sort,
+    page,
+    totalPages,
+    appliedFilters,
+    isOfflineEnabled,
+    isOnlineEnabled,
+} = storeToRefs(filtersStore);
 
 if (!categoryHandle || categoryHandle === "undefined")
     throw createError({
@@ -185,6 +193,8 @@ const productsRequestKey = computed(() =>
         category.value?.id,
         page.value,
         sort.value,
+        isOnlineEnabled.value,
+        isOfflineEnabled.value,
         JSON.stringify(appliedFilters.value),
     ].join(":"),
 );
@@ -192,32 +202,29 @@ const {
     data: productsResponse,
     status,
     refresh: refreshProducts,
-} = await useAsyncData(
-    `category-products-${category.value.id}`,
-    () => {
-        isInternalUpdate.value = true;
-        let filter = [`category_ids IN ['${category.value?.id}']`];
-        filter = prepareFilterQuery(filter, appliedFilters.value);
-        return searchClient.index("cards").search<SearchProductDocument>(null, {
-            filter,
-            hitsPerPage: limit.value,
-            page: page.value,
-            sort: sort.value
-                ? [sort.value, "is_tag_new:desc"]
-                : ["is_tag_new:desc"],
-            facets: [
-                "color",
-                "size",
-                "metadata.subclass",
-                "metadata.class",
-                "is_discounted",
-            ],
-        });
-    },
-    {
-        watch: false,
-    },
-);
+} = await useAsyncData(`category-products-${category.value.id}`, () => {
+    isInternalUpdate.value = true;
+    let filter = [`category_ids IN ['${category.value?.id}']`];
+    filter = prepareFilterQuery(filter, appliedFilters.value);
+
+    if (isOnlineEnabled.value) filter.push("is_online=true");
+    if (isOfflineEnabled.value) filter.push("is_offline=true");
+    return searchClient.index("cards").search<SearchProductDocument>(null, {
+        filter,
+        hitsPerPage: limit.value,
+        page: page.value,
+        sort: sort.value
+            ? [sort.value, "is_tag_new:desc"]
+            : ["is_tag_new:desc"],
+        facets: [
+            "color",
+            "size",
+            "metadata.subclass",
+            "metadata.class",
+            "is_discounted",
+        ],
+    });
+});
 
 watch(productsRequestKey, (nextKey, previousKey) => {
     if (!isCategoryRouteActive() || nextKey === previousKey) return;
@@ -400,7 +407,10 @@ const getProductsCountLabel = (value: number) => {
                     >{{ count }} {{ getProductsCountLabel(count) }}</span
                 >
             </div>
-            <CategoryLinks :category="category" />
+            <CategoryLinks
+                :category="category"
+                :someProduct="products.length > 0"
+            />
             <CategoryFilters :category="category" />
             <WidgetProductsGrid
                 :products="products"

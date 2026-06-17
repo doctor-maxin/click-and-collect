@@ -5,6 +5,9 @@ import { sortSizeOptions } from "~/shared/lib/utils/sort-size-options";
 const { product } = defineProps<{
     product: StoreProduct;
 }>();
+const filterStore = useFiltersStore();
+const { isOnlineEnabled } = storeToRefs(filterStore);
+
 const router = useRouter();
 const sizeValues = computed(() => {
     const sizeOption = product?.options?.find(
@@ -13,12 +16,25 @@ const sizeValues = computed(() => {
 
     if (!sizeOption) return [];
 
+    if (!product?.variants) return [];
+
+    const variants = isOnlineEnabled.value
+        ? product.variants.filter((v) => {
+              const marketplaces = v.metadata?.marketplaces as any[];
+              const isStock =
+                  "in_stock" in v
+                      ? (v.in_stock as boolean)
+                      : v?.inventory_quantity;
+
+              return isStock && marketplaces.length;
+          })
+        : product.variants;
+
     const list =
-        product?.variants?.map((variant) => {
+        variants?.map((variant) => {
             return variant.options?.find((o) => o.option_id === sizeOption.id)!;
         }) ?? [];
 
-    if (!list || !product?.variants) return [];
     return sortSizeOptions(list, product?.variants);
 });
 const haveScrollbar = ref(false);
