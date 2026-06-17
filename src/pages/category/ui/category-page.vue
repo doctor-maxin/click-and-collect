@@ -28,9 +28,7 @@ const isCategoryRouteActive = () => route.path === categoryPath;
 const {
     public: { siteUrl, siteName },
 } = useRuntimeConfig();
-const canonicalPath = computed(
-    () => `/catalog/${categoryHandle}`,
-);
+const canonicalPath = computed(() => `/catalog/${categoryHandle}`);
 const canonicalUrl = computed(() =>
     toAbsoluteSiteUrl(siteUrl as string, canonicalPath.value),
 );
@@ -204,7 +202,9 @@ const {
             filter,
             hitsPerPage: limit.value,
             page: page.value,
-            sort: sort.value ? [sort.value] : [],
+            sort: sort.value
+                ? [sort.value, "is_tag_new:desc"]
+                : ["is_tag_new:desc"],
             facets: [
                 "color",
                 "size",
@@ -389,36 +389,34 @@ const getProductsCountLabel = (value: number) => {
 <template>
     <div class="mt-16 lg:mt-32.5">
         <div v-if="category" class="px-4 container mx-auto">
-                <CategoryBreadCrumbs :category="category" />
-                <div class="flex items-center gap-4 mt-6 mb-4 lg:my-9">
-                    <h1
-                        class="font-serif font-medium text-xl lg:text-[1.75rem] uppercase"
-                    >
-                        {{ category.name }}
-                    </h1>
-                    <span
-                        v-if="status === 'success' && count > 0"
-                        class="text-gray"
-                        >{{ count }} {{ getProductsCountLabel(count) }}</span
-                    >
-                </div>
-                <CategoryLinks :category="category" />
-                <CategoryFilters :category="category" />
-                <WidgetProductsGrid
-                    :products="products"
-                    :has-more="page < totalPages"
-                    :is-loading="status === 'pending'"
-                    :current-page="page"
-                    :total-pages="totalPages"
-                    @load-more="onLoadMore"
-                    @page-change="onPageChange"
-                />
-                <div
-                    v-if="enableAutoload && page < totalPages"
-                    ref="autoloadTriggerRef"
-                    class="h-px w-full"
-                    aria-hidden="true"
-                />
+            <CategoryBreadCrumbs :category="category" />
+            <div class="flex items-center gap-4 mt-6 mb-4 lg:my-9">
+                <h1
+                    class="font-serif font-medium text-xl lg:text-[1.75rem] uppercase"
+                >
+                    {{ category.name }}
+                </h1>
+                <span v-if="status === 'success' && count > 0" class="text-gray"
+                    >{{ count }} {{ getProductsCountLabel(count) }}</span
+                >
+            </div>
+            <CategoryLinks :category="category" />
+            <CategoryFilters :category="category" />
+            <WidgetProductsGrid
+                :products="products"
+                :has-more="page < totalPages"
+                :is-loading="status === 'pending'"
+                :current-page="page"
+                :total-pages="totalPages"
+                @load-more="onLoadMore"
+                @page-change="onPageChange"
+            />
+            <div
+                v-if="enableAutoload && page < totalPages"
+                ref="autoloadTriggerRef"
+                class="h-px w-full"
+                aria-hidden="true"
+            />
         </div>
     </div>
 </template>

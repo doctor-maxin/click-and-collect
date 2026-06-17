@@ -126,7 +126,9 @@ const { data: productsResponse, status } = await useAsyncData(
                 page: page.value,
                 attributesToSearchOn: searchableProductAttributes,
                 matchingStrategy: "all",
-                sort: sort.value ? [sort.value] : [],
+                sort: sort.value
+                    ? [sort.value, "is_tag_new:desc"]
+                    : ["is_tag_new:desc"],
                 facets: [
                     "color",
                     "size",
