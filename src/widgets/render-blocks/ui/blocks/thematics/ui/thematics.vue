@@ -41,15 +41,27 @@ const _swiper = useSwiper(containerRef, {
         : false,
 });
 
+const visibileItems = computed(() => {
+    if (import.meta.server) return data.items.slice(0, data.visibleCols);
+    console.log(data.mobileVisibleCols);
+    return data.items.slice(
+        0,
+        window.innerWidth <= 768 ? data.mobileVisibleCols : data.visibleCols,
+    );
+});
+
 const duplicatedItems = computed(() => [...data.items, ...data.items]);
 </script>
 <template>
     <section
         v-if="data.items?.length && !data.isCarousel"
-        class="container hide-scrollbar pb-4 lg:pb-0 px-4 lg:px-0 w-full mx-auto snap-x snap-mandatory scroll-mx-4 overflow-x-auto overflow-y-hidden mt-4 mb-6 lg:my-12 flex scroll-px-4 lg:justify-center gap-4 lg:gap-11"
+        class="hide-scrollbar pb-4 lg:pb-0 px-4 2.5xl:px-0 w-full mx-auto snap-x snap-mandatory scroll-mx-4 overflow-x-auto overflow-y-hidden mt-4 mb-6 lg:my-12 flex scroll-px-4 2.5xl:justify-center gap-4 lg:gap-11"
+        :class="{
+            container: data.isCarousel,
+        }"
     >
         <article
-            v-for="(item, index) of data.items"
+            v-for="(item, index) of visibileItems"
             :key="item.id"
             :class="{
                 'snap-start': index === 0,

@@ -10,6 +10,8 @@
     --color-gray: hsl(0, 0%, 75%);
     --color-light-gray: hsl(0, 0%, 85%);
     --color-red: hsl(0, 75%, 45%);
+    --breakpoint-3xl: 108rem;
+    --breakpoint-2\.5xl: 102rem;
 }
 
 @layer utilities {
