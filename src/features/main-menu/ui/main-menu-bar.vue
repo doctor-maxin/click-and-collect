@@ -216,18 +216,6 @@ const toSentenceCase = (value: string) => {
 
             <div class="w-1/2 shrink-0">
                 <ul v-if="activeMobileItem" class="flex flex-col min-w-[9rem]">
-                    <li class="py-2 text-xl leading-5">
-                        <NuxtLink
-                            :to="activeMobileItem.path"
-                            class="w-full block font-medium"
-                            :style="{
-                                color: activeMobileItem.color ?? 'inherit',
-                            }"
-                            @click="closeMenu"
-                        >
-                            Смотреть {{ activeMobileItem.title.toLowerCase() }}
-                        </NuxtLink>
-                    </li>
                     <li
                         v-for="childItem of activeMobileItem.children"
                         :key="childItem.id"
@@ -295,16 +283,6 @@ const toSentenceCase = (value: string) => {
             v-if="activeTabletItem?.children?.length"
             class="flex flex-col min-w-36"
         >
-            <li class="py-2 text-xl leading-5">
-                <NuxtLink
-                    :to="activeTabletItem.path"
-                    class="w-full block font-medium"
-                    :style="{ color: activeTabletItem.color ?? 'inherit' }"
-                    @click="closeMenu"
-                >
-                    Смотреть {{ activeTabletItem.title.toLowerCase() }}
-                </NuxtLink>
-            </li>
             <li
                 v-for="childItem of activeTabletItem.children"
                 :key="childItem.id"

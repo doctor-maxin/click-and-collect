@@ -14,7 +14,7 @@ const { product, variant, price, oldPrice, discount } =
 const router = useRouter();
 const sku = computed(() => {
     if (variant.value?.sku?.includes("-")) {
-        return variant.value?.sku?.split("-").slice(2, -1).join("-");
+        return variant.value?.sku?.split("-").slice(2, 4).join("-");
     }
     return variant.value?.sku;
 });

@@ -45,7 +45,7 @@ const characteristics = computed<CharacteristicItem[]>(() => {
         }
 
         const value = String(rawValue).trim();
-        if (!value) continue;
+        if (!value || value === "N/A") continue;
 
         list.push({
             label: item.label,
