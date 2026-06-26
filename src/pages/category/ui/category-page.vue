@@ -235,7 +235,7 @@ watch(
     () => route.query,
     () => {
         if (!isCategoryRouteActive() || isInternalUpdate.value) return;
-
+        filtersStore.resetToggles();
         const getQueryValue = (key: string) => {
             const v = route.query[key];
             return Array.isArray(v) ? v.join(",") : (v as string);

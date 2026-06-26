@@ -152,6 +152,7 @@ export const useFiltersStore = defineStore("filters", {
         resetFilters() {
             this.appliedFilters = {};
             this.lastAppliedInput = null;
+            this.resetToggles();
         },
         removeFilterValue(filter: string, value: string) {
             filter = this.normalizeFilterKey(filter);
