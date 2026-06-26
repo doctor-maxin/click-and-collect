@@ -122,6 +122,7 @@ const products = ref<SearchProductDocument[]>([]);
 const count = ref(0);
 const isInternalUpdate = ref(false);
 const shouldAppendProducts = ref(false);
+const isAutoloadReady = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 
 const getPageFromQuery = () => {
@@ -166,6 +167,7 @@ watch(
 
         const nextPage = getPageFromQuery();
         if (page.value === nextPage) return;
+        isAutoloadReady.value = false;
         filtersStore.setPage(nextPage);
         if (nextPage === 1) shouldAppendProducts.value = false;
     },
@@ -178,6 +180,7 @@ const { data: filtersResponse } = await useAsyncData(
         return searchClient.index("cards").search<SearchProductDocument>(null, {
             filter: [`category_ids IN ['${category.value?.id}']`],
             hitsPerPage: 0,
+            distinct: "id",
             facets: [
                 "color",
                 "size",
@@ -213,6 +216,7 @@ const {
         filter,
         hitsPerPage: limit.value,
         page: page.value,
+        distinct: "id",
         sort: sort.value
             ? [sort.value, "is_tag_new:desc"]
             : ["is_tag_new:desc"],
@@ -228,6 +232,7 @@ const {
 
 watch(productsRequestKey, (nextKey, previousKey) => {
     if (!isCategoryRouteActive() || nextKey === previousKey) return;
+    isAutoloadReady.value = false;
     void refreshProducts();
 });
 
@@ -305,7 +310,7 @@ watch(
 // Update Filter response
 watch(
     [() => productsResponse.value, () => status.value],
-    ([response, currentStatus]) => {
+    async ([response, currentStatus]) => {
         if (currentStatus !== "success" || !response) return;
 
         if (page.value === 1 || !shouldAppendProducts.value) {
@@ -316,9 +321,12 @@ watch(
         shouldAppendProducts.value = false;
 
         //@ts-ignore
-        filtersStore.setTotalPages(response.totalPages ?? 0);
+        count.value = response.totalHits ?? 0;
+        filtersStore.setTotalPages(Math.ceil(count.value / limit.value));
         filtersStore.setAvailableFilters(response.facetDistribution);
         isInternalUpdate.value = false;
+        await nextTick();
+        isAutoloadReady.value = true;
     },
     {
         immediate: true,
@@ -330,19 +338,16 @@ watchEffect(() => {
     filtersStore.setFiltersList(filtersResponse.value?.facetDistribution);
 });
 
-watchEffect(() => {
-    //@ts-ignore
-    count.value = productsResponse.value?.totalHits ?? 0;
-});
-
 watch(sort, () => {
     if (!isCategoryRouteActive()) return;
+    isAutoloadReady.value = false;
     shouldAppendProducts.value = false;
     pushPageToQuery(1);
 });
 
 const onLoadMore = () => {
     if (
+        !isAutoloadReady.value ||
         status.value === "pending" ||
         shouldAppendProducts.value ||
         page.value >= totalPages.value
@@ -350,6 +355,7 @@ const onLoadMore = () => {
         return;
     }
 
+    isAutoloadReady.value = false;
     shouldAppendProducts.value = true;
     pushPageToQuery(page.value + 1, true);
 };
@@ -370,7 +376,13 @@ useIntersectionObserver(
 watch(
     [isAutoloadTriggerVisible, enableAutoload, status, page, totalPages],
     ([isVisible, isEnabled, currentStatus]) => {
-        if (!isVisible || !isEnabled || currentStatus !== "success") return;
+        if (
+            !isVisible ||
+            !isEnabled ||
+            !isAutoloadReady.value ||
+            currentStatus !== "success"
+        )
+            return;
         onLoadMore();
     },
     { immediate: true },
@@ -383,6 +395,7 @@ const onPageChange = (nextPage: number) => {
         top: 0,
         behavior: "smooth",
     });
+    isAutoloadReady.value = false;
     shouldAppendProducts.value = false;
     pushPageToQuery(nextPage, false);
 };

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { StoreProductCategory } from "@medusajs/types";
+import { useIntersectionObserver } from "@vueuse/core";
 import type { SearchProductDocument } from "#shared/types/search-product-document";
 import { NOINDEX_FOLLOW_ROBOTS } from "#shared/lib/seo";
 import { resolveSeoMeta, truncateDescription } from "#shared/lib/seo-meta";
@@ -34,10 +35,11 @@ const searchMeta = computed(() =>
     }),
 );
 
-const { limit, page, totalPages, appliedFilters, sort } =
+const { limit, enableAutoload, page, totalPages, appliedFilters, sort } =
     storeToRefs(filtersStore);
 const products = ref<SearchProductDocument[]>([]);
 const shouldAppendProducts = ref(false);
+const isAutoloadReady = ref(false);
 filtersStore.setAppliedFiltersFromQuery(route.query);
 const isInternalUpdate = ref(false);
 const searchableProductAttributes = [
@@ -47,6 +49,14 @@ const searchableProductAttributes = [
     "variants.sku",
 ];
 const count = ref(0);
+const productsRequestKey = computed(() =>
+    [
+        query.value,
+        page.value,
+        sort.value,
+        JSON.stringify(appliedFilters.value),
+    ].join(":"),
+);
 
 const getPageFromQuery = () => {
     const rawPage = Array.isArray(route.query.page)
@@ -86,6 +96,7 @@ watch(
     () => {
         const nextPage = getPageFromQuery();
         if (page.value === nextPage) return;
+        isAutoloadReady.value = false;
         filtersStore.setPage(nextPage);
         if (nextPage === 1) shouldAppendProducts.value = false;
     },
@@ -124,6 +135,7 @@ const { data: productsResponse, status } = await useAsyncData(
                 filter,
                 hitsPerPage: limit.value,
                 page: page.value,
+                distinct: "id",
                 attributesToSearchOn: searchableProductAttributes,
                 matchingStrategy: "all",
                 sort: sort.value
@@ -146,14 +158,13 @@ const { data: productsResponse, status } = await useAsyncData(
     },
 );
 
-watchEffect(() => {
-    //@ts-ignore
-    count.value = productsResponse.value?.totalHits ?? 0;
+watch(productsRequestKey, () => {
+    isAutoloadReady.value = false;
 });
 
 watch(
     [() => productsResponse.value, () => status.value],
-    ([response, currentStatus]) => {
+    async ([response, currentStatus]) => {
         if (currentStatus !== "success" || !response) return;
         if (status.value === "success") {
             if (page.value === 1 || !shouldAppendProducts.value) {
@@ -164,11 +175,14 @@ watch(
             shouldAppendProducts.value = false;
 
             //@ts-ignore
-            filtersStore.setTotalPages(productsResponse.value?.totalPages ?? 0);
+            count.value = productsResponse.value?.totalHits ?? 0;
+            filtersStore.setTotalPages(Math.ceil(count.value / limit.value));
             filtersStore.setAvailableFilters(
                 productsResponse.value?.facetDistribution,
             );
             isInternalUpdate.value = false;
+            await nextTick();
+            isAutoloadReady.value = true;
         }
     },
     {
@@ -217,17 +231,57 @@ watch(
 );
 
 watch(sort, () => {
+    isAutoloadReady.value = false;
     shouldAppendProducts.value = false;
     pushPageToQuery(1, false);
 });
 
 const onLoadMore = () => {
+    if (
+        !isAutoloadReady.value ||
+        status.value === "pending" ||
+        shouldAppendProducts.value ||
+        page.value >= totalPages.value
+    ) {
+        return;
+    }
+
+    isAutoloadReady.value = false;
     shouldAppendProducts.value = true;
     pushPageToQuery(page.value + 1, true);
 };
 
+const autoloadTriggerRef = ref<HTMLElement | null>(null);
+const isAutoloadTriggerVisible = ref(false);
+
+useIntersectionObserver(
+    autoloadTriggerRef,
+    ([entry]) => {
+        isAutoloadTriggerVisible.value = entry?.isIntersecting ?? false;
+    },
+    {
+        rootMargin: "0px 0px 400px 0px",
+    },
+);
+
+watch(
+    [isAutoloadTriggerVisible, enableAutoload, status, page, totalPages],
+    ([isVisible, isEnabled, currentStatus]) => {
+        if (
+            !isVisible ||
+            !isEnabled ||
+            !isAutoloadReady.value ||
+            currentStatus !== "success"
+        )
+            return;
+        onLoadMore();
+    },
+    { immediate: true },
+);
+
 const onPageChange = (nextPage: number) => {
     if (nextPage === page.value) return;
+    isAutoloadReady.value = false;
     shouldAppendProducts.value = false;
     pushPageToQuery(nextPage, false);
 };
@@ -259,13 +313,19 @@ const getProductsCountLabel = (value: number) => {
             <WidgetProductsGrid
                 :products="products"
                 :has-more="page < totalPages"
-                :is-loading="status === 'pending'"
+                :is-loading="status === 'pending' || status === 'idle'"
                 :current-page="page"
                 :total-pages="totalPages"
                 empty-message="По вашему запросу ничего не найдено.
 Попробуйте изменить запрос и мы поищем еще раз."
                 @load-more="onLoadMore"
                 @page-change="onPageChange"
+            />
+            <div
+                v-if="enableAutoload && page < totalPages"
+                ref="autoloadTriggerRef"
+                class="h-px w-full"
+                aria-hidden="true"
             />
             <section
                 v-if="status !== 'pending' && products.length === 0"
