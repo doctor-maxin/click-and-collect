@@ -78,16 +78,15 @@ const handleCategoryClick = (category: StoreProductCategory) => {
             }}</UiBadge>
         </div>
 
-        <div v-if="someProduct">
+        <div>
             <UiBadge
                 @click="filtersStore.toggleOnline()"
                 :active="isOnlineEnabled"
                 >Доступно онлайн</UiBadge
             >
         </div>
-        <div v-if="someProduct">
+        <div>
             <UiBadge
-                v-if="someProduct"
                 @click="filtersStore.toggleOffline()"
                 :active="isOfflineEnabled"
                 >Доступно офлайн</UiBadge

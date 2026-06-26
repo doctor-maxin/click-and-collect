@@ -85,6 +85,7 @@ export const useFiltersStore = defineStore("filters", {
             this.isOpen = val;
         },
         resetToggles() {
+            console.log("resetToggles");
             this.isOnlineEnabled = false;
             this.isOfflineEnabled = false;
         },

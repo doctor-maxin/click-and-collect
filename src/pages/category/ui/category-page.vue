@@ -237,6 +237,17 @@ watch(productsRequestKey, (nextKey, previousKey) => {
 });
 
 watch(
+    () => route.params.handle,
+    () => {
+        filtersStore.resetToggles();
+    },
+    {
+        immediate: true,
+        deep: true,
+    },
+);
+
+watch(
     () => route.query,
     () => {
         if (!isCategoryRouteActive() || isInternalUpdate.value) return;
