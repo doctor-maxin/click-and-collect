@@ -47,14 +47,13 @@ const { data: product, error } = await useAsyncData(
     () =>
         client.store.product.list({
             handle: route.params.handle as string,
-            fields: "title,handle,description,variants.*,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity",
+            fields: "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity",
         }),
     {
         transform: (r) => r.products?.[0],
         watch: [() => route.params.handle as string],
     },
 );
-
 if (!product.value)
     throw createError({
         message: "Товар не найден",

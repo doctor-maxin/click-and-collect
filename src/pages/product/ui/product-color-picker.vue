@@ -55,31 +55,26 @@ function getDisplayColor(product: StoreProduct | SearchProductDocument) {
 }
 
 function getProductImage(product: StoreProduct | SearchProductDocument) {
-    const variantColor = normalizeValue(getVariantColor(product));
-    const imageByColor = product.images?.find(
-        (image) =>
-            normalizeValue(image.metadata?.color as string | undefined) ===
-            variantColor,
-    );
-
-    return imageByColor ?? product.images?.[0] ?? null;
+    return product.thumbnail ?? product.images?.[0] ?? null;
 }
 
-function formatImageUrl(image?: StoreProductImage | null) {
-    if (!image?.url?.trim()) {
+function formatImageUrl(image?: StoreProductImage | null | string) {
+    if (typeof image !== "string" && !image?.url?.trim()) {
         return "/not_found.png";
     }
 
     return isS3.value
         ? img(
-              image.url,
+              typeof image !== "string" ? image.url : image,
               { width: 168 },
               {
                   // @ts-ignore custom provider
                   provider: "customS3",
               },
           )
-        : image.url;
+        : typeof image !== "string"
+          ? image.url
+          : image;
 }
 
 const currentModel = computed(() => getProductModel(product.value));
