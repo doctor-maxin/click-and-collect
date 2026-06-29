@@ -50,7 +50,6 @@ const {
     enableAutoload,
     sort,
     page,
-    totalPages,
     appliedFilters,
     isOfflineEnabled,
     isOnlineEnabled,
@@ -120,6 +119,7 @@ useSeoMeta({
 
 const products = ref<SearchProductDocument[]>([]);
 const count = ref(0);
+const resolvedTotalPages = ref(1);
 const isInternalUpdate = ref(false);
 const shouldAppendProducts = ref(false);
 const isAutoloadReady = ref(false);
@@ -206,28 +206,35 @@ const {
     status,
     refresh: refreshProducts,
 } = await useAsyncData(`category-products-${category.value.id}`, () => {
+    const requestKey = productsRequestKey.value;
     isInternalUpdate.value = true;
     let filter = [`category_ids IN ['${category.value?.id}']`];
     filter = prepareFilterQuery(filter, appliedFilters.value);
 
     if (isOnlineEnabled.value) filter.push("is_online=true");
     if (isOfflineEnabled.value) filter.push("is_offline=true");
-    return searchClient.index("cards").search<SearchProductDocument>(null, {
-        filter,
-        hitsPerPage: limit.value,
-        page: page.value,
-        distinct: "id",
-        sort: sort.value
-            ? [sort.value, "is_tag_new:desc"]
-            : ["is_tag_new:desc"],
-        facets: [
-            "color",
-            "size",
-            "metadata.subclass",
-            "metadata.class",
-            "is_discounted",
-        ],
-    });
+    return searchClient
+        .index("cards")
+        .search<SearchProductDocument>(null, {
+            filter,
+            hitsPerPage: limit.value,
+            page: page.value,
+            distinct: "id",
+            sort: sort.value
+                ? [sort.value, "is_tag_new:desc"]
+                : ["is_tag_new:desc"],
+            facets: [
+                "color",
+                "size",
+                "metadata.subclass",
+                "metadata.class",
+                "is_discounted",
+            ],
+        })
+        .then((response) => ({
+            requestKey,
+            response,
+        }));
 });
 
 watch(productsRequestKey, (nextKey, previousKey) => {
@@ -240,6 +247,8 @@ watch(
     () => route.params.handle,
     () => {
         filtersStore.resetToggles();
+        resolvedTotalPages.value = 1;
+        count.value = 0;
     },
     {
         immediate: true,
@@ -321,8 +330,11 @@ watch(
 // Update Filter response
 watch(
     [() => productsResponse.value, () => status.value],
-    async ([response, currentStatus]) => {
-        if (currentStatus !== "success" || !response) return;
+    async ([payload, currentStatus]) => {
+        if (currentStatus !== "success" || !payload) return;
+        if (payload.requestKey !== productsRequestKey.value) return;
+
+        const { response } = payload;
 
         if (page.value === 1 || !shouldAppendProducts.value) {
             products.value = response.hits ?? [];
@@ -333,7 +345,8 @@ watch(
 
         //@ts-ignore
         count.value = response.totalHits ?? 0;
-        filtersStore.setTotalPages(Math.ceil(count.value / limit.value));
+        resolvedTotalPages.value = Math.ceil(count.value / limit.value);
+        filtersStore.setTotalPages(resolvedTotalPages.value);
         filtersStore.setAvailableFilters(response.facetDistribution);
         isInternalUpdate.value = false;
         await nextTick();
@@ -361,7 +374,7 @@ const onLoadMore = () => {
         !isAutoloadReady.value ||
         status.value === "pending" ||
         shouldAppendProducts.value ||
-        page.value >= totalPages.value
+        page.value >= resolvedTotalPages.value
     ) {
         return;
     }
@@ -385,7 +398,7 @@ useIntersectionObserver(
 );
 
 watch(
-    [isAutoloadTriggerVisible, enableAutoload, status, page, totalPages],
+    [isAutoloadTriggerVisible, enableAutoload, status, page, resolvedTotalPages],
     ([isVisible, isEnabled, currentStatus]) => {
         if (
             !isVisible ||
@@ -443,15 +456,15 @@ const getProductsCountLabel = (value: number) => {
             <CategoryFilters :category="category" />
             <WidgetProductsGrid
                 :products="products"
-                :has-more="page < totalPages"
+                :has-more="page < resolvedTotalPages"
                 :is-loading="status === 'pending'"
                 :current-page="page"
-                :total-pages="totalPages"
+                :total-pages="resolvedTotalPages"
                 @load-more="onLoadMore"
                 @page-change="onPageChange"
             />
             <div
-                v-if="enableAutoload && page < totalPages"
+                v-if="enableAutoload && page < resolvedTotalPages"
                 ref="autoloadTriggerRef"
                 class="h-px w-full"
                 aria-hidden="true"
