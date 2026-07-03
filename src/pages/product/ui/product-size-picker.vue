@@ -51,7 +51,7 @@ const options = computed(() => {
                 :class="{
                     '  border-blue ': size?.id === item?.id,
                     ' border-transparent': size?.id !== item?.id,
-                    'text-black/50': !item.metadata?.available,
+                    'text-black/30': !item.metadata?.available,
                 }"
                 @click="productStore.selectSize(item)"
             >
