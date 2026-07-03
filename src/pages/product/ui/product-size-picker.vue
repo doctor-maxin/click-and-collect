@@ -26,9 +26,13 @@ const options = computed(() => {
                     )?.value === color.value?.value,
             )
             ?.map((variant) => {
-                return variant.options?.find(
+                const option = variant.options?.find(
                     (o) => o.option_id === sizeOption.value?.id,
                 )!;
+                option.metadata!.available =
+                    (variant.metadata?.marketplaces as any[]).length > 0 &&
+                    variant.inventory_quantity! > 0;
+                return option;
             }) ?? [];
 
     return sortSizeOptions(list, product.value?.variants ?? []);
@@ -47,6 +51,7 @@ const options = computed(() => {
                 :class="{
                     '  border-blue ': size?.id === item?.id,
                     ' border-transparent': size?.id !== item?.id,
+                    'text-black/50': !item.metadata?.available,
                 }"
                 @click="productStore.selectSize(item)"
             >
