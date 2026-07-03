@@ -6,7 +6,7 @@ const { product } = defineProps<{
     product: StoreProduct;
 }>();
 const filterStore = useFiltersStore();
-const { isOnlineEnabled } = storeToRefs(filterStore);
+const { isOnlineEnabled, isOfflineEnabled } = storeToRefs(filterStore);
 
 const router = useRouter();
 const sizeValues = computed(() => {
@@ -28,7 +28,17 @@ const sizeValues = computed(() => {
 
               return isStock && marketplaces.length;
           })
-        : product.variants;
+        : isOfflineEnabled.value
+          ? product.variants.filter((v) => {
+                const marketplaces = v.metadata?.marketplaces as any[];
+                const isStock =
+                    "in_stock" in v
+                        ? (v.in_stock as boolean)
+                        : v?.inventory_quantity;
+
+                return !isStock || !marketplaces.length;
+            })
+          : product.variants;
 
     const list =
         variants?.map((variant) => {
