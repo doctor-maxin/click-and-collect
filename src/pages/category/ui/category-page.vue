@@ -221,8 +221,8 @@ const {
             page: page.value,
             distinct: "id",
             sort: sort.value
-                ? [sort.value, "is_tag_new:desc"]
-                : ["is_tag_new:desc"],
+                ? [sort.value, "rank:asc", "is_tag_new:desc"]
+                : ["rank:asc", "is_tag_new:desc"],
             facets: [
                 "color",
                 "size",
@@ -398,7 +398,13 @@ useIntersectionObserver(
 );
 
 watch(
-    [isAutoloadTriggerVisible, enableAutoload, status, page, resolvedTotalPages],
+    [
+        isAutoloadTriggerVisible,
+        enableAutoload,
+        status,
+        page,
+        resolvedTotalPages,
+    ],
     ([isVisible, isEnabled, currentStatus]) => {
         if (
             !isVisible ||
