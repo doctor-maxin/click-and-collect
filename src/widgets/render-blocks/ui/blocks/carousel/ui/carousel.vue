@@ -31,7 +31,7 @@ const _swiper = useSwiper(containerRef, {
         <swiper-container
             ref="containerRef"
             :init="false"
-            class="relative z-10"
+            class="relative h-160 z-10"
         >
             <swiper-slide v-for="(item, index) in data.slides" :key="item.id">
                 <component
