@@ -213,16 +213,23 @@ const {
 
     if (isOnlineEnabled.value) filter.push("is_online=true");
     if (isOfflineEnabled.value) filter.push("is_offline=true");
+
+    const sortList = sort.value
+        ? [sort.value, "is_tag_new:desc"]
+        : ["is_tag_new:desc"];
+
+    if (category.value?.metadata?.manualSorting) {
+        sortList.push("rank:asc");
+    }
+
     return searchClient
         .index("cards")
         .search<SearchProductDocument>(null, {
             filter,
             hitsPerPage: limit.value,
             page: page.value,
-            distinct: "id",
-            sort: sort.value
-                ? [sort.value, "rank:asc", "is_tag_new:desc"]
-                : ["rank:asc", "is_tag_new:desc"],
+            distinct: "product_id",
+            sort: sortList,
             facets: [
                 "color",
                 "size",
