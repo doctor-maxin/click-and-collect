@@ -1,180 +1,118 @@
-# Руководство по деплою
+# Сборка и деплой
 
-Этот документ описывает процесс автоматического деплоя приложения на staging и production среды.
+Проект доставляется через GitLab CI/CD. Pipeline не собирает приложение внутри
+контейнера: он формирует `.env`, синхронизирует весь checkout на сервер через
+`rsync`, затем сервер выполняет `bun install`, `bun run build` и reload PM2.
 
-## Обзор
+## Связь веток и окружений
 
-Проект использует GitLab CI/CD для автоматического деплоя:
-- **Staging** - деплой происходит автоматически при пуше в ветку `develop`
-- **Production** - деплой происходит вручную при пуше в ветку `master`/`main`
+| Ветка | GitLab job | Окружение | PM2 process | Режим запуска |
+| --- | --- | --- | --- | --- |
+| `develop` | `deploy_staging` | `staging` | `sin-storefront-dev` | автоматически |
+| `master` / `main` | `deploy_production` | `production` | `sin-storefront-prod` | автоматически |
 
-## Переменные окружения
+В `.gitlab-ci.yml` нет `when: manual`, поэтому production job стартует сразу
+после push/merge в production-ветку. Защиту веток и обязательное подтверждение,
+если они нужны, следует настраивать в GitLab или явно добавлять в pipeline.
 
-### Staging (develop ветка)
+## GitLab CI/CD Variables
 
-В GitLab CI/CD Settings > Variables нужно настроить следующие переменные:
+Для staging:
 
-```bash
-# SSH подключение
-SSH_PRIVATE_KEY=<приватный SSH ключ для staging сервера>
-DEPLOY_HOST=<хост staging сервера>
-DEPLOY_USER=<пользователь для подключения к staging серверу>
-DEPLOY_PATH=<путь для деплоя на staging сервере>
+| Переменная | Назначение |
+| --- | --- |
+| `SSH_PRIVATE_KEY` | Приватный SSH-ключ deploy user |
+| `SSH_PASSPHRASE` | Passphrase ключа, если есть |
+| `SSH_PORT` | SSH-порт; необязательно, по умолчанию `22` |
+| `DEPLOY_HOST` | Host staging-сервера |
+| `DEPLOY_USER` | SSH-пользователь |
+| `DEPLOY_PATH` | Абсолютная директория приложения на сервере |
+| `DEV_ENV` | Полное содержимое staging `.env` |
 
-# Переменные приложения
-NUXT_PUBLIC_API_BASE=<базовый URL API для staging>
-STRAPI_URL=<URL Strapi для staging>
-DATABASE_URL=<строка подключения к БД для staging>
-REDIS_URL=<строка подключения к Redis для staging>
-```
+Для production используются аналоги с суффиксом `_PROD`:
+`SSH_PRIVATE_KEY_PROD`, `SSH_PASSPHRASE_PROD`, `SSH_PORT_PROD`,
+`DEPLOY_HOST_PROD`, `DEPLOY_USER_PROD`, `DEPLOY_PATH_PROD` и `PROD_ENV`.
 
-### Production (master ветка)
+`DEV_ENV` и `PROD_ENV` должны содержать актуальные переменные приложения из
+`.env.example`. Секреты следует хранить как masked/protected variables. Для
+protected production variables ветка `master` тоже должна быть protected.
 
-Для production окружения используются отдельные переменные с суффиксом `_PROD`:
+## Требования к серверу
 
-```bash
-# SSH подключение
-SSH_PRIVATE_KEY_PROD=<приватный SSH ключ для production сервера>
-DEPLOY_HOST_PROD=<хост production сервера>
-DEPLOY_USER_PROD=<пользователь для подключения к production серверу>
-DEPLOY_PATH_PROD=<путь для деплоя на production сервере>
+- Bash;
+- Bun в `$HOME/.bun/bin`;
+- Node.js/npm (PM2-конфигурация вызывает npm через Bun interpreter);
+- глобально установленный PM2;
+- достаточно памяти и места для `node_modules`, новой `.output` и одной копии
+  `.output.backup`;
+- deploy user может писать в `DEPLOY_PATH` и управлять своими PM2-процессами.
 
-# Переменные приложения
-NUXT_PUBLIC_API_BASE=<базовый URL API для production>
-STRAPI_URL=<URL Strapi для production>
-DATABASE_URL=<строка подключения к БД для production>
-REDIS_URL=<строка подключения к Redis для production>
-JWT_SECRET=<секретный ключ JWT для production>
-```
+Оба окружения слушают `PORT=3000`. Внешний доступ обычно должен идти через
+настроенный отдельно reverse proxy (Nginx/аналог); его конфигурации в этом
+репозитории нет.
 
-## Процесс деплоя
+## Что делает pipeline
 
-### Staging Деплой
+1. Alpine job устанавливает `openssh-client`, `rsync` и `sshpass`.
+2. Добавляет ключ и host в SSH-конфигурацию, проверяет соединение.
+3. Записывает `DEV_ENV` либо `PROD_ENV` в локальный `.env` job-а.
+4. `rsync --delete` копирует checkout на сервер, исключая только `.git`.
+5. На сервере запускается `deploy.sh` либо `deploy-production.sh`.
+6. Скрипт устанавливает зависимости, собирает `.output`, создаёт `logs/`,
+   выполняет `pm2 startOrReload ... --update-env` и `pm2 save`.
+7. Деплой считается успешным, если нужный PM2 process имеет статус `online`.
 
-1. Создайте Pull Request в ветку `develop`
-2. После мержа код автоматически задеплоится на staging
-3. Проверьте работу приложения на staging окружении
+PM2 запускает `bun .output/server/index.mjs` через package script `start`.
+Несмотря на старое имя `sin-storefront-dev`, staging также собирается и работает
+с `NODE_ENV=production`.
 
-### Production Деплой
+## Проверка и эксплуатация
 
-1. Создайте Pull Request в ветку `master`
-2. После мержа в GitLab CI появится manual job для production деплоя
-3. Нажмите кнопку "Run" для запуска production деплоя
-4. Деплой произойдет с использованием `ecosystem.production.config.cjs`
-
-## Конфигурация серверов
-
-### PM2 конфигурация
-
-- **Staging**: использует `ecosystem.config.cjs` с базовыми настройками
-- **Production**: использует `ecosystem.production.config.cjs` с расширенными настройками:
-  - Кластерный режим
-  - Автоматический перезапуск при превышении лимита памяти
-  - Логирование в файлы
-  - Health checks
-
-### Требования к серверу
-
-Убедитесь, что на целевых серверах установлено:
-
-- Node.js (через nvm)
-- Bun runtime
-- PM2 process manager
-- SSH доступ для пользователя деплоя
+Локально перед merge:
 
 ```bash
-# Установка зависимостей на сервере
-curl -fsSL https://bun.sh/install | bash
-npm install -g pm2
-pm2 startup # настройка автозапуска PM2
+bun install
+bun run build
+test -f .output/server/index.mjs
 ```
 
-## Структура файлов
-
-```
-.
-├── .gitlab-ci.yml                    # CI/CD конфигурация
-├── ecosystem.config.cjs              # PM2 конфигурация для staging
-├── ecosystem.production.config.cjs   # PM2 конфигурация для production
-├── deploy.sh                         # Скрипт деплоя для staging
-├── deploy-production.sh              # Скрипт деплоя для production
-└── DEPLOYMENT.md                     # Эта документация
-```
-
-## Логи и мониторинг
-
-### Просмотр логов
+На сервере:
 
 ```bash
-# На сервере
-pm2 logs sin-storefront        # staging
-pm2 logs sin-storefront-prod   # production
-
-# Логи в файлах (только production)
-tail -f logs/out.log
-tail -f logs/err.log
-tail -f logs/combined.log
-```
-
-### Мониторинг
-
-```bash
-pm2 status              # статус всех процессов
-pm2 info <app-name>     # детальная информация о приложении
-pm2 monit              # интерактивный мониторинг
-```
-
-## Откат изменений
-
-В случае проблем с production деплоем:
-
-```bash
-# На production сервере
-cd /path/to/deployment
-ls -la *.backup.*       # найти резервную копию
-rm -rf .output
-mv .output.backup.YYYYMMDD_HHMMSS .output
-pm2 reload ecosystem.production.config.cjs
-```
-
-## Безопасность
-
-- SSH ключи хранятся в GitLab CI/CD Variables как защищенные переменные
-- Production деплой требует ручного подтверждения
-- Все чувствительные данные передаются через переменные окружения
-- Логи не содержат секретных данных
-
-## Troubleshooting
-
-### Частые проблемы
-
-1. **SSH ключ не работает**
-   - Проверьте формат ключа (должен быть без паролей)
-   - Убедитесь, что публичный ключ добавлен в `~/.ssh/authorized_keys`
-
-2. **PM2 не может запустить приложение**
-   - Проверьте, что Bun установлен в PATH
-   - Убедитесь, что все зависимости установлены
-
-3. **Приложение не отвечает**
-   - Проверьте логи PM2
-   - Убедитесь, что порт не занят другим процессом
-   - Проверьте переменные окружения
-
-### Полезные команды
-
-```bash
-# Проверка статуса деплоя
 pm2 status
-pm2 info <app-name>
-
-# Перезапуск приложения
-pm2 restart <app-name>
-
-# Просмотр переменных окружения
-pm2 env <process-id>
-
-# Очистка PM2
-pm2 kill
-pm2 resurrect
+pm2 logs sin-storefront-dev       # staging
+pm2 logs sin-storefront-prod      # production
+pm2 info sin-storefront-prod
 ```
+
+Файлы логов обоих окружений находятся в `logs/err.log`, `logs/out.log` и
+`logs/combined.log` относительно deploy directory. PM2 перезапускает процесс при
+падении и при потреблении более 2 GB памяти.
+
+## Откат
+
+Deploy script перед сборкой копирует текущую `.output` в `.output.backup`.
+Копия только одна и при следующем деплое перезаписывается.
+
+```bash
+cd <DEPLOY_PATH>
+mv .output .output.failed
+mv .output.backup .output
+pm2 startOrReload ecosystem.production.config.cjs --update-env
+```
+
+Для staging используйте `ecosystem.config.cjs`. После проверки неудачную
+`.output.failed` можно удалить вручную.
+
+## Ограничения текущей схемы
+
+- CI не выполняет отдельные lint, typecheck или test jobs — таких scripts сейчас
+  нет в `package.json`.
+- Сборка происходит уже на целевом сервере, поэтому результат зависит от версии
+  установленного там Bun и доступности package registry/API во время build.
+- `rsync --delete` синхронизирует почти весь checkout, включая локально созданные
+  артефакты job-а; постоянные файлы следует хранить вне `DEPLOY_PATH`.
+- Health check проверяет статус PM2, но не делает HTTP-запрос к приложению.
+- Backup создаётся после новой сборки в текущей реализации, поэтому при сборке в
+  той же `.output` нужно отдельно проверить, что копия действительно содержит
+  предыдущую рабочую версию.
