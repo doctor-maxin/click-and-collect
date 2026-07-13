@@ -49,6 +49,12 @@ export default defineNuxtConfig({
         blockNonSeoBots: true,
         cacheControl: "max-age=14400, must-revalidate",
         sitemap: ["/sitemap.xml"],
+        groups: [
+             {
+                userAgent: ['Yandex'],
+                cleanParam: ['variant', 'color', 'page', 'size', 'metadata.subclass', 'metadata.class', 'category_ids', 'is_discounted']
+             }
+        ]
     },
     schemaOrg: {
         identity: {
