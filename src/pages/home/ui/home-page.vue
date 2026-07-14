@@ -12,11 +12,8 @@ import {
 const { data: homePage, error } = await useAsyncData("home-page", () =>
     getHomePage(),
 );
-
 const siteConfig = useSiteConfig();
-const canonicalUrl = computed(() =>
-    toAbsoluteSiteUrl(siteConfig.url, "/"),
-);
+const canonicalUrl = computed(() => toAbsoluteSiteUrl(siteConfig.url, "/"));
 const homeMeta = computed(() =>
     resolveSeoMeta({
         canonical: canonicalUrl.value,

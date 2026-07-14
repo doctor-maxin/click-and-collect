@@ -1,4 +1,4 @@
-query GetHomePage {
+query GetHomePage($pagination: PaginationArg) {
     homePage {
         H1
         seo {
@@ -21,6 +21,12 @@ query GetHomePage {
             }
         }
         content {
+            ... on ComponentBlocksProducts {
+                __typename
+                id
+                title
+                productIds
+            }
             ... on ComponentBlocksAnnouncementBar {
                 __typename
                 id
@@ -33,7 +39,7 @@ query GetHomePage {
             ... on ComponentBlocksTemy {
                 id
                 __typename
-                items {
+                items(pagination: $pagination) {
                     link
                     text
                     textColor
@@ -48,10 +54,10 @@ query GetHomePage {
                     }
                     id
                 }
+                autoplayDelay
+                autoplayDuration
                 isCarousel
                 visibleCols
-                autoplayDuration
-                autoplayDelay
                 mobileVisibleCols
             }
             ... on ComponentBlocksSubscriptionForm {
@@ -94,18 +100,17 @@ query GetHomePage {
                         url
                     }
                     link
-                    textColor
                 }
-                isCarousel
-                visibleCols
-                autoplayDuration
                 autoplayDelay
+                autoplayDuration
+                isCarousel
                 mobileVisibleCols
+                visibleCols
             }
             ... on ComponentBlocksCarousel {
                 id
                 __typename
-                slides {
+                slides(pagination: $pagination) {
                     id
                     media {
                         alternativeText
@@ -129,7 +134,6 @@ query GetHomePage {
                     textHPosition
                     textVPosition
                     showText
-                    link
                     textColor
                 }
                 autoplay
@@ -138,7 +142,7 @@ query GetHomePage {
             ... on ComponentBlocksBanners {
                 id
                 __typename
-                items {
+                items(pagination: $pagination) {
                     id
                     title
                     showLinkButton
@@ -214,6 +218,16 @@ query GetHomePage {
             ... on Error {
                 code
                 message
+            }
+            ... on ComponentBlocksProductCategories {
+                __typename
+                id
+                categories(pagination: $pagination) {
+                    title
+                    productIds
+                    id
+                    categoryId
+                }
             }
         }
     }

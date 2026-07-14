@@ -36,7 +36,7 @@ const _swiper = useSwiper(containerRef, {
             <swiper-slide v-for="(item, index) in data.slides" :key="item.id">
                 <component
                     :is="'link' in item && item.link ? NuxtLink : 'div'"
-                    class="h-screen relative"
+                    class="h-full relative"
                     :to="item.link"
                 >
                     <FeatureRenderMedia
@@ -44,6 +44,9 @@ const _swiper = useSwiper(containerRef, {
                         :mobile-media="item.mobileMedia"
                         class="h-full"
                         :loading="index === 0 ? 'eager' : 'lazy'"
+                        :fetch-priority="index === 0 ? 'high' : 'low'"
+                        :preload="index === 0"
+                        sizes="100vw"
                     />
                     <div
                         v-if="item.showText"

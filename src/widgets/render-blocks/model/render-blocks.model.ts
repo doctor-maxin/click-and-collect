@@ -111,6 +111,26 @@ export interface ISharedMap {
     defaultMobileMedia: IMedia;
 }
 
+export interface IProductsBlock {
+    id: number;
+    __typename: "ComponentBlocksProducts";
+    title?: string | null;
+    productIds: string[];
+}
+
+export interface IProductCategoryProductsItem {
+    id: number;
+    title?: string | null;
+    categoryId?: string | null;
+    productIds: string[];
+}
+
+export interface IProductCategoriesBlock {
+    id: number;
+    __typename: "ComponentBlocksProductCategories";
+    categories: IProductCategoryProductsItem[];
+}
+
 export type IUiBlock =
     | ICarouselBlock
     | IAnnouncementBarBlock
@@ -118,5 +138,7 @@ export type IUiBlock =
     | IDepartmentsBlocks
     | IBannersBlock
     | ISubscriptionBlock
+    | IProductsBlock
+    | IProductCategoriesBlock
     | ISharedMap;
 export type IUiBlocks = Array<IUiBlock>;

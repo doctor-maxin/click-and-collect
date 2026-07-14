@@ -42,6 +42,7 @@ const _swiper = useSwiper(containerRef, {
 });
 
 const visibileItems = computed(() => {
+    if (!data.isCarousel) return data.items;
     if (import.meta.server) return data.items.slice(0, data.visibleCols);
     console.log(data.mobileVisibleCols);
     return data.items.slice(
@@ -49,7 +50,6 @@ const visibileItems = computed(() => {
         window.innerWidth <= 768 ? data.mobileVisibleCols : data.visibleCols,
     );
 });
-
 const duplicatedItems = computed(() => [...data.items, ...data.items]);
 </script>
 <template>
@@ -90,7 +90,7 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
     </section>
 
     <section
-        v-else-if="data.items?.length"
+        v-else-if="data.items?.length && data.isCarousel"
         class="w-full mx-auto mt-4 mb-6 lg:my-12"
     >
         <swiper-container

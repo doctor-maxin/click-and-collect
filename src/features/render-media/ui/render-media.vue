@@ -1,19 +1,41 @@
 <script setup lang="ts">
 import type { IMedia } from "#shared/types/media";
 
-const { media, mobileMedia, loading } = defineProps<{
-    media: IMedia;
-    mobileMedia: IMedia;
-    loading?: HTMLImageElement["loading"];
-}>();
+const props = withDefaults(
+    defineProps<{
+        media: IMedia;
+        mobileMedia: IMedia;
+        loading?: HTMLImageElement["loading"];
+        fetchPriority?: "auto" | "high" | "low";
+        preload?: boolean;
+        sizes?: string;
+    }>(),
+    {
+        loading: "lazy",
+        fetchPriority: "auto",
+        preload: false,
+        sizes: "100vw",
+    },
+);
 
-const formatVideo = useImage();
-const isImage = computed(() => media.mime.startsWith("image"));
-const isImageMobile = computed(() => mobileMedia.mime.startsWith("image"));
-const desktopLoaded = ref(false);
-const mobileLoaded = ref(false);
-const desktopImageRef = ref<HTMLImageElement | null>(null);
-const mobileImageRef = ref<HTMLImageElement | null>(null);
+const image = useImage();
+const isImage = computed(() => props.media.mime.startsWith("image"));
+const isImageMobile = computed(() => props.mobileMedia.mime.startsWith("image"));
+const imageLoaded = ref(false);
+const imageRef = ref<HTMLImageElement | null>(null);
+
+const desktopImage = computed(() =>
+    image.getSizes(props.media.url, {
+        provider: "strapi",
+        sizes: props.sizes,
+    }),
+);
+const mobileImage = computed(() =>
+    image.getSizes(props.mobileMedia.url, {
+        provider: "strapi",
+        sizes: props.sizes,
+    }),
+);
 
 async function syncLoadedState(
     target: Ref<HTMLImageElement | null>,
@@ -27,87 +49,174 @@ async function syncLoadedState(
 }
 
 watch(
-    () => media.url,
+    () => [props.media.url, props.mobileMedia.url],
     async () => {
-        desktopLoaded.value = false;
-        await syncLoadedState(desktopImageRef, desktopLoaded);
-    },
-    { immediate: true },
-);
-
-watch(
-    () => mobileMedia.url,
-    async () => {
-        mobileLoaded.value = false;
-        await syncLoadedState(mobileImageRef, mobileLoaded);
+        imageLoaded.value = false;
+        await syncLoadedState(imageRef, imageLoaded);
     },
     { immediate: true },
 );
 
 onMounted(() => {
-    syncLoadedState(desktopImageRef, desktopLoaded);
-    syncLoadedState(mobileImageRef, mobileLoaded);
+    syncLoadedState(imageRef, imageLoaded);
+});
+
+useHead(() => {
+    if (!props.preload || !isImage.value || !isImageMobile.value) {
+        return {};
+    }
+
+    const fetchpriority = props.fetchPriority;
+    const sharedLinkAttrs = {
+        rel: "preload",
+        as: "image",
+        fetchpriority,
+    };
+
+    if (props.media.url === props.mobileMedia.url) {
+        return {
+            link: [
+                {
+                    ...sharedLinkAttrs,
+                    href:
+                        desktopImage.value.src ??
+                        image(props.media.url, undefined, {
+                            provider: "strapi",
+                        }),
+                    imagesrcset: desktopImage.value.srcset,
+                    imagesizes: desktopImage.value.sizes,
+                },
+            ],
+        };
+    }
+
+    return {
+        link: [
+            {
+                ...sharedLinkAttrs,
+                media: "(min-width: 1024px)",
+                href:
+                    desktopImage.value.src ??
+                    image(props.media.url, undefined, { provider: "strapi" }),
+                imagesrcset: desktopImage.value.srcset,
+                imagesizes: desktopImage.value.sizes,
+            },
+            {
+                ...sharedLinkAttrs,
+                media: "(max-width: 1023.98px)",
+                href:
+                    mobileImage.value.src ??
+                    image(props.mobileMedia.url, undefined, {
+                        provider: "strapi",
+                    }),
+                imagesrcset: mobileImage.value.srcset,
+                imagesizes: mobileImage.value.sizes,
+            },
+        ],
+    };
 });
 </script>
 
 <template>
     <div class="relative ui-media">
-        <div class="hidden lg:block h-full">
-            <NuxtImg
-                v-if="isImage"
-                custom
-                provider="strapi"
-                :src="media.url"
-                v-slot="{ src, imgAttrs }"
+        <template v-if="isImage && isImageMobile">
+            <picture
+                class="ui-image-shell block h-full"
+                :class="{ 'is-loaded': imageLoaded }"
             >
-                <div
-                    class="ui-image-shell h-full"
-                    :class="{ 'is-loaded': desktopLoaded }"
-                >
-                    <img
-                        ref="desktopImageRef"
-                        v-bind="imgAttrs"
-                        :src="src"
-                        :loading="loading"
-                        @load="desktopLoaded = true"
-                    />
-                </div>
-            </NuxtImg>
+                <source
+                    media="(min-width: 1024px)"
+                    :srcset="desktopImage.srcset"
+                    :sizes="desktopImage.sizes"
+                />
+                <img
+                    ref="imageRef"
+                    :src="
+                        mobileImage.src ??
+                        image(props.mobileMedia.url, undefined, {
+                            provider: 'strapi',
+                        })
+                    "
+                    :srcset="mobileImage.srcset"
+                    :sizes="mobileImage.sizes"
+                    :alt="
+                        props.mobileMedia.alternativeText ??
+                        props.media.alternativeText ??
+                        ''
+                    "
+                    :loading="props.loading"
+                    :fetchpriority="props.fetchPriority"
+                    decoding="async"
+                    @load="imageLoaded = true"
+                    @error="imageLoaded = true"
+                />
+            </picture>
+        </template>
+
+        <div v-else class="hidden lg:block h-full">
+            <div
+                v-if="isImage"
+                class="ui-image-shell h-full"
+                :class="{ 'is-loaded': imageLoaded }"
+            >
+                <img
+                    ref="imageRef"
+                    :src="
+                        desktopImage.src ??
+                        image(props.media.url, undefined, {
+                            provider: 'strapi',
+                        })
+                    "
+                    :srcset="desktopImage.srcset"
+                    :sizes="desktopImage.sizes"
+                    :alt="props.media.alternativeText ?? ''"
+                    :loading="props.loading"
+                    :fetchpriority="props.fetchPriority"
+                    decoding="async"
+                    @load="imageLoaded = true"
+                    @error="imageLoaded = true"
+                />
+            </div>
             <video
                 v-else
-                :src="formatVideo(media.url, undefined, { provider: 'strapi' })"
+                :src="
+                    image(props.media.url, undefined, { provider: 'strapi' })
+                "
                 playsinline
-                :loading="loading"
+                :loading="props.loading"
                 autoplay
                 muted
                 loop
             />
         </div>
-        <div class="lg:hidden h-full">
-            <NuxtImg
+        <div v-if="!isImage || !isImageMobile" class="lg:hidden h-full">
+            <div
                 v-if="isImageMobile"
-                custom
-                provider="strapi"
-                :src="mobileMedia.url"
-                v-slot="{ src, imgAttrs }"
+                class="ui-image-shell h-full"
+                :class="{ 'is-loaded': imageLoaded }"
             >
-                <div
-                    class="ui-image-shell h-full"
-                    :class="{ 'is-loaded': mobileLoaded }"
-                >
-                    <img
-                        ref="mobileImageRef"
-                        v-bind="imgAttrs"
-                        :loading="loading"
-                        :src="src"
-                        @load="mobileLoaded = true"
-                    />
-                </div>
-            </NuxtImg>
+                <img
+                    ref="imageRef"
+                    :src="
+                        mobileImage.src ??
+                        image(props.mobileMedia.url, undefined, {
+                            provider: 'strapi',
+                        })
+                    "
+                    :srcset="mobileImage.srcset"
+                    :sizes="mobileImage.sizes"
+                    :alt="props.mobileMedia.alternativeText ?? ''"
+                    :loading="props.loading"
+                    :fetchpriority="props.fetchPriority"
+                    decoding="async"
+                    @load="imageLoaded = true"
+                    @error="imageLoaded = true"
+                />
+            </div>
             <video
                 v-else
                 :src="
-                    formatVideo(mobileMedia.url, undefined, {
+                    image(props.mobileMedia.url, undefined, {
                         provider: 'strapi',
                     })
                 "

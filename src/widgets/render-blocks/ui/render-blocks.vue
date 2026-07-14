@@ -1,40 +1,83 @@
 <script setup lang="ts">
+import { defineAsyncComponent, type Component } from "vue";
 import type { IUiBlocks, IUiBlock } from "../model/render-blocks.model";
-import CarouselBlock from "./blocks/carousel";
-import AnnouncementBarBlock from "./blocks/announcement-bar";
-import ThematicsBlock from "./blocks/thematics";
-import DepartmentsBlock from "./blocks/departments";
-import BannersBlock from "./blocks/banners";
-import SubscriptionForm from "./blocks/subscription-form";
-import MapBlock from "./blocks/map";
 
-defineProps<{
+const props = defineProps<{
     content: IUiBlocks;
 }>();
 
-function getBlock(componentName: IUiBlock["__typename"]): any {
-    switch (componentName) {
-        case "ComponentBlocksCarousel":
-            return CarouselBlock;
-        case "ComponentBlocksAnnouncementBar":
-            return AnnouncementBarBlock;
-        case "ComponentBlocksTemy":
-            return ThematicsBlock;
-        case "ComponentBlocksDepartments":
-            return DepartmentsBlock;
-        case "ComponentBlocksBanners":
-            return BannersBlock;
-        case "ComponentBlocksSubscriptionForm":
-            return SubscriptionForm;
-        case "ComponentSharedMap":
-            return MapBlock;
-        default:
-            null;
+const blockComponents = {
+    ComponentBlocksCarousel: defineAsyncComponent(() => import("./blocks/carousel")),
+    ComponentBlocksAnnouncementBar: defineAsyncComponent(
+        () => import("./blocks/announcement-bar"),
+    ),
+    ComponentBlocksTemy: defineAsyncComponent(() => import("./blocks/thematics")),
+    ComponentBlocksDepartments: defineAsyncComponent(
+        () => import("./blocks/departments"),
+    ),
+    ComponentBlocksBanners: defineAsyncComponent(() => import("./blocks/banners")),
+    ComponentBlocksSubscriptionForm: defineAsyncComponent(
+        () => import("./blocks/subscription-form"),
+    ),
+    ComponentBlocksProducts: defineAsyncComponent(() => import("./blocks/products")),
+    ComponentBlocksProductCategories: defineAsyncComponent(
+        () => import("./blocks/products"),
+    ),
+    ComponentSharedMap: defineAsyncComponent(() => import("./blocks/map")),
+} satisfies Record<IUiBlock["__typename"], Component>;
+
+function getBlock(componentName: IUiBlock["__typename"]): Component | null {
+    return blockComponents[componentName] ?? null;
+}
+
+const supportedContent = computed(() =>
+    props.content.filter((block) => Boolean(getBlock(block.__typename))),
+);
+
+const visibleCount = ref(supportedContent.value.length > 0 ? 1 : 0);
+
+const visibleContent = computed(() =>
+    supportedContent.value.slice(0, visibleCount.value),
+);
+
+const contentSignature = computed(() =>
+    props.content
+        .map((block) => `${block.id}:${block.__typename}`)
+        .join("|"),
+);
+
+watch(
+    contentSignature,
+    () => {
+        visibleCount.value = supportedContent.value.length > 0 ? 1 : 0;
+    },
+);
+
+function showNextBlock(index: number) {
+    if (index !== visibleCount.value - 1) return;
+    if (visibleCount.value >= supportedContent.value.length) return;
+
+    const showNext = () => {
+        visibleCount.value += 1;
+    };
+
+    if (import.meta.client) {
+        requestAnimationFrame(showNext);
+        return;
     }
+
+    showNext();
 }
 </script>
 <template>
-    <template v-for="block in content" :key="block.id + block.__typename">
-        <component :is="getBlock(block.__typename)" :data="block" />
+    <template
+        v-for="(block, index) in visibleContent"
+        :key="block.id + block.__typename"
+    >
+        <component
+            :is="getBlock(block.__typename)"
+            :data="block"
+            @vue:mounted="showNextBlock(index)"
+        />
     </template>
 </template>
