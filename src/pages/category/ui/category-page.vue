@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from "#app";
+import { useRoute, type AsyncDataRequestStatus } from "#app";
 import type { StoreProductCategory } from "@medusajs/types";
 import { useIntersectionObserver } from "@vueuse/core";
 import { useFiltersStore } from "~/shared/lib/filters.store";
@@ -260,6 +260,7 @@ watch(
     {
         immediate: true,
         deep: true,
+        flush: 'pre'
     },
 );
 
@@ -334,35 +335,33 @@ watch(
     },
 );
 
+async function reloadFilterStats(payload: typeof productsResponse.value, currentStatus: AsyncDataRequestStatus) {
+    if (currentStatus !== "success" || !payload) return;
+    if (payload.requestKey !== productsRequestKey.value) return;
+
+    const { response } = payload;
+
+    if (page.value === 1 || !shouldAppendProducts.value) {
+        products.value = response.hits ?? [];
+    } else {
+        products.value.push(...(response.hits ?? []));
+    }
+    shouldAppendProducts.value = false;
+
+    //@ts-ignore
+    count.value = response.totalHits ?? 0;
+    resolvedTotalPages.value = Math.ceil(count.value / limit.value);
+    filtersStore.setTotalPages(resolvedTotalPages.value);
+    filtersStore.setAvailableFilters(response.facetDistribution);
+    isInternalUpdate.value = false;
+    await nextTick();
+    isAutoloadReady.value = true;
+}
 // Update Filter response
-watch(
-    [() => productsResponse.value, () => status.value],
-    async ([payload, currentStatus]) => {
-        if (currentStatus !== "success" || !payload) return;
-        if (payload.requestKey !== productsRequestKey.value) return;
+watchEffect(() => {
+    reloadFilterStats(productsResponse.value, status.value)
+})
 
-        const { response } = payload;
-
-        if (page.value === 1 || !shouldAppendProducts.value) {
-            products.value = response.hits ?? [];
-        } else {
-            products.value.push(...(response.hits ?? []));
-        }
-        shouldAppendProducts.value = false;
-
-        //@ts-ignore
-        count.value = response.totalHits ?? 0;
-        resolvedTotalPages.value = Math.ceil(count.value / limit.value);
-        filtersStore.setTotalPages(resolvedTotalPages.value);
-        filtersStore.setAvailableFilters(response.facetDistribution);
-        isInternalUpdate.value = false;
-        await nextTick();
-        isAutoloadReady.value = true;
-    },
-    {
-        immediate: true,
-    },
-);
 
 // Update Facets
 watchEffect(() => {
