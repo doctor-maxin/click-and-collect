@@ -135,6 +135,7 @@ query GetHomePage($pagination: PaginationArg) {
                     textVPosition
                     showText
                     textColor
+                    link
                 }
                 autoplay
                 autoplayDelay
