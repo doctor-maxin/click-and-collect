@@ -256,6 +256,7 @@ watch(
         filtersStore.resetToggles();
         resolvedTotalPages.value = 1;
         count.value = 0;
+        console.log('change after handle')
     },
     {
         immediate: true,
@@ -350,6 +351,7 @@ async function reloadFilterStats(payload: typeof productsResponse.value, current
 
     //@ts-ignore
     count.value = response.totalHits ?? 0;
+    console.log('change aftert produict loaded')
     resolvedTotalPages.value = Math.ceil(count.value / limit.value);
     filtersStore.setTotalPages(resolvedTotalPages.value);
     filtersStore.setAvailableFilters(response.facetDistribution);
@@ -358,10 +360,40 @@ async function reloadFilterStats(payload: typeof productsResponse.value, current
     isAutoloadReady.value = true;
 }
 // Update Filter response
-watchEffect(() => {
-    reloadFilterStats(productsResponse.value, status.value)
-})
 
+watch(
+    [() => productsResponse.value, () => status.value],
+    async ([payload, currentStatus]) => {
+        console.log(payload, currentStatus)
+        if (currentStatus !== "success" || !payload) return;
+        if (payload.requestKey !== productsRequestKey.value) return;
+
+        const { response } = payload;
+        await nextTick();
+
+        if (page.value === 1 || !shouldAppendProducts.value) {
+            products.value = response.hits ?? [];
+        } else {
+            products.value.push(...(response.hits ?? []));
+        }
+        shouldAppendProducts.value = false;
+
+        //@ts-ignore
+        count.value = response.totalHits ?? 0;
+        console.log('change aftert produict loaded')
+        resolvedTotalPages.value = Math.ceil(count.value / limit.value);
+        filtersStore.setTotalPages(resolvedTotalPages.value);
+        filtersStore.setAvailableFilters(response.facetDistribution);
+        isInternalUpdate.value = false;
+        await nextTick();
+        isAutoloadReady.value = true;
+    },
+    {
+        immediate: true,
+        deep: true,
+        flush: 'sync'
+    },
+);
 
 // Update Facets
 watchEffect(() => {
