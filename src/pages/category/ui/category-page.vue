@@ -24,7 +24,9 @@ const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
 const categoryPath = route.path;
 const categoryHandle = route.params.handle as string;
-const isCategoryRouteActive = () => route.path === categoryPath;
+let isComponentActive = true;
+const isCategoryRouteActive = () =>
+    isComponentActive && route.path === categoryPath;
 const {
     public: { siteUrl, siteName },
 } = useRuntimeConfig();
@@ -123,6 +125,8 @@ const resolvedTotalPages = ref(1);
 const isInternalUpdate = ref(false);
 const shouldAppendProducts = ref(false);
 const isAutoloadReady = ref(false);
+let isRestoringFromCache = false;
+let hasActivatedOnce = false;
 filtersStore.setAppliedFiltersFromQuery(route.query);
 
 const getPageFromQuery = () => {
@@ -245,7 +249,12 @@ const {
 });
 
 watch(productsRequestKey, (nextKey, previousKey) => {
-    if (!isCategoryRouteActive() || nextKey === previousKey) return;
+    if (
+        !isCategoryRouteActive() ||
+        isRestoringFromCache ||
+        nextKey === previousKey
+    )
+        return;
     isAutoloadReady.value = false;
     void refreshProducts();
 });
@@ -253,15 +262,13 @@ watch(productsRequestKey, (nextKey, previousKey) => {
 watch(
     () => route.params.handle,
     () => {
+        if (!isCategoryRouteActive()) return;
         filtersStore.resetToggles();
         resolvedTotalPages.value = 1;
         count.value = 0;
-        console.log('change after handle')
     },
     {
         immediate: true,
-        deep: true,
-        flush: 'pre'
     },
 );
 
@@ -336,11 +343,17 @@ watch(
     },
 );
 
-async function reloadFilterStats(payload: typeof productsResponse.value, currentStatus: AsyncDataRequestStatus) {
+async function reloadFilterStats(
+    payload: typeof productsResponse.value,
+    currentStatus: AsyncDataRequestStatus,
+) {
+    if (!isCategoryRouteActive()) return;
     if (currentStatus !== "success" || !payload) return;
     if (payload.requestKey !== productsRequestKey.value) return;
 
     const { response } = payload;
+    await nextTick();
+    if (!isCategoryRouteActive()) return;
 
     if (page.value === 1 || !shouldAppendProducts.value) {
         products.value = response.hits ?? [];
@@ -351,7 +364,6 @@ async function reloadFilterStats(payload: typeof productsResponse.value, current
 
     //@ts-ignore
     count.value = response.totalHits ?? 0;
-    console.log('change aftert produict loaded')
     resolvedTotalPages.value = Math.ceil(count.value / limit.value);
     filtersStore.setTotalPages(resolvedTotalPages.value);
     filtersStore.setAvailableFilters(response.facetDistribution);
@@ -363,37 +375,48 @@ async function reloadFilterStats(payload: typeof productsResponse.value, current
 
 watch(
     [() => productsResponse.value, () => status.value],
-    async ([payload, currentStatus]) => {
-        console.log(payload, currentStatus)
-        if (currentStatus !== "success" || !payload) return;
-        if (payload.requestKey !== productsRequestKey.value) return;
-
-        const { response } = payload;
-        await nextTick();
-
-        if (page.value === 1 || !shouldAppendProducts.value) {
-            products.value = response.hits ?? [];
-        } else {
-            products.value.push(...(response.hits ?? []));
-        }
-        shouldAppendProducts.value = false;
-
-        //@ts-ignore
-        count.value = response.totalHits ?? 0;
-        console.log('change aftert produict loaded')
-        resolvedTotalPages.value = Math.ceil(count.value / limit.value);
-        filtersStore.setTotalPages(resolvedTotalPages.value);
-        filtersStore.setAvailableFilters(response.facetDistribution);
-        isInternalUpdate.value = false;
-        await nextTick();
-        isAutoloadReady.value = true;
+    ([payload, currentStatus]) => {
+        void reloadFilterStats(payload, currentStatus);
     },
     {
         immediate: true,
-        deep: true,
-        flush: 'sync'
     },
 );
+
+onActivated(() => {
+    isComponentActive = true;
+
+    if (!hasActivatedOnce) {
+        hasActivatedOnce = true;
+        return;
+    }
+
+    if (!isCategoryRouteActive()) return;
+
+    void (async () => {
+        isRestoringFromCache = true;
+        isInternalUpdate.value = false;
+        isAutoloadReady.value = false;
+        shouldAppendProducts.value = false;
+
+        filtersStore.setAppliedFiltersFromQuery(route.query);
+        filtersStore.setPage(getPageFromQuery());
+        filtersStore.resetToggles();
+        resolvedTotalPages.value = 1;
+        count.value = 0;
+
+        await nextTick();
+        isRestoringFromCache = false;
+
+        if (!isCategoryRouteActive()) return;
+        await refreshProducts();
+    })();
+});
+
+onDeactivated(() => {
+    isComponentActive = false;
+    isAutoloadReady.value = false;
+});
 
 // Update Facets
 watchEffect(() => {
