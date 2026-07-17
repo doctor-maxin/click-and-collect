@@ -85,10 +85,11 @@ const groups = computed<ProductGroup[]>(() => {
     if (data.__typename === "ComponentBlocksProductCategories") {
         return (data.categories ?? [])
             .map((category, index) => {
+                console.log(category)
                 const categoryId = category.categoryId?.trim() ?? null;
 
                 return {
-                    id: String(categoryId || category.id || index),
+                    id: [categoryId, category.id].join('-'),
                     title: category.title?.trim() || `Список ${index + 1}`,
                     productIds: normalizeProductIds(category.productIds),
                     categoryId,
