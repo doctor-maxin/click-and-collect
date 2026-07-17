@@ -31,18 +31,22 @@ const _swiper = useSwiper(containerRef, {
         <swiper-container
             ref="containerRef"
             :init="false"
-            class="relative h-screen lg:h-[70vh] z-10"
+            class="block relative w-full h-screen lg:h-[70vh] z-10"
         >
-            <swiper-slide v-for="(item, index) in data.slides" :key="item.id">
+            <swiper-slide
+                v-for="(item, index) in data.slides"
+                :key="item.id"
+                class="block w-full h-full"
+            >
                 <component
                     :is="'link' in item && item.link ? NuxtLink : 'div'"
-                    class="h-full relative"
+                    class="block w-full h-full relative"
                     :to="item.link"
                 >
                     <FeatureRenderMedia
                         :media="item.media"
                         :mobile-media="item.mobileMedia"
-                        class="h-full"
+                        class="block w-full h-full"
                         :loading="index === 0 ? 'eager' : 'lazy'"
                         :fetch-priority="index === 0 ? 'high' : 'low'"
                         :preload="index === 0"
