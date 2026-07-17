@@ -50,7 +50,6 @@ const _swiper = useSwiper(containerRef, {
                         :loading="index === 0 ? 'eager' : 'lazy'"
                         :fetch-priority="index === 0 ? 'high' : 'low'"
                         :preload="index === 0"
-                        sizes="100vw"
                     />
                     <div
                         v-if="item.showText"

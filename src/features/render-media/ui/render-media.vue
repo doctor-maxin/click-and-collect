@@ -8,13 +8,11 @@ const props = withDefaults(
         loading?: HTMLImageElement["loading"];
         fetchPriority?: "auto" | "high" | "low";
         preload?: boolean;
-        sizes?: string;
     }>(),
     {
         loading: "lazy",
         fetchPriority: "auto",
         preload: false,
-        sizes: "100vw",
     },
 );
 
@@ -24,17 +22,11 @@ const isImageMobile = computed(() => props.mobileMedia.mime.startsWith("image"))
 const imageLoaded = ref(false);
 const imageRef = ref<HTMLImageElement | null>(null);
 
-const desktopImage = computed(() =>
-    image.getSizes(props.media.url, {
-        provider: "strapi",
-        sizes: props.sizes,
-    }),
+const desktopMediaUrl = computed(() =>
+    image(props.media.url, undefined, { provider: "strapi" }),
 );
-const mobileImage = computed(() =>
-    image.getSizes(props.mobileMedia.url, {
-        provider: "strapi",
-        sizes: props.sizes,
-    }),
+const mobileMediaUrl = computed(() =>
+    image(props.mobileMedia.url, undefined, { provider: "strapi" }),
 );
 
 async function syncLoadedState(
@@ -78,13 +70,7 @@ useHead(() => {
             link: [
                 {
                     ...sharedLinkAttrs,
-                    href:
-                        desktopImage.value.src ??
-                        image(props.media.url, undefined, {
-                            provider: "strapi",
-                        }),
-                    imagesrcset: desktopImage.value.srcset,
-                    imagesizes: desktopImage.value.sizes,
+                    href: desktopMediaUrl.value,
                 },
             ],
         };
@@ -95,22 +81,12 @@ useHead(() => {
             {
                 ...sharedLinkAttrs,
                 media: "(min-width: 1024px)",
-                href:
-                    desktopImage.value.src ??
-                    image(props.media.url, undefined, { provider: "strapi" }),
-                imagesrcset: desktopImage.value.srcset,
-                imagesizes: desktopImage.value.sizes,
+                href: desktopMediaUrl.value,
             },
             {
                 ...sharedLinkAttrs,
                 media: "(max-width: 1023.98px)",
-                href:
-                    mobileImage.value.src ??
-                    image(props.mobileMedia.url, undefined, {
-                        provider: "strapi",
-                    }),
-                imagesrcset: mobileImage.value.srcset,
-                imagesizes: mobileImage.value.sizes,
+                href: mobileMediaUrl.value,
             },
         ],
     };
@@ -126,19 +102,11 @@ useHead(() => {
             >
                 <source
                     media="(min-width: 1024px)"
-                    :srcset="desktopImage.srcset"
-                    :sizes="desktopImage.sizes"
+                    :srcset="desktopMediaUrl"
                 />
                 <img
                     ref="imageRef"
-                    :src="
-                        mobileImage.src ??
-                        image(props.mobileMedia.url, undefined, {
-                            provider: 'strapi',
-                        })
-                    "
-                    :srcset="mobileImage.srcset"
-                    :sizes="mobileImage.sizes"
+                    :src="mobileMediaUrl"
                     :alt="
                         props.mobileMedia.alternativeText ??
                         props.media.alternativeText ??
@@ -161,14 +129,7 @@ useHead(() => {
             >
                 <img
                     ref="imageRef"
-                    :src="
-                        desktopImage.src ??
-                        image(props.media.url, undefined, {
-                            provider: 'strapi',
-                        })
-                    "
-                    :srcset="desktopImage.srcset"
-                    :sizes="desktopImage.sizes"
+                    :src="desktopMediaUrl"
                     :alt="props.media.alternativeText ?? ''"
                     :loading="props.loading"
                     :fetchpriority="props.fetchPriority"
@@ -179,9 +140,7 @@ useHead(() => {
             </div>
             <video
                 v-else
-                :src="
-                    image(props.media.url, undefined, { provider: 'strapi' })
-                "
+                :src="desktopMediaUrl"
                 playsinline
                 :loading="props.loading"
                 autoplay
@@ -197,14 +156,7 @@ useHead(() => {
             >
                 <img
                     ref="imageRef"
-                    :src="
-                        mobileImage.src ??
-                        image(props.mobileMedia.url, undefined, {
-                            provider: 'strapi',
-                        })
-                    "
-                    :srcset="mobileImage.srcset"
-                    :sizes="mobileImage.sizes"
+                    :src="mobileMediaUrl"
                     :alt="props.mobileMedia.alternativeText ?? ''"
                     :loading="props.loading"
                     :fetchpriority="props.fetchPriority"
@@ -215,11 +167,7 @@ useHead(() => {
             </div>
             <video
                 v-else
-                :src="
-                    image(props.mobileMedia.url, undefined, {
-                        provider: 'strapi',
-                    })
-                "
+                :src="mobileMediaUrl"
                 playsinline
                 autoplay
                 muted
