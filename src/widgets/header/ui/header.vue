@@ -83,7 +83,7 @@ await useAsyncData(
         class="fixed ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center"
     >
         <div
-            class="container px-4 py-2 lg:py-5 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"
+            class="ui-header-content container px-4 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"
         >
             <FeatureMainMenu />
 
@@ -101,6 +101,18 @@ await useAsyncData(
 <style scoped>
 .ui-header {
     position: absolute;
+}
+
+.ui-header-content {
+    padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
+    padding-bottom: 0.5rem;
+}
+
+@media (min-width: 1024px) {
+    .ui-header-content {
+        padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
+        padding-bottom: 1.25rem;
+    }
 }
 
 .ui-header-shell {
