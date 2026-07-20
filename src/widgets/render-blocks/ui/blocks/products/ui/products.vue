@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
+import type { SwiperContainer } from "swiper/element";
+import type { SwiperOptions } from "swiper/types";
 import type {
     IProductCategoriesBlock,
     IProductsBlock,
@@ -40,7 +42,7 @@ const blockId = computed(
 );
 const nextButtonClass = computed(() => `${blockId.value}-next`);
 const prevButtonClass = computed(() => `${blockId.value}-prev`);
-const containerRef = ref(null);
+const containerRef = ref<SwiperContainer | null>(null);
 const activeGroupId = ref("");
 const { data: productCategories } =
     useNuxtData<StoreProductCategory[]>("categories");
@@ -191,7 +193,7 @@ const shouldRenderBlock = computed(
     () => status.value === "pending" || activeProducts.value.length > 0,
 );
 
-const swiper = useSwiper(containerRef, {
+const swiperOptions = {
     effect: "slide",
     slidesPerView: 2,
     spaceBetween: 16,
@@ -207,6 +209,36 @@ const swiper = useSwiper(containerRef, {
             spaceBetween: 16,
         },
     },
+} satisfies SwiperOptions;
+
+const swiper = useSwiper(containerRef, swiperOptions);
+
+let swiperInitFrame: number | null = null;
+
+onActivated(() => {
+    if (swiperInitFrame !== null) cancelAnimationFrame(swiperInitFrame);
+
+    swiperInitFrame = requestAnimationFrame(() => {
+        swiperInitFrame = null;
+
+        const container = containerRef.value;
+        if (!container?.isConnected) return;
+
+        if (!container.swiper || container.swiper.destroyed) {
+            Object.assign(container, swiperOptions);
+            container.initialize();
+            swiper.instance.value = container.swiper;
+            return;
+        }
+
+        container.swiper.update();
+    });
+});
+
+onDeactivated(() => {
+    if (swiperInitFrame === null) return;
+    cancelAnimationFrame(swiperInitFrame);
+    swiperInitFrame = null;
 });
 
 watch(

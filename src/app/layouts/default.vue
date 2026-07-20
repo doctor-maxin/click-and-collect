@@ -46,7 +46,7 @@ await useAsyncData("categories", () =>
     <NuxtPage
       class="flex-1"
       :keepalive="{
-        include: ['CatalogRoutePage'],
+        include: ['CatalogRoutePage', 'index'],
         max: 10,
       }"
     />

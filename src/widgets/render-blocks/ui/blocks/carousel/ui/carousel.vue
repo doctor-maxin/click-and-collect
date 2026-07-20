@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import type { ICarouselBlock } from "~/widgets/render-blocks";
 import { FeatureRenderMedia } from "~/features/render-media";
+import { normalizeSiteLink } from "~/shared/lib/normalize-site-link";
 import { NuxtLink } from "#components";
 
 const { data } = defineProps<{
     data: ICarouselBlock;
 }>();
+const {
+    public: { siteUrl },
+} = useRuntimeConfig();
+
+const getCarouselLink = (link?: string) =>
+    link ? normalizeSiteLink(link, siteUrl as string | undefined) : undefined;
+
 const instanceId = `carousel-${data.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 const nextButtonClass = `${instanceId}-next`;
 const prevButtonClass = `${instanceId}-prev`;
@@ -41,7 +49,7 @@ const _swiper = useSwiper(containerRef, {
                 <component
                     :is="'link' in item && item.link ? NuxtLink : 'div'"
                     class="block w-full h-full relative"
-                    :to="item.link"
+                    :to="getCarouselLink(item.link)"
                 >
                     <FeatureRenderMedia
                         :media="item.media"

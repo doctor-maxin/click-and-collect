@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { FeatureRenderMedia } from "~/features/render-media";
+import { normalizeSiteLink } from "~/shared/lib/normalize-site-link";
 import type { IDepartmentsBlocks } from "~/widgets/render-blocks";
 
 const { data } = defineProps<{
     data: IDepartmentsBlocks;
 }>();
+const {
+    public: { siteUrl },
+} = useRuntimeConfig();
+
+const getDepartmentLink = (link: string) =>
+    normalizeSiteLink(link, siteUrl as string | undefined);
 
 const instanceId = computed(
     () => `departments-${String(data.id).replace(/[^a-zA-Z0-9_-]/g, "-")}`,
@@ -19,7 +26,6 @@ const canSlide = computed(
     () => data.isCarousel && (data.items?.length ?? 0) > 1,
 );
 const canAutoplay = computed(() => canSlide.value && !!data.autoplayDuration);
-console.log(data.autoplayDuration);
 
 const _swiper = useSwiper(containerRef, {
     effect: "slide",
@@ -48,7 +54,7 @@ const _swiper = useSwiper(containerRef, {
           }
         : false,
 });
-
+console.log(data)
 const duplicatedItems = computed(() => [...data.items, ...data.items]);
 </script>
 <template>
@@ -62,7 +68,7 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
     >
         <article v-for="item of data.items" :key="item.id">
             <NuxtLink
-                :to="item.link"
+                :to="getDepartmentLink(item.link)"
                 class="flex justify-center items-center relative aspect-3/4"
             >
                 <h3
@@ -101,7 +107,7 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
                 class="w-[18rem] lg:w-[25rem]"
             >
                 <NuxtLink
-                    :to="item.link"
+                    :to="getDepartmentLink(item.link)"
                     class="flex justify-center items-center relative aspect-3/4"
                 >
                     <h3
