@@ -138,14 +138,23 @@ const getPageFromQuery = () => {
     return Math.floor(parsedPage);
 };
 
-const pushPageToQuery = (nextPage: number, append = false) => {
+const updatePageQuery = (
+    nextPage: number,
+    historyMode: "push" | "replace" = "push",
+) => {
     if (!isCategoryRouteActive()) return;
 
     const currentPageQuery = Array.isArray(route.query.page)
         ? route.query.page[0]
         : route.query.page;
-    if (nextPage <= 1 && !currentPageQuery) return;
-    if (nextPage > 1 && currentPageQuery === String(nextPage)) return;
+    const hasAppendQuery = "_append" in route.query;
+    if (nextPage <= 1 && !currentPageQuery && !hasAppendQuery) return;
+    if (
+        nextPage > 1 &&
+        currentPageQuery === String(nextPage) &&
+        !hasAppendQuery
+    )
+        return;
 
     const nextQuery: Record<string, string | string[]> = {
         ...(route.query as Record<string, string | string[]>),
@@ -156,12 +165,14 @@ const pushPageToQuery = (nextPage: number, append = false) => {
         nextQuery.page = String(nextPage);
     }
 
-    if (append) {
-        nextQuery._append = "1";
-    } else {
-        delete nextQuery._append;
+    delete nextQuery._append;
+
+    if (historyMode === "replace") {
+        void router.replace({ query: nextQuery });
+        return;
     }
-    router.push({ query: nextQuery });
+
+    void router.push({ query: nextQuery });
 };
 
 watch(
@@ -427,7 +438,7 @@ watch(sort, () => {
     if (!isCategoryRouteActive()) return;
     isAutoloadReady.value = false;
     shouldAppendProducts.value = false;
-    pushPageToQuery(1);
+    updatePageQuery(1);
 });
 
 const onLoadMore = () => {
@@ -442,7 +453,7 @@ const onLoadMore = () => {
 
     isAutoloadReady.value = false;
     shouldAppendProducts.value = true;
-    pushPageToQuery(page.value + 1, true);
+    updatePageQuery(page.value + 1, "replace");
 };
 
 const autoloadTriggerRef = ref<HTMLElement | null>(null);
@@ -488,7 +499,7 @@ const onPageChange = (nextPage: number) => {
     });
     isAutoloadReady.value = false;
     shouldAppendProducts.value = false;
-    pushPageToQuery(nextPage, false);
+    updatePageQuery(nextPage);
 };
 
 const getProductsCountLabel = (value: number) => {
