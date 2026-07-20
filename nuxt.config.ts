@@ -171,6 +171,9 @@ export default defineNuxtConfig({
             searchApiKey: process.env.NUXT_SEARCH_API_KEY,
             searchUrl: process.env.NUXT_SEARCH_URL,
             cdnDomain: process.env.NUXT_PUBLIC_CDN_DOMAIN,
+            mediaStorageUrl:
+                process.env.NUXT_PUBLIC_MEDIA_STORAGE_URL ??
+                "https://ecom-sin.storage.yandexcloud.net",
         },
     },
     router: {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMediaQuery } from "@vueuse/core";
 import type { IMedia } from "#shared/types/media";
 
 const props = withDefaults(
@@ -8,26 +9,116 @@ const props = withDefaults(
         loading?: HTMLImageElement["loading"];
         fetchPriority?: "auto" | "high" | "low";
         preload?: boolean;
+        videoAutoplay?: boolean;
+        videoLoop?: boolean;
+        videoControls?: boolean;
+        videoActive?: boolean;
     }>(),
     {
         loading: "lazy",
         fetchPriority: "auto",
         preload: false,
+        videoAutoplay: true,
+        videoLoop: true,
+        videoControls: false,
+        videoActive: true,
     },
 );
 
 const image = useImage();
+const {
+    public: { cdnDomain, mediaStorageUrl },
+} = useRuntimeConfig();
 const isImage = computed(() => props.media.mime.startsWith("image"));
 const isImageMobile = computed(() => props.mobileMedia.mime.startsWith("image"));
 const imageLoaded = ref(false);
 const imageRef = ref<HTMLImageElement | null>(null);
+const desktopVideoRef = ref<HTMLVideoElement | null>(null);
+const mobileVideoRef = ref<HTMLVideoElement | null>(null);
+const isDesktopViewport = useMediaQuery("(min-width: 1024px)");
+
+function isGif(media: IMedia) {
+    return media.mime.toLowerCase() === "image/gif";
+}
+
+function resolveGifUrl(media: IMedia) {
+    if (!isGif(media) || !cdnDomain || !mediaStorageUrl) {
+        return media.url;
+    }
+
+    try {
+        const sourceUrl = new URL(media.url);
+        const normalizedCdnUrl = new URL(
+            String(cdnDomain).includes("://")
+                ? String(cdnDomain)
+                : `https://${String(cdnDomain)}`,
+        );
+
+        if (sourceUrl.hostname !== normalizedCdnUrl.hostname) {
+            return media.url;
+        }
+
+        const originalPath = sourceUrl.pathname.replace(
+            /^\/ioss\([^)]+\)(?=\/)/,
+            "",
+        );
+        return new URL(
+            `${originalPath}${sourceUrl.search}${sourceUrl.hash}`,
+            String(mediaStorageUrl),
+        ).toString();
+    } catch {
+        return media.url;
+    }
+}
 
 const desktopMediaUrl = computed(() =>
-    image(props.media.url, undefined, { provider: "strapi" }),
+    isGif(props.media)
+        ? resolveGifUrl(props.media)
+        : image(props.media.url, undefined, { provider: "strapi" }),
 );
 const mobileMediaUrl = computed(() =>
-    image(props.mobileMedia.url, undefined, { provider: "strapi" }),
+    isGif(props.mobileMedia)
+        ? resolveGifUrl(props.mobileMedia)
+        : image(props.mobileMedia.url, undefined, { provider: "strapi" }),
 );
+
+function pauseVideo(video: HTMLVideoElement | null, reset = true) {
+    if (!video) return;
+
+    video.pause();
+    if (!reset) return;
+
+    try {
+        video.currentTime = 0;
+    } catch {
+        // The source may not have loaded its metadata yet.
+    }
+}
+
+async function syncVideoPlayback() {
+    await nextTick();
+
+    const activeVideo = isDesktopViewport.value
+        ? desktopVideoRef.value
+        : mobileVideoRef.value;
+    const videos = [desktopVideoRef.value, mobileVideoRef.value];
+
+    for (const video of videos) {
+        if (
+            video &&
+            video === activeVideo &&
+            props.videoActive &&
+            props.videoAutoplay
+        ) {
+            video.defaultMuted = true;
+            video.muted = true;
+            void video.play().catch(() => undefined);
+            continue;
+        }
+
+        pauseVideo(video);
+    }
+}
 
 async function syncLoadedState(
     target: Ref<HTMLImageElement | null>,
@@ -49,8 +140,35 @@ watch(
     { immediate: true },
 );
 
+watch(
+    [
+        () => props.videoActive,
+        () => props.videoAutoplay,
+        desktopMediaUrl,
+        mobileMediaUrl,
+        isDesktopViewport,
+    ],
+    () => void syncVideoPlayback(),
+    { flush: "post" },
+);
+
 onMounted(() => {
     syncLoadedState(imageRef, imageLoaded);
+    void syncVideoPlayback();
+});
+
+onActivated(() => {
+    void syncVideoPlayback();
+});
+
+onDeactivated(() => {
+    pauseVideo(desktopVideoRef.value, false);
+    pauseVideo(mobileVideoRef.value, false);
+});
+
+onBeforeUnmount(() => {
+    pauseVideo(desktopVideoRef.value, false);
+    pauseVideo(mobileVideoRef.value, false);
 });
 
 useHead(() => {
@@ -140,12 +258,19 @@ useHead(() => {
             </div>
             <video
                 v-else
+                ref="desktopVideoRef"
                 :src="desktopMediaUrl"
+                :autoplay="props.videoAutoplay && props.videoActive"
+                :controls="props.videoControls"
+                :loop="props.videoLoop"
+                :preload="props.loading === 'eager' ? 'auto' : 'metadata'"
+                :class="{ 'pointer-events-none': !props.videoControls }"
                 playsinline
-                :loading="props.loading"
-                autoplay
                 muted
-                loop
+                disablepictureinpicture
+                disableremoteplayback
+                controlslist="nodownload nofullscreen noremoteplayback"
+                @loadedmetadata="syncVideoPlayback"
             />
         </div>
         <div v-if="!isImage || !isImageMobile" class="lg:hidden h-full">
@@ -167,11 +292,19 @@ useHead(() => {
             </div>
             <video
                 v-else
+                ref="mobileVideoRef"
                 :src="mobileMediaUrl"
+                :autoplay="props.videoAutoplay && props.videoActive"
+                :controls="props.videoControls"
+                :loop="props.videoLoop"
+                :preload="props.loading === 'eager' ? 'auto' : 'metadata'"
+                :class="{ 'pointer-events-none': !props.videoControls }"
                 playsinline
-                autoplay
                 muted
-                loop
+                disablepictureinpicture
+                disableremoteplayback
+                controlslist="nodownload nofullscreen noremoteplayback"
+                @loadedmetadata="syncVideoPlayback"
             />
         </div>
     </div>

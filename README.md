@@ -63,6 +63,7 @@ bun run generate  # статическая генерация (не исполь
 | `NUXT_SEARCH_URL` | URL Meilisearch |
 | `NUXT_SEARCH_API_KEY` | Search-only API key Meilisearch |
 | `NUXT_PUBLIC_CDN_DOMAIN` | Hostname CDN без протокола для custom S3 image provider |
+| `NUXT_PUBLIC_MEDIA_STORAGE_URL` | Публичный origin исходных media-файлов; используется для GIF без обработки CDN |
 | `FTP_HOST`, `FTP_USER`, `FTP_PASS` | Доступ к XML с точками магазинов |
 | `PORT` | Порт Nitro-сервера; по умолчанию `3000` |
 

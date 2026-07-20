@@ -18,6 +18,11 @@ const instanceId = `carousel-${data.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 const nextButtonClass = `${instanceId}-next`;
 const prevButtonClass = `${instanceId}-prev`;
 const containerRef = ref(null);
+const activeSlideIndex = ref(0);
+
+const updateActiveSlide = (swiper: { realIndex: number }) => {
+    activeSlideIndex.value = swiper.realIndex;
+};
 
 const _swiper = useSwiper(containerRef, {
     effect: "slide",
@@ -32,6 +37,10 @@ const _swiper = useSwiper(containerRef, {
               delay: data.autoplayDelay,
           }
         : false,
+    on: {
+        afterInit: updateActiveSlide,
+        slideChange: updateActiveSlide,
+    },
 });
 </script>
 <template>
@@ -58,6 +67,10 @@ const _swiper = useSwiper(containerRef, {
                         :loading="index === 0 ? 'eager' : 'lazy'"
                         :fetch-priority="index === 0 ? 'high' : 'low'"
                         :preload="index === 0"
+                        :video-autoplay="true"
+                        :video-loop="true"
+                        :video-controls="false"
+                        :video-active="index === activeSlideIndex"
                     />
                     <div
                         v-if="item.showText"
