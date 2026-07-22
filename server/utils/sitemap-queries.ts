@@ -74,5 +74,18 @@ export const SITEMAP_HOME_PAGE_QUERY = `
                 }
             }
         }
+        storesPage {
+            publishedAt
+            map {
+                defaultMedia {
+                    url
+                    mime
+                }
+                defaultMobileMedia {
+                    url
+                    mime
+                }
+            }
+        }
     }
 `;

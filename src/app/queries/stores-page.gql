@@ -1,0 +1,46 @@
+query GetStoresPage {
+    storesPage {
+        seo {
+            metaTitle
+            metaDescription
+            canonicalURL
+            keywords
+            metaRobots
+            metaImage {
+                url
+            }
+            openGraph {
+                ogTitle
+                ogDescription
+                ogUrl
+                ogType
+                ogImage {
+                    url
+                }
+            }
+        }
+        map {
+            id
+            header
+            __typename
+            defaultMedia {
+                alternativeText
+                caption
+                ext
+                mime
+                name
+                provider
+                url
+            }
+            defaultMobileMedia {
+                alternativeText
+                caption
+                ext
+                mime
+                name
+                provider
+                url
+            }
+        }
+    }
+}

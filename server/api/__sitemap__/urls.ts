@@ -60,6 +60,10 @@ type StrapiHomePageResponse = {
     homePage?: {
         content?: unknown;
     } | null;
+    storesPage?: {
+        publishedAt?: string | null;
+        map?: unknown;
+    } | null;
 };
 
 const toIsoDate = (value?: string | null) => {
@@ -243,6 +247,9 @@ export default defineSitemapEventHandler(async () => {
     const homeImages = [
         ...collectImageUrls(homePageResponse.homePage?.content),
     ].map((loc) => ({ loc }));
+    const storesImages = [
+        ...collectImageUrls(homePageResponse.storesPage?.map),
+    ].map((loc) => ({ loc }));
 
     const pages: SitemapEntry[] = [];
     let page = 1;
@@ -306,6 +313,17 @@ export default defineSitemapEventHandler(async () => {
             loc: "/",
             images: homeImages,
         },
+        ...(homePageResponse.storesPage
+            ? [
+                  {
+                      loc: "/stores",
+                      lastmod: toIsoDate(
+                          homePageResponse.storesPage.publishedAt,
+                      ),
+                      images: storesImages,
+                  },
+              ]
+            : []),
         ...products,
         ...categories,
         ...pages,

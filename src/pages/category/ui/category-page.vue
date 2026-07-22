@@ -195,7 +195,7 @@ const { data: filtersResponse } = await useAsyncData(
         return searchClient.index("cards").search<SearchProductDocument>(null, {
             filter: [`category_ids IN ['${category.value?.id}']`],
             hitsPerPage: 0,
-            distinct: "id",
+            distinct: "product_id",
             facets: [
                 "color",
                 "size",

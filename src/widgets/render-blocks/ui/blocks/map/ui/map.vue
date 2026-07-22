@@ -5,7 +5,7 @@ import {
     YandexMap,
     YandexMapDefaultSchemeLayer,
     YandexMapDefaultFeaturesLayer,
-    YandexMapDefaultMarker,
+    YandexMapClusterer,
     YandexMapMarker,
     getLocationFromBounds,
     getCenterFromCoords,
@@ -59,6 +59,13 @@ const cities = computed(() => {
     }));
 });
 const openMarker = ref<number | null>(null);
+const clusterMarkerProps = markRaw({
+    position: "top-center left-center" as const,
+    zIndex: 1,
+    onClick: () => {
+        openMarker.value = null;
+    },
+});
 
 const cityPoints = computed(
     () =>
@@ -101,7 +108,27 @@ const centerToCity = async () => {
         });
     }
 };
-watch(city, centerToCity);
+
+function selectMarker(index: number, marker: MapPoint) {
+    if (openMarker.value === index) {
+        openMarker.value = null;
+        return;
+    }
+
+    openMarker.value = index;
+    if (!map.value) return;
+
+    map.value.setLocation({
+        center: [+marker.coordinates.lon, +marker.coordinates.lat],
+        zoom: Math.max(map.value.zoom, 14),
+        duration: 300,
+    });
+}
+
+watch(city, () => {
+    openMarker.value = null;
+    void centerToCity();
+});
 
 watch(viewMode, (mode) => {
     if (mode === "map" && city.value) {
@@ -112,13 +139,24 @@ watch(viewMode, (mode) => {
 });
 </script>
 <template>
-    <section id="stores" class="pt-6 lg:pt-9 container lg:max-w-none mx-auto">
-        <a name="stores" />
-        <h2 class="font-bold mb-6 lg:mb-13 text-xl lg:text-[2rem] text-center">
-            {{ data.header }}
-        </h2>
+    <section id="stores" class="">
+        <div class="relative h-[248px] overflow-hidden">
+            <FeatureRenderMedia
+                :media="data.defaultMedia"
+                :mobile-media="data.defaultMobileMedia"
+                loading="lazy"
+                class="h-full"
+            />
+            <div class="absolute inset-0 bg-black/25" aria-hidden="true" />
+            <h2
+                class="absolute inset-0 z-1 flex items-center justify-center px-4 text-center text-2xl font-bold text-white lg:text-[2.5rem] lg:leading-tight"
+            >
+                {{ data.header }}
+            </h2>
+        </div>
+
         <header
-            class="flex flex-col gap-3 px-4 lg:px-0 lg:flex-row mb-3 lg:mb-9 lg:mx-auto lg:container justify-end py-2"
+            class="container mx-auto flex flex-col gap-3 px-4 py-6 lg:flex-row lg:items-center lg:justify-end lg:py-9"
         >
             <div class="mr-auto">
                 <UiCombobox
@@ -133,15 +171,8 @@ watch(viewMode, (mode) => {
         </header>
         <div
             v-if="viewMode === 'map'"
-            class="grid grid-cols-1 grid-rows-1 lg:grid-cols-2"
+            class="w-full"
         >
-            <FeatureRenderMedia
-                :media="data.defaultMedia"
-                :mobile-media="data.defaultMobileMedia"
-                loading="lazy"
-                class="hidden lg:block aspect-6/7 lg:h-full"
-            />
-
             <yandex-map
                 v-model="map"
                 :settings="{
@@ -150,14 +181,21 @@ watch(viewMode, (mode) => {
                         zoom: 9,
                     },
                 }"
-                class="h-full aspect-6/7"
+                class="!h-[32rem] w-full lg:!h-[46rem]"
             >
                 <yandex-map-default-scheme-layer />
                 <yandex-map-default-features-layer />
-                <template v-for="(marker, index) of points" :key="index">
+                <YandexMapClusterer
+                    :grid-size="72"
+                    :cluster-marker-props="clusterMarkerProps"
+                    :zoom-on-cluster-click="{ duration: 350 }"
+                >
                     <YandexMapMarker
+                        v-for="(marker, index) of cityPoints"
+                        :key="marker['company-id']"
                         position="left-center top"
                         :settings="{
+                            id: String(marker['company-id']),
                             zIndex: openMarker === index ? 2 : 0,
                             coordinates: [
                                 marker.coordinates.lon,
@@ -165,13 +203,11 @@ watch(viewMode, (mode) => {
                             ],
                             hideOutsideViewport: true,
                         }"
-                        @click="
-                            openMarker = openMarker === index ? null : index
-                        "
+                        @click="selectMarker(index, marker)"
                     >
                         <SvgoSinMarker
                             filled
-                            class="text-[4rem] cursor-pointer mb-0!"
+                            class="mb-0! cursor-pointer text-[4rem]"
                         />
 
                         <Ballon
@@ -180,11 +216,63 @@ watch(viewMode, (mode) => {
                             @close="openMarker = null"
                         />
                     </YandexMapMarker>
-                </template>
+
+                    <template #cluster="{ length }">
+                        <div
+                            class="flex h-12 min-w-12 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-black px-3 text-base font-semibold text-white shadow-lg"
+                            :aria-label="`Магазинов в группе: ${length}`"
+                        >
+                            {{ length }}
+                        </div>
+                    </template>
+                </YandexMapClusterer>
             </yandex-map>
         </div>
-        <div v-if="viewMode === 'list'" class="px-4 container mx-auto">
-            <table class="text-base text-left">
+        <div
+            v-if="viewMode === 'list'"
+            class="container mx-auto px-4 pb-8"
+        >
+            <div class="divide-y divide-gray lg:hidden">
+                <article
+                    v-for="(marker, index) of cityPoints"
+                    :key="index"
+                    class="py-6"
+                >
+                    <h3 class="mb-2 text-base font-medium">
+                        {{ marker.name }}
+                    </h3>
+                    <p class="text-base">{{ marker.address }}</p>
+
+                    <dl class="mt-5 flex flex-col gap-4 text-base">
+                        <div>
+                            <dt class="mb-1 text-sm text-[hsla(216,64%,15%,0.5)]">
+                                Режим работы магазина
+                            </dt>
+                            <dd>{{ marker["working-time"] }}</dd>
+                        </div>
+                        <div
+                            v-if="
+                                marker.phone.type === 'phone' &&
+                                marker.phone.number
+                            "
+                        >
+                            <dt class="mb-1 text-sm text-[hsla(216,64%,15%,0.5)]">
+                                Телефон магазина
+                            </dt>
+                            <dd>
+                                <a :href="`tel:+${marker.phone.number}`">
+                                    +{{ marker.phone.number }}
+                                </a>
+                                <span v-if="marker.phone.ext">
+                                    (Доб. {{ marker.phone.ext }})
+                                </span>
+                            </dd>
+                        </div>
+                    </dl>
+                </article>
+            </div>
+
+            <table class="hidden w-full text-left text-base lg:table">
                 <thead>
                     <tr>
                         <th

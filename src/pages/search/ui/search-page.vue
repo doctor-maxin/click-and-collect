@@ -111,7 +111,7 @@ const { data: filtersResponse } = await useAsyncData(
             .search<SearchProductDocument>(query.value?.toString(), {
                 hitsPerPage: 0,
                 attributesToSearchOn: searchableProductAttributes,
-                distinct: "id",
+                distinct: "product_id",
                 facets: [
                     "color",
                     "size",
@@ -135,7 +135,7 @@ const { data: productsResponse, status } = await useAsyncData(
                 filter,
                 hitsPerPage: limit.value,
                 page: page.value,
-                distinct: "id",
+                distinct: "product_id",
                 attributesToSearchOn: searchableProductAttributes,
                 matchingStrategy: "all",
                 sort: sort.value
