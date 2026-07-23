@@ -2,10 +2,19 @@
 import { useMediaQuery } from "@vueuse/core";
 import type { IMedia } from "#shared/types/media";
 
+type ImageModifiers = {
+    width: number;
+    height?: number;
+    quality?: number;
+};
+
 const props = withDefaults(
     defineProps<{
         media: IMedia;
         mobileMedia: IMedia;
+        imageProvider?: "strapi" | "customS3";
+        desktopImageModifiers?: ImageModifiers;
+        mobileImageModifiers?: ImageModifiers;
         loading?: HTMLImageElement["loading"];
         fetchPriority?: "auto" | "high" | "low";
         preload?: boolean;
@@ -15,6 +24,7 @@ const props = withDefaults(
         videoActive?: boolean;
     }>(),
     {
+        imageProvider: "strapi",
         loading: "lazy",
         fetchPriority: "auto",
         preload: false,
@@ -71,15 +81,25 @@ function resolveGifUrl(media: IMedia) {
     }
 }
 
+function resolveMediaUrl(media: IMedia, modifiers?: ImageModifiers) {
+    if (isGif(media)) {
+        return resolveGifUrl(media);
+    }
+
+    if (!media.mime.startsWith("image")) {
+        return media.url;
+    }
+
+    return image(media.url, modifiers, {
+        provider: props.imageProvider,
+    });
+}
+
 const desktopMediaUrl = computed(() =>
-    isGif(props.media)
-        ? resolveGifUrl(props.media)
-        : image(props.media.url, undefined, { provider: "strapi" }),
+    resolveMediaUrl(props.media, props.desktopImageModifiers),
 );
 const mobileMediaUrl = computed(() =>
-    isGif(props.mobileMedia)
-        ? resolveGifUrl(props.mobileMedia)
-        : image(props.mobileMedia.url, undefined, { provider: "strapi" }),
+    resolveMediaUrl(props.mobileMedia, props.mobileImageModifiers),
 );
 
 function pauseVideo(video: HTMLVideoElement | null, reset = true) {

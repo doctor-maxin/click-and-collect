@@ -13,6 +13,9 @@ defineProps<{
       <FeatureRenderMedia
         :media="data.media"
         :mobile-media="data.mobileMedia"
+        image-provider="customS3"
+        :desktop-image-modifiers="{ width: 1920, quality: 82 }"
+        :mobile-image-modifiers="{ width: 720, quality: 82 }"
       />
 
       <div

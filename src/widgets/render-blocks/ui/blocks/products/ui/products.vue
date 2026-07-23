@@ -87,11 +87,10 @@ const groups = computed<ProductGroup[]>(() => {
     if (data.__typename === "ComponentBlocksProductCategories") {
         return (data.categories ?? [])
             .map((category, index) => {
-                console.log(category)
                 const categoryId = category.categoryId?.trim() ?? null;
 
                 return {
-                    id: [categoryId, category.id].join('-'),
+                    id: [categoryId, category.id].join("-"),
                     title: category.title?.trim() || `Список ${index + 1}`,
                     productIds: normalizeProductIds(category.productIds),
                     categoryId,
@@ -303,7 +302,13 @@ function selectGroup(groupId: string) {
                     v-for="product in activeProducts"
                     :key="`${activeGroup?.id}-${product.id}`"
                 >
-                    <ProductCard :product="product" />
+                    <ProductCard
+                        :product="product"
+                        :image-width="384"
+                        image-sizes="sm:50vw lg:25vw 2xl:384px"
+                        first-image-loading="lazy"
+                        first-image-fetch-priority="low"
+                    />
                 </swiper-slide>
                 <swiper-slide
                     v-if="activeGroup?.categoryLink"

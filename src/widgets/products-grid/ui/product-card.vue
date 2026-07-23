@@ -4,8 +4,18 @@ import ProductCardOptions from "./product-card-options.vue";
 import ProductCardPrice from "./product-card-price.vue";
 import ProductImage from "./product-image.vue";
 
-const { product } = defineProps<{
+const {
+    product,
+    imageWidth = 540,
+    imageSizes = "(max-width: 768px) 350px, 540px",
+    firstImageLoading = "eager",
+    firstImageFetchPriority = "high",
+} = defineProps<{
     product: StoreProduct;
+    imageWidth?: number;
+    imageSizes?: string;
+    firstImageLoading?: "lazy" | "eager";
+    firstImageFetchPriority?: "auto" | "high" | "low";
 }>();
 const containerRef = ref(null);
 
@@ -85,14 +95,22 @@ const link = computed(
                             <ProductImage
                                 class="object-cover object-center size-full"
                                 :src="image.url"
-                                :width="540"
+                                :width="imageWidth"
                                 :alt="
                                     (image.metadata?.alt as string) ??
                                     product.title
                                 "
-                                :loading="index === 0 ? 'eager' : 'lazy'"
-                                fetchpriority="high"
-                                sizes="(max-width: 768px) 350px, 540px"
+                                :loading="
+                                    index === 0
+                                        ? firstImageLoading
+                                        : 'lazy'
+                                "
+                                :fetchpriority="
+                                    index === 0
+                                        ? firstImageFetchPriority
+                                        : 'low'
+                                "
+                                :sizes="imageSizes"
                             />
                         </swiper-slide>
                     </swiper-container>

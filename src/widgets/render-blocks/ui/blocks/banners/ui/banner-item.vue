@@ -13,6 +13,9 @@ defineProps<{
       <FeatureRenderMedia
         :media="data.media"
         :mobile-media="data.mobileMedia"
+        image-provider="customS3"
+        :desktop-image-modifiers="{ width: 1920, quality: 82 }"
+        :mobile-image-modifiers="{ width: 720, quality: 82 }"
       />
       <h4
         class="block left-0 px-4 top-1/2 -translate-y-1/2 absolute w-full text-center text-[1.75rem] lg:text-[3.5rem] font-semibold text-white"

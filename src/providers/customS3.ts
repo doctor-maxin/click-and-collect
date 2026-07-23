@@ -4,6 +4,14 @@ function stripIossSegment(pathname: string) {
     return pathname.replace(/^\/ioss\([^)]+\)(?=\/)/, "");
 }
 
+function resolveCdnUrl(cdnDomain?: string) {
+    if (!cdnDomain) return null;
+
+    return new URL(
+        cdnDomain.includes("://") ? cdnDomain : `https://${cdnDomain}`,
+    );
+}
+
 function buildResizeValue(width?: string | number, height?: string | number) {
     if (!width && !height) {
         return undefined;
@@ -36,8 +44,9 @@ function buildIossPath(
 
 function normalizeSourcePath(src: string, cdnDomain?: string) {
     const url = new URL(src);
+    const cdnUrl = resolveCdnUrl(cdnDomain);
 
-    if (cdnDomain && url.hostname === cdnDomain) {
+    if (cdnUrl && url.hostname === cdnUrl.hostname) {
         return stripIossSegment(url.pathname);
     }
 
@@ -70,7 +79,16 @@ export default defineProvider<{ baseURL?: string }>({
 
             const { public: publicConfig } = useRuntimeConfig();
             const cdnDomain = publicConfig?.cdnDomain as string | undefined;
-            const cdnBaseUrl = cdnDomain ? `https://${cdnDomain}` : "";
+            const sourceUrl = new URL(src);
+            const cdnUrl = resolveCdnUrl(cdnDomain);
+            const isCdnMediaPath =
+                sourceUrl.pathname.startsWith("/strapi/") ||
+                /^\/ioss\([^)]+\)\/strapi\//.test(sourceUrl.pathname);
+            const cdnBaseUrl = cdnUrl
+                ? cdnUrl.origin
+                : isCdnMediaPath
+                  ? sourceUrl.origin
+                  : "";
             const normalizedPath = normalizeSourcePath(src, cdnDomain);
             const pathname = buildIossPath(normalizedPath, {
                 width: modifiers.width?.toString(),

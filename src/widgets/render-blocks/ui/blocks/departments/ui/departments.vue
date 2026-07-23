@@ -85,6 +85,8 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
                     class="w-full h-full"
                     :media="item.image"
                     :mobile-media="item.image"
+                    image-provider="customS3"
+                    :mobile-image-modifiers="{ width: 320, quality: 82 }"
                 />
             </NuxtLink>
         </article>
@@ -124,6 +126,8 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
                         class="w-full h-full"
                         :media="item.image"
                         :mobile-media="item.image"
+                        image-provider="customS3"
+                        :mobile-image-modifiers="{ width: 320, quality: 82 }"
                     />
                 </NuxtLink>
             </swiper-slide>

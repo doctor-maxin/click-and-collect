@@ -93,19 +93,19 @@ const characteristics = computed<CharacteristicItem[]>(() => {
                     >
                 </VisuallyHidden>
 
-                <div v-if="characteristics.length" class="flex flex-col gap-3">
+                <dl v-if="characteristics.length" class="grid grid-cols-2 flex-col gap-3">
                     <template v-for="item of characteristics" :key="item.label">
                         <div
-                            class="flex gap-1 text-base leading-5"
+                            class="contents gap-1 text-base leading-5"
                             v-if="item.value"
                         >
-                            <span class=""> {{ item.label }}: </span>
-                            <span class="">
+                            <dd class=""> {{ item.label }}: </dd>
+                            <dt class="">
                                 {{ item.value }}
-                            </span>
+                            </dt>
                         </div></template
                     >
-                </div>
+                </dl>
                 <p v-else class="text-base leading-6">
                     Характеристики товара пока не добавлены.
                 </p>

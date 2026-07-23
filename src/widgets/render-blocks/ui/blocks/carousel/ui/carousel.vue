@@ -63,6 +63,15 @@ const _swiper = useSwiper(containerRef, {
                     <FeatureRenderMedia
                         :media="item.media"
                         :mobile-media="item.mobileMedia"
+                        image-provider="customS3"
+                        :desktop-image-modifiers="{
+                            width: 1920,
+                            quality: 82,
+                        }"
+                        :mobile-image-modifiers="{
+                            width: 720,
+                            quality: 82,
+                        }"
                         class="block w-full h-full"
                         :loading="index === 0 ? 'eager' : 'lazy'"
                         :fetch-priority="index === 0 ? 'high' : 'low'"
