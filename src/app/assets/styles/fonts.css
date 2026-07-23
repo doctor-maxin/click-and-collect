@@ -1,49 +1,10 @@
 @font-face {
     font-family: Euclid;
     font-style: normal;
-    font-weight: 300;
-    font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Light.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Light.ttf")
-            format("truetype");
-}
-
-@font-face {
-    font-family: Euclid;
-    font-style: italic;
-    font-weight: 300;
-    font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Light%20Italic.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Light%20Italic.ttf")
-            format("truetype");
-}
-
-@font-face {
-    font-family: Euclid;
-    font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Regular.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Regular.ttf")
-            format("truetype");
-}
-
-@font-face {
-    font-family: Euclid;
-    font-style: italic;
-    font-weight: 400;
-    font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Italic.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Italic.ttf")
-            format("truetype");
+    src: url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Regular.woff2")
+        format("woff2");
 }
 
 @font-face {
@@ -51,23 +12,8 @@
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Medium.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Medium.ttf")
-            format("truetype");
-}
-
-@font-face {
-    font-family: Euclid;
-    font-style: italic;
-    font-weight: 500;
-    font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Medium%20Italic.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Medium%20Italic.ttf")
-            format("truetype");
+    src: url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Medium.woff2")
+        format("woff2");
 }
 
 @font-face {
@@ -75,23 +21,8 @@
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20SemiBold.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20SemiBold.ttf")
-            format("truetype");
-}
-
-@font-face {
-    font-family: Euclid;
-    font-style: italic;
-    font-weight: 600;
-    font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20SemiBold%20Italic.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20SemiBold%20Italic.ttf")
-            format("truetype");
+    src: url("../fonts/euclid-woff2/Euclid%20Circular%20B%20SemiBold.woff2")
+        format("woff2");
 }
 
 @font-face {
@@ -99,21 +30,6 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Bold.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Bold.ttf")
-            format("truetype");
-}
-
-@font-face {
-    font-family: Euclid;
-    font-style: italic;
-    font-weight: 700;
-    font-display: swap;
-    src:
-        url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Bold%20Italic.woff2")
-            format("woff2"),
-        url("../fonts/euclid-ttf/Euclid%20Circular%20B%20Bold%20Italic.ttf")
-            format("truetype");
+    src: url("../fonts/euclid-woff2/Euclid%20Circular%20B%20Bold.woff2")
+        format("woff2");
 }

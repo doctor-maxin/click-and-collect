@@ -4,6 +4,27 @@ import { WidgetFooter } from "~/widgets/footer";
 import { WidgetScrollUp } from "~/widgets/scroll-up";
 import { WidgetCookieBanner } from "~/widgets/cookie-banner";
 import { useAsyncData } from "#app";
+import euclidRegularUrl from "~/app/assets/fonts/euclid-woff2/Euclid Circular B Regular.woff2?url";
+import euclidSemiBoldUrl from "~/app/assets/fonts/euclid-woff2/Euclid Circular B SemiBold.woff2?url";
+
+useHead({
+  link: [
+    {
+      rel: "preload",
+      href: euclidRegularUrl,
+      as: "font",
+      type: "font/woff2",
+      crossorigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      href: euclidSemiBoldUrl,
+      as: "font",
+      type: "font/woff2",
+      crossorigin: "anonymous",
+    },
+  ],
+});
 
 const client = useMedusaClient();
 const searchClient = useSearchClient();
