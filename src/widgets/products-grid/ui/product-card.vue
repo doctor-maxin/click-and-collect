@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { StoreProduct } from "@medusajs/types";
+import type { SwiperContainer } from "swiper/element";
+import type { Swiper, SwiperOptions } from "swiper/types";
 import ProductCardOptions from "./product-card-options.vue";
 import ProductCardPrice from "./product-card-price.vue";
 import ProductImage from "./product-image.vue";
@@ -17,9 +19,10 @@ const {
     firstImageLoading?: "lazy" | "eager";
     firstImageFetchPriority?: "auto" | "high" | "low";
 }>();
-const containerRef = ref(null);
-
-const swiper = useSwiper(containerRef, {
+const containerRef = ref<SwiperContainer | null>(null);
+const swiperInstance = shallowRef<Swiper | null>(null);
+const cardWidth = ref(0);
+const swiperOptions = {
     pagination: {
         el: `.product-card[data-id='${product.id}'] .product-card-pagination`,
         type: "bullets",
@@ -32,23 +35,67 @@ const swiper = useSwiper(containerRef, {
             containerRef.value.classList.add("swiper-initialized");
         },
     },
+} satisfies SwiperOptions;
+
+function initializeSwiper() {
+    const container = containerRef.value;
+    if (!container) return;
+
+    if (container.swiper && !container.swiper.destroyed) {
+        swiperInstance.value = container.swiper;
+        return;
+    }
+
+    Object.assign(container, swiperOptions);
+    container.initialize();
+    swiperInstance.value = container.swiper;
+}
+
+let swiperInitFrame: number | null = null;
+const { stop: stopSwiperObserver } = useIntersectionObserver(
+    containerRef,
+    ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        stopSwiperObserver();
+        swiperInitFrame = requestAnimationFrame(() => {
+            swiperInitFrame = null;
+            initializeSwiper();
+        });
+    },
+    { rootMargin: "200px" },
+);
+
+useResizeObserver(containerRef, ([entry]) => {
+    cardWidth.value = entry?.contentRect.width ?? 0;
+});
+
+onBeforeUnmount(() => {
+    stopSwiperObserver();
+
+    if (swiperInitFrame !== null) {
+        cancelAnimationFrame(swiperInitFrame);
+    }
 });
 
 const imageList = computed(() => product.images?.slice(0, 6));
 
 function onMouseOver(event: MouseEvent) {
-    const target = event.target as HTMLDivElement;
     const size = imageList.value?.length ?? 0;
-    const partWidth = target.offsetWidth / size;
+    if (size <= 1 || cardWidth.value <= 0) return;
+
+    initializeSwiper();
+    const partWidth = cardWidth.value / size;
 
     if (event.offsetX < 0) {
-        swiper.instance.value?.slideTo(0, 0);
+        swiperInstance.value?.slideTo(0, 0);
         return;
     }
 
-    const index = Math.trunc(event.offsetX / partWidth);
-    if (swiper.instance.value?.activeIndex !== index)
-        swiper.instance.value?.slideTo(index);
+    const index = Math.min(size - 1, Math.trunc(event.offsetX / partWidth));
+    if (swiperInstance.value?.activeIndex !== index) {
+        swiperInstance.value?.slideTo(index);
+    }
 }
 
 const smallestVariant = computed(() => {
@@ -161,6 +208,11 @@ const link = computed(
 .product-card swiper-container,
 .product-card swiper-container swiper-slide {
     display: block;
+}
+.product-card
+    swiper-container:not(.swiper-initialized)
+    swiper-slide:not(:first-child) {
+    display: none;
 }
 .product-card swiper-slide .ui-image-shell {
     display: none;

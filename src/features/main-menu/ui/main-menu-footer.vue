@@ -68,7 +68,15 @@ const secondaryLinks = computed(() => defaultLinks.value?.[1]?.items ?? []);
                             @click="$emit('close')"
                         >
                             <figure class="w-9 aspect-square">
-                                <img :src="item?.additionalFields?.icon!" />
+                                <img
+                                    :src="item?.additionalFields?.icon!"
+                                    :alt="item?.title ?? ''"
+                                    width="36"
+                                    height="36"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="size-full object-contain"
+                                />
                                 <figcaption class="hidden">
                                     {{ item?.title }}
                                 </figcaption>

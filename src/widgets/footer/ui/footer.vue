@@ -95,7 +95,15 @@ const defaultLinks = computed(() =>
                         class="cursor-pointer"
                     >
                         <figure class="w-12 aspect-square">
-                            <img :src="item?.additionalFields?.icon!" />
+                            <img
+                                :src="item?.additionalFields?.icon!"
+                                :alt="item?.title ?? ''"
+                                width="48"
+                                height="48"
+                                loading="lazy"
+                                decoding="async"
+                                class="size-full object-contain"
+                            />
                             <figcaption class="hidden">
                                 {{ item?.title }}
                             </figcaption>

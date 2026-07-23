@@ -54,6 +54,9 @@ const showToRight = ref(false);
 const optionsContainer = useTemplateRef("optionsContainer");
 const optionsScrollbar = useTemplateRef("optionsScrollbar");
 const trashHold = shallowRef(0);
+let measureFrame: number | null = null;
+let stateFrame: number | null = null;
+let resizeObserver: ResizeObserver | null = null;
 
 function onScroll() {
     if (!optionsScrollbar.value) return;
@@ -72,25 +75,43 @@ function onScroll() {
         showToRight.value = true;
     }
 }
+function scheduleScrollbarMeasure() {
+    if (measureFrame !== null) cancelAnimationFrame(measureFrame);
+
+    measureFrame = requestAnimationFrame(() => {
+        measureFrame = null;
+
+        const scrollbar = optionsScrollbar.value;
+        if (!scrollbar) return;
+
+        const hasOverflow = scrollbar.scrollWidth > scrollbar.clientWidth;
+        const isAtStart = scrollbar.scrollLeft <= trashHold.value;
+
+        stateFrame = requestAnimationFrame(() => {
+            stateFrame = null;
+            haveScrollbar.value = hasOverflow;
+            showToLeft.value = hasOverflow && !isAtStart;
+            showToRight.value = hasOverflow && isAtStart;
+        });
+    });
+}
+
 onMounted(() => {
-    if (!optionsScrollbar.value) return;
+    const scrollbar = optionsScrollbar.value;
+    if (!scrollbar) return;
 
-    optionsScrollbar.value.addEventListener("scroll", onScroll);
-
-    if (
-        optionsScrollbar.value.scrollWidth <= optionsScrollbar.value.clientWidth
-    )
-        return;
-    haveScrollbar.value = true;
-
-    if (optionsScrollbar.value.scrollLeft === 0) {
-        showToLeft.value = false;
-        showToRight.value = true;
-    }
+    scrollbar.addEventListener("scroll", onScroll, { passive: true });
+    resizeObserver = new ResizeObserver(scheduleScrollbarMeasure);
+    resizeObserver.observe(scrollbar);
+    scheduleScrollbarMeasure();
 });
+
 onUnmounted(() => {
-    if (!optionsScrollbar.value) return;
-    optionsScrollbar.value.removeEventListener("scroll", onScroll);
+    optionsScrollbar.value?.removeEventListener("scroll", onScroll);
+    resizeObserver?.disconnect();
+
+    if (measureFrame !== null) cancelAnimationFrame(measureFrame);
+    if (stateFrame !== null) cancelAnimationFrame(stateFrame);
 });
 
 function scrollLeft() {

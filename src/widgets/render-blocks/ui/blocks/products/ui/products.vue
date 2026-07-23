@@ -213,8 +213,14 @@ const swiperOptions = {
 const swiper = useSwiper(containerRef, swiperOptions);
 
 let swiperInitFrame: number | null = null;
+let hasBeenActivated = false;
 
 onActivated(() => {
+    if (!hasBeenActivated) {
+        hasBeenActivated = true;
+        return;
+    }
+
     if (swiperInitFrame !== null) cancelAnimationFrame(swiperInitFrame);
 
     swiperInitFrame = requestAnimationFrame(() => {
