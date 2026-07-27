@@ -3,6 +3,7 @@ import ProductBreadCrumbs from "./product-bread-crumbs.vue";
 import ProductMedia from "./product-media.vue";
 import ProductInfo from "./product-info.vue";
 import type { StoreProductCategory } from "@medusajs/types";
+import { normalizeProductWithDisplayTags } from "#shared/types/product-display-tag";
 import { useProductStore } from "../lib/product-store";
 import { useRecentlyViewedStore } from "~/features/recently-viewed";
 import {
@@ -47,10 +48,16 @@ const { data: product, error } = await useAsyncData(
     () =>
         client.store.product.list({
             handle: route.params.handle as string,
-            fields: "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity",
+            fields: "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity,+product_display_tags.*",
         }),
     {
-        transform: (r) => r.products?.[0],
+        transform: (r) => {
+            const resolvedProduct = r.products?.[0];
+
+            return resolvedProduct
+                ? normalizeProductWithDisplayTags(resolvedProduct)
+                : undefined;
+        },
         watch: [() => route.params.handle as string],
     },
 );

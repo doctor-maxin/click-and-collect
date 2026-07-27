@@ -6,6 +6,11 @@ import ProductColorPicker from "./product-color-picker.vue";
 import ProductSizePicker from "./product-size-picker.vue";
 import ProductDescriptionDrawer from "./product-description-drawer.vue";
 import ProductCharacteristicsDrawer from "./product-characteristics-drawer.vue";
+import {
+    ProductDisplayTagBadge,
+    ProductPriceTags,
+} from "~/features/product-display-tags";
+import { normalizeProductDisplayTags } from "#shared/types/product-display-tag";
 import { UiWbButton } from "#components";
 
 const productStore = useProductStore();
@@ -21,6 +26,12 @@ const sku = computed(() => {
 
 const productTitle = computed(
     () => variant.value?.metadata?.name ?? product.value?.title,
+);
+const displayTags = computed(() =>
+    normalizeProductDisplayTags(product.value?.product_display_tags),
+);
+const otherDisplayTags = computed(() =>
+    displayTags.value.filter((tag) => tag.placement !== "under_price"),
 );
 
 const marketplaces = computed(
@@ -93,6 +104,26 @@ const isAvailableProduct = computed(() => {
 </script>
 <template>
     <div class="w-full">
+        <div
+            v-if="displayTags.length"
+            class="mb-3 flex flex-col gap-1.5 lg:mb-4"
+        >
+            <ProductPriceTags
+                :tags="displayTags"
+                class="flex-wrap gap-1.5"
+            />
+            <div
+                v-if="otherDisplayTags.length"
+                role="list"
+                class="flex flex-wrap gap-1.5"
+            >
+                <ProductDisplayTagBadge
+                    v-for="tag in otherDisplayTags"
+                    :key="tag.id"
+                    :tag="tag"
+                />
+            </div>
+        </div>
         <h1
             class="text-base md:text-[1.25rem] font-medium leading-5 lg:leading-6 uppercase mb-3 lg:mb-4"
         >
@@ -102,49 +133,51 @@ const isAvailableProduct = computed(() => {
             class="text-base block mb-3 md:mb-4 lg:mb-6 leading-5 text-[hsl(216,64%,15%)]/50"
             >Арт. {{ sku }}</span
         >
-        <div class="my-6 items-center flex gap-4">
-            <template v-if="oldPrice && price !== oldPrice">
-                <span
-                    v-if="typeof price === 'number'"
-                    class="text-red text-2xl font-medium"
-                    >{{
-                        price.toLocaleString("ru-RU", {
-                            style: "currency",
-                            currency: "RUB",
-                            maximumFractionDigits: 0,
-                        })
-                    }}</span
-                >
-                <span
-                    v-if="typeof oldPrice === 'number'"
-                    class="text-2xl text-gray line-through"
-                    >{{
-                        oldPrice.toLocaleString("ru-RU", {
-                            style: "currency",
-                            currency: "RUB",
-                            maximumFractionDigits: 0,
-                        })
-                    }}</span
-                >
-                <span
-                    v-if="typeof discount === 'number'"
-                    class="text-red text-2xl"
-                    >-{{ discount }}%</span
-                >
-            </template>
-            <template v-else>
-                <span
-                    v-if="typeof price === 'number'"
-                    class="text-2xl font-medium"
-                    >{{
-                        price.toLocaleString("ru-RU", {
-                            style: "currency",
-                            currency: "RUB",
-                            maximumFractionDigits: 0,
-                        })
-                    }}</span
-                ></template
-            >
+        <div class="my-6 flex flex-col gap-2">
+            <div class="flex items-center gap-4">
+                <template v-if="oldPrice && price !== oldPrice">
+                    <span
+                        v-if="typeof price === 'number'"
+                        class="text-red text-2xl font-medium"
+                        >{{
+                            price.toLocaleString("ru-RU", {
+                                style: "currency",
+                                currency: "RUB",
+                                maximumFractionDigits: 0,
+                            })
+                        }}</span
+                    >
+                    <span
+                        v-if="typeof oldPrice === 'number'"
+                        class="text-2xl text-gray line-through"
+                        >{{
+                            oldPrice.toLocaleString("ru-RU", {
+                                style: "currency",
+                                currency: "RUB",
+                                maximumFractionDigits: 0,
+                            })
+                        }}</span
+                    >
+                    <span
+                        v-if="typeof discount === 'number'"
+                        class="text-red text-2xl"
+                        >-{{ discount }}%</span
+                    >
+                </template>
+                <template v-else>
+                    <span
+                        v-if="typeof price === 'number'"
+                        class="text-2xl font-medium"
+                        >{{
+                            price.toLocaleString("ru-RU", {
+                                style: "currency",
+                                currency: "RUB",
+                                maximumFractionDigits: 0,
+                            })
+                        }}</span
+                    >
+                </template>
+            </div>
         </div>
         <ProductColorPicker />
         <ProductSizePicker />

@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
-import type { StoreProduct, StoreProductVariant } from "@medusajs/types";
+import type { StoreProductVariant } from "@medusajs/types";
+import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
 
 const MAX_RECENTLY_VIEWED = 12;
 
-const collapseVariantsBySize = (product: StoreProduct): StoreProduct => {
+const collapseVariantsBySize = (
+    product: ProductWithDisplayTags,
+): ProductWithDisplayTags => {
     const sizeOption = product.options?.find(
         (option) => option.title?.toLowerCase() === "size",
     );
@@ -36,10 +39,10 @@ const collapseVariantsBySize = (product: StoreProduct): StoreProduct => {
 
 export const useRecentlyViewedStore = defineStore("recently-viewed", {
     state: () => ({
-        products: [] as StoreProduct[],
+        products: [] as ProductWithDisplayTags[],
     }),
     actions: {
-        addProduct(product: StoreProduct) {
+        addProduct(product: ProductWithDisplayTags) {
             const normalizedProduct = collapseVariantsBySize(product);
             const deduped = this.products.filter(
                 (item) => item.id !== product.id,

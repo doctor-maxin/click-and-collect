@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import type { StoreProduct } from "@medusajs/types";
+import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
 import type { SwiperContainer } from "swiper/element";
 import type { Swiper, SwiperOptions } from "swiper/types";
+import {
+    ProductCardOverlayTags,
+    ProductPriceTags,
+} from "~/features/product-display-tags";
 import ProductCardOptions from "./product-card-options.vue";
 import ProductCardPrice from "./product-card-price.vue";
 import ProductImage from "./product-image.vue";
@@ -13,7 +17,7 @@ const {
     firstImageLoading = "eager",
     firstImageFetchPriority = "high",
 } = defineProps<{
-    product: StoreProduct;
+    product: ProductWithDisplayTags;
     imageWidth?: number;
     imageSizes?: string;
     firstImageLoading?: "lazy" | "eager";
@@ -174,6 +178,9 @@ const link = computed(
                 </div>
             </NuxtLink>
 
+            <ProductCardOverlayTags
+                :tags="product.product_display_tags"
+            />
             <ProductCardOptions
                 class="group-hover:translate-y-0 transition-all translate-y-4 opacity-0 group-hover:opacity-100"
                 :product="product"
@@ -190,6 +197,7 @@ const link = computed(
                 v-if="product.variants?.[0]?.calculated_price"
                 :calculated_price="product.variants?.[0]?.calculated_price"
             />
+            <ProductPriceTags :tags="product.product_display_tags" />
         </div>
     </article>
 </template>

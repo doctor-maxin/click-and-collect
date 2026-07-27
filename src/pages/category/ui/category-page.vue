@@ -13,6 +13,7 @@ import type { SearchProductDocument } from "#shared/types/search-product-documen
 import { getCategoryFromTree } from "~/shared/lib/utils/get-category-from-tree";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
+import { useProductDisplayTags } from "~/features/product-display-tags";
 import CategoryBreadCrumbs from "./category-breadcrumbs.vue";
 import CategoryFilters from "./category-filters.vue";
 import CategoryLinks from "./category-links.vue";
@@ -22,6 +23,7 @@ const route = useRoute();
 const router = useRouter();
 const filtersStore = useFiltersStore();
 const searchClient = useSearchClient();
+const { enrichProductsWithDisplayTags } = useProductDisplayTags();
 const categoryPath = route.path;
 const categoryHandle = route.params.handle as string;
 let isComponentActive = true;
@@ -253,9 +255,14 @@ const {
                 "is_discounted",
             ],
         })
-        .then((response) => ({
+        .then(async (response) => ({
             requestKey,
-            response,
+            response: {
+                ...response,
+                hits: await enrichProductsWithDisplayTags(
+                    response.hits ?? [],
+                ),
+            },
         }));
 });
 

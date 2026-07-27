@@ -7,12 +7,14 @@ import { resolveSeoMeta, truncateDescription } from "#shared/lib/seo-meta";
 import { toAbsoluteSiteUrl } from "#shared/lib/site-url";
 import { prepareFilterQuery } from "~/shared/lib/utils/prepare-filter-query";
 import { WidgetProductsGrid } from "~/widgets/products-grid";
+import { useProductDisplayTags } from "~/features/product-display-tags";
 import SearchFilters from "./search-filters.vue";
 import PopularProducts from "~/features/search/ui/popular-products.vue";
 
 const route = useRoute();
 const router = useRouter();
 const searchClient = useSearchClient();
+const { enrichProductsWithDisplayTags } = useProductDisplayTags();
 const filtersStore = useFiltersStore();
 const siteConfig = useSiteConfig();
 const canonicalUrl = computed(() =>
@@ -148,7 +150,13 @@ const { data: productsResponse, status } = await useAsyncData(
                     "metadata.class",
                     "is_discounted",
                 ],
-            });
+            })
+            .then(async (response) => ({
+                ...response,
+                hits: await enrichProductsWithDisplayTags(
+                    response.hits ?? [],
+                ),
+            }));
     },
     {
         deep: true,

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { StoreProductCategory } from "@medusajs/types";
 import type { SearchProductDocument } from "#shared/types/search-product-document";
+import { useProductDisplayTags } from "~/features/product-display-tags";
 import { ProductCard } from "~/widgets/products-grid";
 
 const { title = "Популярные товары" } = defineProps<{
@@ -8,6 +9,7 @@ const { title = "Популярные товары" } = defineProps<{
 }>();
 
 const searchClient = useSearchClient();
+const { enrichProductsWithDisplayTags } = useProductDisplayTags();
 const { data: productCategories } =
     useNuxtData<StoreProductCategory[]>("categories");
 
@@ -19,13 +21,21 @@ const menuCategoryId = computed(
 
 const { data } = await useAsyncData(
     "popular-products",
-    () =>
-        searchClient.index("cards").search<SearchProductDocument>(null, {
-            hitsPerPage: 4,
-            filter: menuCategoryId.value
-                ? [`category_ids IN ['${menuCategoryId.value}']`]
-                : [],
-        }),
+    async () => {
+        const response = await searchClient
+            .index("cards")
+            .search<SearchProductDocument>(null, {
+                hitsPerPage: 4,
+                filter: menuCategoryId.value
+                    ? [`category_ids IN ['${menuCategoryId.value}']`]
+                    : [],
+            });
+
+        return {
+            ...response,
+            hits: await enrichProductsWithDisplayTags(response.hits ?? []),
+        };
+    },
     {
         watch: [menuCategoryId],
         transform: (response) => response.hits ?? [],

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import type { StoreProduct, StoreProductCategory } from "@medusajs/types";
+import type { StoreProductCategory } from "@medusajs/types";
 import type { SwiperContainer } from "swiper/element";
 import type { SwiperOptions } from "swiper/types";
+import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
+import { normalizeProductWithDisplayTags } from "#shared/types/product-display-tag";
 import type {
     IProductCategoriesBlock,
     IProductsBlock,
@@ -13,7 +15,7 @@ const { data } = defineProps<{
 }>();
 
 const PRODUCT_FIELDS =
-    "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity,+variants.calculated_price";
+    "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity,+variants.calculated_price,+product_display_tags.*";
 
 type ProductGroup = {
     id: string;
@@ -158,7 +160,7 @@ const { data: products, status } = await useAsyncData(
             fields: PRODUCT_FIELDS,
         });
 
-        return response.products ?? [];
+        return (response.products ?? []).map(normalizeProductWithDisplayTags);
     },
     {
         watch: [productIdsKey],
@@ -166,7 +168,7 @@ const { data: products, status } = await useAsyncData(
 );
 
 const productsById = computed(() => {
-    const map = new Map<string, StoreProduct>();
+    const map = new Map<string, ProductWithDisplayTags>();
 
     for (const product of products.value ?? []) {
         map.set(product.id, product);
@@ -182,7 +184,9 @@ const productsById = computed(() => {
 const activeProducts = computed(() =>
     (activeGroup.value?.productIds ?? [])
         .map((productId) => productsById.value.get(productId))
-        .filter((product): product is StoreProduct => Boolean(product)),
+        .filter((product): product is ProductWithDisplayTags =>
+            Boolean(product),
+        ),
 );
 const activeSlidesCount = computed(
     () =>

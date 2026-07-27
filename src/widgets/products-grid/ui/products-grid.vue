@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StoreProduct } from "@medusajs/types";
+import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
 import { computed } from "vue";
 import ProductSkeleton from "./product-skeleton.vue";
 import ProductCard from "./product-card.vue";
@@ -12,7 +12,7 @@ const {
     totalPages = 1,
     emptyMessage = "",
 } = defineProps<{
-    products: StoreProduct[];
+    products: ProductWithDisplayTags[];
     isLoading?: boolean;
     hasMore?: boolean;
     currentPage?: number;

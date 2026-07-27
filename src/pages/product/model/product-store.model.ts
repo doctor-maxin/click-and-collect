@@ -1,11 +1,11 @@
 import type {
-    StoreProduct,
     StoreProductVariant,
     StoreProductOptionValue,
 } from "@medusajs/types";
+import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
 
 export interface IProductState {
-    product: StoreProduct | null;
+    product: ProductWithDisplayTags | null;
     color: StoreProductOptionValue | null;
     size: StoreProductOptionValue | null;
     price: number | null;
