@@ -2,6 +2,8 @@
 import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
 import type { SwiperContainer } from "swiper/element";
 import type { Swiper, SwiperOptions } from "swiper/types";
+import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
+import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
 import {
     ProductCardOverlayTags,
     ProductPriceTags,
@@ -16,16 +18,24 @@ const {
     imageSizes = "(max-width: 768px) 350px, 540px",
     firstImageLoading = "eager",
     firstImageFetchPriority = "high",
+    analyticsList = "Товары",
+    analyticsPosition,
 } = defineProps<{
     product: ProductWithDisplayTags;
     imageWidth?: number;
     imageSizes?: string;
     firstImageLoading?: "lazy" | "eager";
     firstImageFetchPriority?: "auto" | "high" | "low";
+    analyticsList?: string;
+    analyticsPosition?: number;
 }>();
+const ecommerceAnalytics = useEcommerceAnalytics();
+const siteConfig = useSiteConfig();
+const cardRef = ref<HTMLElement | null>(null);
 const containerRef = ref<SwiperContainer | null>(null);
 const swiperInstance = shallowRef<Swiper | null>(null);
 const cardWidth = ref(0);
+const hasTrackedImpression = ref(false);
 const swiperOptions = {
     pagination: {
         el: `.product-card[data-id='${product.id}'] .product-card-pagination`,
@@ -68,6 +78,15 @@ const { stop: stopSwiperObserver } = useIntersectionObserver(
     },
     { rootMargin: "200px" },
 );
+const { stop: stopAnalyticsObserver } = useIntersectionObserver(
+    cardRef,
+    ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        trackProductImpression();
+        stopAnalyticsObserver();
+    },
+);
 
 useResizeObserver(containerRef, ([entry]) => {
     cardWidth.value = entry?.contentRect.width ?? 0;
@@ -75,6 +94,7 @@ useResizeObserver(containerRef, ([entry]) => {
 
 onBeforeUnmount(() => {
     stopSwiperObserver();
+    stopAnalyticsObserver();
 
     if (swiperInitFrame !== null) {
         cancelAnimationFrame(swiperInitFrame);
@@ -137,14 +157,42 @@ const smallestVariant = computed(() => {
 const link = computed(
     () => `/products/${product.handle}?variant=${smallestVariant?.value?.id}`,
 );
+
+function getAnalyticsProduct(variant = smallestVariant.value) {
+    return createEcommerceProduct(product, {
+        brand: siteConfig.name,
+        list: analyticsList,
+        position: analyticsPosition,
+        variant,
+    });
+}
+
+function trackProductImpression() {
+    if (hasTrackedImpression.value) return;
+    hasTrackedImpression.value = true;
+    ecommerceAnalytics.track({
+        type: "view_item_list",
+        currency: "RUB",
+        products: [getAnalyticsProduct()],
+    });
+}
+
+function trackProductClick(variant = smallestVariant.value) {
+    ecommerceAnalytics.track({
+        type: "select_item",
+        currency: "RUB",
+        products: [getAnalyticsProduct(variant)],
+    });
+}
 </script>
 <template>
     <article
+        ref="cardRef"
         class="product-card flex group flex-col gap-2 lg:gap-4 w-full"
         :data-id="product.id"
     >
         <div class="relative" @mousemove="onMouseOver">
-            <NuxtLink class="block" :to="link">
+            <NuxtLink class="block" :to="link" @click="trackProductClick()">
                 <template v-if="imageList?.length">
                     <swiper-container
                         :init="false"
@@ -204,6 +252,7 @@ const link = computed(
             <ProductCardOptions
                 class="group-hover:translate-y-0 transition-all translate-y-4 opacity-0 group-hover:opacity-100"
                 :product="product"
+                @select="trackProductClick"
                 @mousemove.stop
             />
         </div>

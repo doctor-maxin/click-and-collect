@@ -8,6 +8,7 @@
     "start": "bun .output/server/index.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "test:ecommerce-analytics": "node --experimental-strip-types --test tests/ecommerce-analytics.test.ts",
     "test:display-tags": "node --experimental-strip-types --test tests/product-display-tags.test.ts",
     "postinstall": "nuxt prepare"
   },

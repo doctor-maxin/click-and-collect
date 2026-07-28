@@ -55,8 +55,10 @@ defineEmits<{
         <div class="grid gap-y-4 lg:gap-y-9 gap-x-4 grid-cols-2">
             <ProductCard
                 :product="product"
-                v-for="product in data"
+                v-for="(product, index) in data"
                 :key="product.id"
+                analytics-list="Популярные товары"
+                :analytics-position="index + 1"
                 @click="$emit('close')"
             />
         </div>

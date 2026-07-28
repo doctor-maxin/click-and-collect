@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import type { StoreProduct, StoreProductOptionValue } from "@medusajs/types";
+import type {
+    StoreProduct,
+    StoreProductOptionValue,
+    StoreProductVariant,
+} from "@medusajs/types";
 import { sortSizeOptions } from "~/shared/lib/utils/sort-size-options";
 
 const { product } = defineProps<{
     product: StoreProduct;
+}>();
+const emit = defineEmits<{
+    select: [variant: StoreProductVariant];
 }>();
 const filterStore = useFiltersStore();
 const { isOnlineEnabled, isOfflineEnabled } = storeToRefs(filterStore);
@@ -140,7 +147,10 @@ function routeTo(option: StoreProductOptionValue) {
         ),
     );
 
-    router.push(`/products/${product.handle}?variant=${variant?.id}`);
+    if (!variant) return;
+
+    emit("select", variant);
+    router.push(`/products/${product.handle}?variant=${variant.id}`);
 }
 </script>
 <template>

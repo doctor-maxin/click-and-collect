@@ -72,9 +72,11 @@ const viewedProducts = computed(() =>
         </h2>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <ProductCard
-                v-for="product in viewedProducts"
+                v-for="(product, index) in viewedProducts"
                 :key="product.id"
                 :product="product"
+                analytics-list="Ранее просматривали"
+                :analytics-position="index + 1"
             />
         </div>
     </section>

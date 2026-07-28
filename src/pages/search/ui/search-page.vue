@@ -320,6 +320,7 @@ const getProductsCountLabel = (value: number) => {
             <SearchFilters :class="{}" />
             <WidgetProductsGrid
                 :products="products"
+                :analytics-list="`Поиск: ${query}`"
                 :has-more="page < totalPages"
                 :is-loading="status === 'pending' || status === 'idle'"
                 :current-page="page"

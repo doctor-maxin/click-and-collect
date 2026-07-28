@@ -11,6 +11,7 @@ const {
     currentPage = 1,
     totalPages = 1,
     emptyMessage = "",
+    analyticsList = "Каталог",
 } = defineProps<{
     products: ProductWithDisplayTags[];
     isLoading?: boolean;
@@ -18,6 +19,7 @@ const {
     currentPage?: number;
     totalPages?: number;
     emptyMessage?: string;
+    analyticsList?: string;
 }>();
 
 defineEmits<{
@@ -58,9 +60,11 @@ const visiblePages = computed<(number | "...")[]>(() => {
     <div v-if="products.length > 0 || isLoading">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <ProductCard
-                v-for="product of products"
+                v-for="(product, index) of products"
                 :key="product.id"
                 :product="product"
+                :analytics-list="analyticsList"
+                :analytics-position="index + 1"
             />
 
             <template v-if="isLoading">

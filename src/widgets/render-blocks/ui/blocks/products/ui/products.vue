@@ -309,11 +309,17 @@ function selectGroup(groupId: string) {
         <div class="relative">
             <swiper-container ref="containerRef" :init="false" class="w-full">
                 <swiper-slide
-                    v-for="product in activeProducts"
+                    v-for="(product, index) in activeProducts"
                     :key="`${activeGroup?.id}-${product.id}`"
                 >
                     <ProductCard
                         :product="product"
+                        :analytics-list="
+                            activeGroup?.title ||
+                            blockTitle ||
+                            'Подборка товаров'
+                        "
+                        :analytics-position="index + 1"
                         :image-width="384"
                         image-sizes="sm:50vw lg:25vw 2xl:384px"
                         first-image-loading="lazy"

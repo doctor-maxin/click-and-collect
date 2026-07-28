@@ -541,6 +541,7 @@ const getProductsCountLabel = (value: number) => {
             <CategoryFilters :category="category" />
             <WidgetProductsGrid
                 :products="products"
+                :analytics-list="category.name"
                 :has-more="page < resolvedTotalPages"
                 :is-loading="status === 'pending'"
                 :current-page="page"

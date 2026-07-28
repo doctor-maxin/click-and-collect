@@ -3,7 +3,9 @@ import ProductBreadCrumbs from "./product-bread-crumbs.vue";
 import ProductMedia from "./product-media.vue";
 import ProductInfo from "./product-info.vue";
 import type { StoreProductCategory } from "@medusajs/types";
+import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
 import { normalizeProductWithDisplayTags } from "#shared/types/product-display-tag";
+import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
 import { useProductStore } from "../lib/product-store";
 import { useRecentlyViewedStore } from "~/features/recently-viewed";
 import {
@@ -19,6 +21,7 @@ const route = useRoute();
 const client = useMedusaClient();
 const productStore = useProductStore();
 const recentlyViewedStore = useRecentlyViewedStore();
+const ecommerceAnalytics = useEcommerceAnalytics();
 const { variant, price } = storeToRefs(productStore);
 const siteConfig = useSiteConfig();
 const canonicalPath = computed(
@@ -271,6 +274,25 @@ watch(
         deep: true,
         immediate: true,
     },
+);
+
+watch(
+    [() => product.value?.id, () => variant.value?.id],
+    () => {
+        if (!import.meta.client || !product.value || !variant.value) return;
+
+        ecommerceAnalytics.track({
+            type: "view_item",
+            currency: "RUB",
+            products: [
+                createEcommerceProduct(product.value, {
+                    brand: siteConfig.name,
+                    variant: variant.value,
+                }),
+            ],
+        });
+    },
+    { immediate: true },
 );
 
 watch(
