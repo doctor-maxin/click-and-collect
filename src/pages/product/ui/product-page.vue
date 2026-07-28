@@ -48,7 +48,8 @@ const { data: product, error } = await useAsyncData(
     () =>
         client.store.product.list({
             handle: route.params.handle as string,
-            fields: "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity,+product_display_tags.*",
+            fields: "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity,+variants.calculated_price,+product_display_tags.*",
+            country_code: "ru",
         }),
     {
         transform: (r) => {

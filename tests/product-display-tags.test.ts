@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+    getDefaultProductDisplayTags,
     getProductDisplayTagsByPlacement,
     normalizeProductDisplayTags,
 } from "../shared/types/product-display-tag.ts";
@@ -121,4 +122,21 @@ test("does not treat standard Medusa product.tags as display tags", () => {
         ),
         [],
     );
+});
+
+test("creates unique display tags from productType metadata", () => {
+    const tags = getDefaultProductDisplayTags([
+        "SALE",
+        "SOON",
+        "NEW",
+        "SALE",
+        "UNKNOWN",
+        null,
+    ]);
+
+    assert.deepEqual(
+        tags.map((tag) => tag.name),
+        ["РАСПРОДАЖА", "СКОРО В ПРОДАЖЕ", "НОВИНКА"],
+    );
+    assert.ok(tags.every((tag) => tag.placement === "card_bottom_left"));
 });

@@ -20,6 +20,36 @@ export interface ProductDisplayTag {
     placement: ProductDisplayTagPlacement;
 }
 
+const DEFAULT_PRODUCT_DISPLAY_TAGS = {
+    SALE: {
+        id: "default-display-tag-sale",
+        name: "РАСПРОДАЖА",
+        text_color: "#FFFFFF",
+        background_color: "#C4131C",
+        placement: "card_bottom_left",
+        font_weight: "normal",
+    },
+    SOON: {
+        id: "default-display-tag-soon",
+        name: "СКОРО В ПРОДАЖЕ",
+        text_color: "#FFFFFF",
+        background_color: "#363031",
+        placement: "card_bottom_left",
+        font_weight: "normal",
+    },
+    NEW: {
+        id: "default-display-tag-new",
+        name: "НОВИНКА",
+        text_color: "#FFFFFF",
+        background_color: "#2EE4BA",
+        placement: "card_bottom_left",
+        font_weight: "normal",
+    },
+} satisfies Record<string, ProductDisplayTag>;
+
+type DefaultProductDisplayTagName =
+    keyof typeof DEFAULT_PRODUCT_DISPLAY_TAGS;
+
 export type ProductWithDisplayTags = StoreProduct & {
     product_display_tags?: ProductDisplayTag[] | null;
 };
@@ -78,6 +108,18 @@ export function getProductDisplayTagsByPlacement(
     return normalizeProductDisplayTags(tags).filter(
         (tag) => tag.placement === placement,
     );
+}
+
+export function getDefaultProductDisplayTags(value: unknown) {
+    if (!Array.isArray(value)) return [];
+
+    return [...new Set(value)]
+        .filter(
+            (tag): tag is DefaultProductDisplayTagName =>
+                typeof tag === "string" &&
+                Object.hasOwn(DEFAULT_PRODUCT_DISPLAY_TAGS, tag),
+        )
+        .map((tag) => DEFAULT_PRODUCT_DISPLAY_TAGS[tag]);
 }
 
 export function normalizeProductWithDisplayTags(

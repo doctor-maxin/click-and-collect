@@ -54,7 +54,6 @@ function initializeSwiper() {
     container.initialize();
     swiperInstance.value = container.swiper;
 }
-
 let swiperInitFrame: number | null = null;
 const { stop: stopSwiperObserver } = useIntersectionObserver(
     containerRef,
@@ -83,6 +82,25 @@ onBeforeUnmount(() => {
 });
 
 const imageList = computed(() => product.images?.slice(0, 6));
+const discountPercentage = computed(() => {
+    const calculatedPrice = product.variants?.[0]?.calculated_price;
+    const originalAmount = calculatedPrice?.original_amount;
+    const calculatedAmount = calculatedPrice?.calculated_amount;
+
+    if (calculatedPrice && 'discount' in calculatedPrice) return calculatedPrice.discount as number
+    if (
+        typeof originalAmount !== "number" ||
+        typeof calculatedAmount !== "number" ||
+        originalAmount <= 0 ||
+        calculatedAmount >= originalAmount
+    ) {
+        return null;
+    }
+
+    return Math.round(
+        ((originalAmount - calculatedAmount) / originalAmount) * 100,
+    );
+});
 
 function onMouseOver(event: MouseEvent) {
     const size = imageList.value?.length ?? 0;
@@ -180,6 +198,8 @@ const link = computed(
 
             <ProductCardOverlayTags
                 :tags="product.product_display_tags"
+                :default-tags="product.metadata?.productType"
+                :discount-percentage="discountPercentage"
             />
             <ProductCardOptions
                 class="group-hover:translate-y-0 transition-all translate-y-4 opacity-0 group-hover:opacity-100"

@@ -10,7 +10,10 @@ import {
     ProductDisplayTagBadge,
     ProductPriceTags,
 } from "~/features/product-display-tags";
-import { normalizeProductDisplayTags } from "#shared/types/product-display-tag";
+import {
+    getDefaultProductDisplayTags,
+    normalizeProductDisplayTags,
+} from "#shared/types/product-display-tag";
 import { UiWbButton } from "#components";
 
 const productStore = useProductStore();
@@ -27,9 +30,12 @@ const sku = computed(() => {
 const productTitle = computed(
     () => variant.value?.metadata?.name ?? product.value?.title,
 );
-const displayTags = computed(() =>
-    normalizeProductDisplayTags(product.value?.product_display_tags),
-);
+const displayTags = computed(() => [
+    ...normalizeProductDisplayTags(product.value?.product_display_tags),
+    ...getDefaultProductDisplayTags(
+        product.value?.metadata?.productType,
+    ),
+]);
 const otherDisplayTags = computed(() =>
     displayTags.value.filter((tag) => tag.placement !== "under_price"),
 );
@@ -203,7 +209,7 @@ const isAvailableProduct = computed(() => {
                     is-link
                     :to="item.link"
                     target="_blank"
-                    class="max-w-70"
+                    class="max-w-70 bg-[#9410A8]! text-white! border-none!"
                     variant="outline"
                     >Купить на сайте партнера</UiButton
                 >
