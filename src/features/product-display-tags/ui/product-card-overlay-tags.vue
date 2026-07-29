@@ -36,10 +36,10 @@ const extendedTags = computed(() => {
 });
 
 const positionClasses: Record<ProductDisplayTagPlacement, string> = {
-    card_top_left: "left-3 top-3 items-start",
-    card_top_right: "right-3 top-3 items-end",
-    card_bottom_left: "bottom-16 left-3 items-start",
-    card_bottom_right: "bottom-16 right-3 items-end",
+    card_top_left: "left-2 md:left-3 top-2 md:top-3 items-start",
+    card_top_right: "right-2 md:right-3 top-2 md:top-3 items-end",
+    card_bottom_left: "bottom-2 md:bottom-16 left-2 md:left-3 items-start",
+    card_bottom_right: "bottom-2 md:bottom-16 right-2 md:right-3 items-end",
     under_price: "",
 };
 
