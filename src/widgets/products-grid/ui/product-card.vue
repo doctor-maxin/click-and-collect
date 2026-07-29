@@ -249,12 +249,12 @@ function trackProductClick(variant = smallestVariant.value) {
                 :default-tags="product.metadata?.productType"
                 :discount-percentage="discountPercentage"
             />
-            <ProductCardOptions
+            <!-- <ProductCardOptions
                 class="group-hover:translate-y-0 transition-all translate-y-4 opacity-0 group-hover:opacity-100"
                 :product="product"
                 @select="trackProductClick"
                 @mousemove.stop
-            />
+            /> -->
         </div>
         <div class="flex flex-col gap-2">
             <div
