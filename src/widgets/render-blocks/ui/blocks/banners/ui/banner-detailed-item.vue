@@ -28,7 +28,7 @@ defineProps<{
           v-if="data.showLinkButton"
           class="flex mr-auto lg:mr-0 ml-auto gap-4 items-center text-[1.25rem] lg:text-[1.5rem] font-semibold"
           >{{ data.linkButtonText ? data.linkButtonText : "Смотреть" }}
-          <SvgoLongArray class="text-[3rem] !mb-0" filled
+          <SvgoLongArray aria-hidden="true" class="text-[3rem] !mb-0" filled
         /></span>
       </div>
     </component>

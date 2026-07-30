@@ -193,6 +193,7 @@ watch(viewMode, (mode) => {
                     <YandexMapMarker
                         v-for="(marker, index) of cityPoints"
                         :key="marker['company-id']"
+                        :aria-label="`Магазин: ${marker.name}`"
                         position="left-center top"
                         :settings="{
                             id: String(marker['company-id']),
@@ -206,6 +207,7 @@ watch(viewMode, (mode) => {
                         @click="selectMarker(index, marker)"
                     >
                         <SvgoSinMarker
+                            aria-hidden="true"
                             filled
                             class="mb-0! cursor-pointer text-[4rem]"
                         />

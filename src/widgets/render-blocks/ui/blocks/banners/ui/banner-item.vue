@@ -25,7 +25,7 @@ defineProps<{
       <span
         v-if="data.showLinkButton"
         class="flex absolute left-1/2 bottom-4 lg:bottom-9 -translate-x-1/2 gap-4 text-white items-center text-[1.25rem] lg:text-[1.5rem] font-semibold capitalize"
-        >Смотреть <SvgoLongArray class="text-[3rem] !mb-0" filled
+        >Смотреть <SvgoLongArray aria-hidden="true" class="text-[3rem] !mb-0" filled
       /></span>
     </component>
   </article>

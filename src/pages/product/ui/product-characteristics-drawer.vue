@@ -65,7 +65,11 @@ const characteristics = computed<CharacteristicItem[]>(() => {
                 class="flex w-full gap-3 items-center text-xl leading-5 cursor-pointer"
             >
                 <span>Характеристики</span>
-                <SvgoArrowDown filled class="text-2xl rotate-90 mb-0!" />
+                <SvgoArrowDown
+                    aria-hidden="true"
+                    filled
+                    class="text-2xl rotate-90 mb-0!"
+                />
             </button>
         </DialogTrigger>
         <DialogPortal>
@@ -78,9 +82,10 @@ const characteristics = computed<CharacteristicItem[]>(() => {
                 <div class="mb-5 flex items-center justify-between gap-5">
                     <h2 class="text-xl font-medium">Характеристики:</h2>
                     <DialogClose
+                        aria-label="Закрыть характеристики"
                         class="cursor-pointer absolute right-4 top-4 text-2xl leading-none"
                     >
-                        <SvgoClose filled class="mb-0!" />
+                        <SvgoClose aria-hidden="true" filled class="mb-0!" />
                     </DialogClose>
                 </div>
 

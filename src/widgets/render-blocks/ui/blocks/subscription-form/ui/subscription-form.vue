@@ -68,6 +68,7 @@ const handleForm = form.handleSubmit(async (values) => {
           class="flex flex-col lg:flex-row mb-2 lg:mb-9 gap-3 lg:gap-[4.25rem] justify-between items-center"
         >
           <UiInput
+            aria-label="E-mail"
             placeholder="E-mail"
             type="email"
             name="email"

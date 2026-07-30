@@ -84,11 +84,13 @@ const visiblePages = computed<(number | "...")[]>(() => {
             <nav class="flex items-center gap-2">
                 <UiButton
                     variant="outline"
+                    aria-label="Предыдущая страница"
                     class="text-base cursor-pointer text-center w-8 h-8! lg:h-9! min-w-8 lg:min-w-9 px-3! py-2! lg:w-9"
                     :disabled="currentPage <= 1"
                     @click="$emit('page-change', currentPage - 1)"
                 >
                     <SvgoChevron
+                        aria-hidden="true"
                         filled
                         class="min-w-4 lg:min-w-6 lg:text-2xl mb-0! rotate-180"
                     />
@@ -114,11 +116,13 @@ const visiblePages = computed<(number | "...")[]>(() => {
 
                 <UiButton
                     variant="outline"
+                    aria-label="Следующая страница"
                     class="text-base cursor-pointer text-center h-8! lg:h-9! min-w-8 w-8 px-3! py-2! lg:w-9"
                     :disabled="currentPage >= totalPages"
                     @click="$emit('page-change', currentPage + 1)"
                 >
                     <SvgoChevron
+                        aria-hidden="true"
                         filled
                         class="text-2xl mb-0! lg:min-w-6 min-w-4 scroll-mb-0"
                     />

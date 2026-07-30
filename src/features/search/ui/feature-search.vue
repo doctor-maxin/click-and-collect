@@ -82,9 +82,25 @@ useEventListener(import.meta.client ? window : undefined, "scroll", () => {
 <template>
     <DialogRoot v-model:open="isOpen">
         <div class="relative z-20">
-            <button type="button" class="cursor-pointer" @click="toggleSearch">
-                <SvgoClose v-if="isOpen" filled class="text-2xl" />
-                <SvgoSearch v-else filled class="text-2xl" />
+            <button
+                type="button"
+                class="cursor-pointer"
+                :aria-label="isOpen ? 'Закрыть поиск' : 'Открыть поиск'"
+                :aria-expanded="isOpen"
+                @click="toggleSearch"
+            >
+                <SvgoClose
+                    v-if="isOpen"
+                    aria-hidden="true"
+                    filled
+                    class="text-2xl"
+                />
+                <SvgoSearch
+                    v-else
+                    aria-hidden="true"
+                    filled
+                    class="text-2xl"
+                />
             </button>
         </div>
 

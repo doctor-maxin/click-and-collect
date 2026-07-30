@@ -102,6 +102,7 @@ const handleForm = () => {
     >
         <label class="flex items-center relative w-full">
             <input
+                aria-label="Поиск по каталогу"
                 placeholder="ХОЧУ КУПИТЬ"
                 type="search"
                 required
@@ -109,8 +110,13 @@ const handleForm = () => {
                 class="h-8 pr-14 w-full outline-0 placeholder:text-[hsla(0,0%,62%,1)] appearance-none text-2xl placeholder:font-medium"
             />
 
-            <button type="submit" class="absolute cursor-pointer right-0">
+            <button
+                type="submit"
+                aria-label="Найти"
+                class="absolute cursor-pointer right-0"
+            >
                 <SvgoLongArray
+                    aria-hidden="true"
                     class="mb-0! text-[hsla(0,0%,62%,1)] w-14! text-2xl"
                     filled
                 />

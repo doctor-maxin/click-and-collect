@@ -21,8 +21,8 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
 
 <template>
     <DialogRoot v-model:open="isOpen" class="relative z-20">
-        <DialogTrigger class="cursor-pointer">
-            <SvgoBurger filled class="text-2xl" />
+        <DialogTrigger aria-label="Открыть меню" class="cursor-pointer">
+            <SvgoBurger aria-hidden="true" filled class="text-2xl" />
         </DialogTrigger>
         <DialogPortal>
             <DialogOverlay
@@ -38,18 +38,20 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
                     class="sm:hidden -mt-2 grid grid-cols-[1.5rem_auto_1.5rem] items-center mb-4"
                 >
                     <span class="text-2xl leading-none">
-                        <SvgoBurger filled />
+                        <SvgoBurger aria-hidden="true" filled />
                     </span>
-                    <NuxtLink to="/" class="mx-auto">
+                    <NuxtLink to="/" class="mx-auto" aria-label="На главную">
                         <SvgoLogo
+                            aria-hidden="true"
                             class="h-12 mx-auto"
                             :fontControlled="false"
                         />
                     </NuxtLink>
                     <DialogClose
+                        aria-label="Закрыть меню"
                         class="cursor-pointer justify-self-end text-2xl leading-none"
                     >
-                        <SvgoClose filled class="!mb-0" />
+                        <SvgoClose aria-hidden="true" filled class="!mb-0" />
                     </DialogClose>
                 </div>
                 <VisuallyHidden as-child>
@@ -67,9 +69,14 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
 
                 <MainMenuFooter @close="isOpen = false" />
                 <DialogClose
+                    aria-label="Закрыть меню"
                     class="hidden sm:block cursor-pointer absolute sm:top-3 sm:right-3"
                 >
-                    <SvgoClose filled class="text-2xl mb-0!" />
+                    <SvgoClose
+                        aria-hidden="true"
+                        filled
+                        class="text-2xl mb-0!"
+                    />
                 </DialogClose>
             </DialogContent>
         </DialogPortal>

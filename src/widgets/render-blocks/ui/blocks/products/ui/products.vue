@@ -305,6 +305,7 @@ function selectGroup(groupId: string) {
                             class="bg-white shadow rounded-full flex justify-center items-center size-12"
                         >
                             <SvgoChevron
+                                aria-hidden="true"
                                 filled
                                 class="!mb-0 ml-1 text-4xl text-black"
                             />
@@ -330,6 +331,7 @@ function selectGroup(groupId: string) {
                     aria-label="Предыдущие товары"
                 >
                     <SvgoChevron
+                        aria-hidden="true"
                         filled
                         class="!mb-0 mr-1 rotate-180 text-4xl text-black"
                     />
@@ -343,6 +345,7 @@ function selectGroup(groupId: string) {
                     aria-label="Следующие товары"
                 >
                     <SvgoChevron
+                        aria-hidden="true"
                         filled
                         class="!mb-0 ml-1 text-4xl text-black lg:text-4xl"
                     />

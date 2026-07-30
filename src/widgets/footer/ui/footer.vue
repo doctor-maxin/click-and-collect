@@ -59,8 +59,12 @@ const defaultLinks = computed(() =>
                 </nav>
             </section>
             <section class="col-span-3 flex flex-col gap-7 col-start-10">
-                <NuxtLink to="/">
-                    <SvgoLogo :fontControlled="false" class="w-24" />
+                <NuxtLink to="/" aria-label="На главную">
+                    <SvgoLogo
+                        aria-hidden="true"
+                        :fontControlled="false"
+                        class="w-24"
+                    />
                 </NuxtLink>
                 <div class="flex gap-3 flex-col leading-5 text-base">
                     <address class="not-italic">

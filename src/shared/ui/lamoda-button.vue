@@ -28,22 +28,32 @@ const isPopoverOpen = ref(false);
   >
     <a
       :href="item.link"
+      aria-label="Купить на Lamoda"
       class="flex px-8 w-full border-r border-white items-center justify-center cursor-pointer h-12"
       target="_blank"
     >
       <span class="flex items-center gap-1.5">
         <span class="flex text-base leading-5 font-medium">Купить на </span>
-        <SvgoLamoda class="!w-[5.25rem] !h-[0.9375rem]" filled />
+        <SvgoLamoda
+          aria-hidden="true"
+          class="!w-[5.25rem] !h-[0.9375rem]"
+          filled
+        />
       </span>
     </a>
     <PopoverRoot v-model:open="isPopoverOpen">
       <PopoverTrigger as-child>
         <button
           type="button"
+          aria-label="Скопировать ссылку на Lamoda"
           class="h-12 cursor-pointer rounded-r ml-auto px-2.5"
           @click="copyLink(item.link)"
         >
-          <SvgoCopy class="!mb-0 text-white text-2xl" filled />
+          <SvgoCopy
+            aria-hidden="true"
+            class="!mb-0 text-white text-2xl"
+            filled
+          />
         </button>
       </PopoverTrigger>
       <PopoverContent

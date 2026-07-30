@@ -26,15 +26,20 @@ const model = defineModel<string>();
         'rounded-b-0': open,
       }"
       class="inline-flex h-12 relative cursor-pointer placeholder:text-gray w-[20.5rem] items-center justify-between border rounded-t-lg"
-      aria-label="Customise options"
+      :aria-label="label"
     >
       <ComboboxInput
+        :aria-label="label"
         class="absolute outline-0 p-3 left-0 top-0 w-full h-full"
         :placeholder="placeholder"
       />
       <span class="absolute left-2 -top-3 bg-white">{{ label }}</span>
       <ComboboxTrigger as-child>
-        <SvgoChevron filled class="!mb-0 rotate-90 absolute right-3 text-2xl" />
+        <SvgoChevron
+          :aria-label="`Открыть список: ${label}`"
+          filled
+          class="!mb-0 rotate-90 absolute right-3 text-2xl"
+        />
       </ComboboxTrigger>
     </ComboboxAnchor>
 

@@ -41,7 +41,11 @@ const description = computed(() => {
                 class="flex w-full gap-3 items-center text-xl leading-5 cursor-pointer"
             >
                 <span>Описание</span>
-                <SvgoArrowDown filled class="text-2xl rotate-90 mb-0!" />
+                <SvgoArrowDown
+                    aria-hidden="true"
+                    filled
+                    class="text-2xl rotate-90 mb-0!"
+                />
             </button>
         </DialogTrigger>
         <DialogPortal>
@@ -54,9 +58,10 @@ const description = computed(() => {
                 <div class="mb-6 flex items-center justify-between gap-5">
                     <h2 class="text-xl font-medium">Описание:</h2>
                     <DialogClose
+                        aria-label="Закрыть описание"
                         class="cursor-pointer text-2xl leading-none absolute right-4 top-4"
                     >
-                        <SvgoClose filled class="mb-0!" />
+                        <SvgoClose aria-hidden="true" filled class="mb-0!" />
                     </DialogClose>
                 </div>
 

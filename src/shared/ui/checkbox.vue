@@ -23,6 +23,7 @@ const { handleBlur, handleChange, value } = useField(name, undefined, {
       @input="handleChange"
       @blur="handleBlur" />
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       width="24"

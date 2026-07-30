@@ -82,6 +82,7 @@ const reset = () => {
     >
         <ComboboxAnchor>
             <ComboboxTrigger
+                :aria-label="placeholder"
                 class="py-2 ui-autocomplete cursor-pointer border rounded-lg flex w-full justify-between items-center px-4"
                 :class="{
                     'rounded-b-none': open,
@@ -97,6 +98,7 @@ const reset = () => {
                     >
                 </span>
                 <SvgoArrowDown
+                    aria-hidden="true"
                     filled
                     v-if="open || value?.length === 0 || !value"
                     class="text-[1.5rem] !mb-0"
@@ -106,6 +108,7 @@ const reset = () => {
                 />
                 <SvgoClose
                     v-if="!open && value?.length > 0"
+                    aria-hidden="true"
                     filled
                     class="text-[1.5rem] !mb-0"
                     @click.stop="reset"
@@ -119,11 +122,13 @@ const reset = () => {
             <ComboboxViewport class="flex flex-col w-full">
                 <label class="relative text-[hsla(0,0%,57%,1)]">
                     <SvgoSearch
+                        aria-hidden="true"
                         filled
                         class="absolute left-0 bottom-1 text-2xl"
                     />
                     <ComboboxInput
                         v-model="query"
+                        :aria-label="`Поиск: ${placeholder}`"
                         class="w-full border-b text-black placeholder:text-base placeholder:leading-5 block focus:outline-none outline-none border-[hsla(0,0%,57%,1)] py-1.5 pl-8 pr-1.5"
                         placeholder="Поиск"
                     />
@@ -138,6 +143,7 @@ const reset = () => {
                         @select.prevent="selectAll"
                     >
                         <svg
+                            aria-hidden="true"
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -168,6 +174,7 @@ const reset = () => {
                         @select="onSelectItem"
                     >
                         <svg
+                            aria-hidden="true"
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink"

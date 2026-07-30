@@ -116,20 +116,32 @@ useKeepAliveSwiper(containerRef, {
             class="container z-20 pointer-events-none hidden lg:flex items-center justify-between h-full absolute left-1/2 top-0 -translate-x-1/2"
         >
             <button
+                type="button"
+                aria-label="Предыдущий слайд"
                 :class="[
                     'bg-black/25 3xl:-translate-x-[calc(100%+16px)] rotate-180 pointer-events-auto cursor-pointer rounded-full',
                     prevButtonClass,
                 ]"
             >
-                <SvgoChevron filled class="text-5xl text-white !mb-0" />
+                <SvgoChevron
+                    aria-hidden="true"
+                    filled
+                    class="text-5xl text-white !mb-0"
+                />
             </button>
             <button
+                type="button"
+                aria-label="Следующий слайд"
                 :class="[
                     'bg-black/25 3xl:translate-x-[calc(100%+16px)] cursor-pointer pointer-events-auto rounded-full',
                     nextButtonClass,
                 ]"
             >
-                <SvgoChevron filled class="text-5xl text-white !mb-0" />
+                <SvgoChevron
+                    aria-hidden="true"
+                    filled
+                    class="text-5xl text-white !mb-0"
+                />
             </button>
         </div>
     </section>

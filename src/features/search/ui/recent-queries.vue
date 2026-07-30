@@ -20,7 +20,7 @@ defineEmits<{ (e: "select", query: string): void }>();
         :key="query"
         @click="$emit('select', query)"
       >
-        <SvgoSearch filled />
+        <SvgoSearch aria-hidden="true" filled />
         <span>
           {{ query }}
         </span>

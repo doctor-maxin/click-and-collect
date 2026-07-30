@@ -197,6 +197,7 @@ const toSentenceCase = (value: string) => {
                         >
                             <span>{{ item.title }}</span>
                             <SvgoArrowRight
+                                aria-hidden="true"
                                 filled
                                 class="text-xl !mb-0 shrink-0"
                             />
@@ -235,10 +236,12 @@ const toSentenceCase = (value: string) => {
                     <li class="py-2 text-xl leading-5">
                         <button
                             type="button"
+                            aria-label="Назад"
                             class="w-full cursor-pointer font-medium flex items-center"
                             @click="closeMobileSubmenu"
                         >
                             <SvgoArrowRight
+                                aria-hidden="true"
                                 filled
                                 class="text-xl !mb-0 rotate-180 shrink-0"
                             />
@@ -269,11 +272,16 @@ const toSentenceCase = (value: string) => {
                     <button
                         v-if="item.children.length"
                         type="button"
+                        :aria-label="`Открыть раздел ${item.title}`"
                         class="cursor-pointer shrink-0"
                         :aria-expanded="activeTabletItemId === item.id"
                         @click="toggleTabletSubmenu(item.id)"
                     >
-                        <SvgoArrowRight filled class="text-xl !mb-0" />
+                        <SvgoArrowRight
+                            aria-hidden="true"
+                            filled
+                            class="text-xl !mb-0"
+                        />
                     </button>
                 </div>
             </li>
@@ -461,7 +469,7 @@ const toSentenceCase = (value: string) => {
                 data-orientation="vertical"
             >
                 <span class="text-2xl"
-                    ><SvgoArrowRight filled class="!mb-0"
+                    ><SvgoArrowRight aria-hidden="true" filled class="!mb-0"
                 /></span>
             </NavigationMenuIndicator>
         </NavigationMenuList>

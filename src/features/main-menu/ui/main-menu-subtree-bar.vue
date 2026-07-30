@@ -185,7 +185,7 @@ defineEmits<{
                 data-orientation="vertical"
             >
                 <span class="text-2xl"
-                    ><SvgoArrowRight filled class="!mb-0"
+                    ><SvgoArrowRight aria-hidden="true" filled class="!mb-0"
                 /></span>
             </NavigationMenuIndicator>
         </NavigationMenuList>

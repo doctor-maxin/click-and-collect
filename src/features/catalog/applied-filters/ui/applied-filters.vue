@@ -47,6 +47,8 @@ const resetFilters = () => {
             <template v-for="[filter, values] of filterEntries" :key="filter">
                 <button
                     v-for="value of values"
+                    type="button"
+                    :aria-label="`Удалить фильтр: ${getFilterLabel(filter, value)}`"
                     class="cursor-pointer flex items-center gap-2"
                     :class="{
                         'px-2 py-1 border rounded-lg':
@@ -60,7 +62,11 @@ const resetFilters = () => {
                     <span v-else class="text-sm">{{
                         getFilterLabel(filter, value)
                     }}</span>
-                    <SvgoClose class="mb-0! text-[1.5rem]" filled />
+                    <SvgoClose
+                        aria-hidden="true"
+                        class="mb-0! text-[1.5rem]"
+                        filled
+                    />
                 </button>
             </template>
         </div>

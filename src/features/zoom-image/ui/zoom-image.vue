@@ -42,6 +42,8 @@ const handleMouseMove = (e: MouseEvent) => {
         >
             <img
                 :src="src"
+                alt=""
+                aria-hidden="true"
                 class="absolute"
                 :style="{
                     top: `${-position.y * 2 + 150}px`,

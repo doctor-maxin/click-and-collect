@@ -165,10 +165,12 @@ function routeTo(option: StoreProductOptionValue) {
                 <button
                     v-if="showToLeft && haveScrollbar"
                     type="button"
+                    aria-label="Предыдущие размеры"
                     class="left-5 absolute bottom-1.5"
                     @click="scrollLeft"
                 >
                     <SvgoChevron
+                        aria-hidden="true"
                         class="text-2xl cursor-pointer rotate-180 !mb-0"
                         filled
                     />
@@ -195,10 +197,15 @@ function routeTo(option: StoreProductOptionValue) {
                 <button
                     v-if="showToRight && haveScrollbar"
                     type="button"
+                    aria-label="Следующие размеры"
                     class="absolute right-5 bottom-1.5"
                     @click="scrollRight"
                 >
-                    <SvgoChevron class="text-2xl cursor-pointer !mb-0" filled />
+                    <SvgoChevron
+                        aria-hidden="true"
+                        class="text-2xl cursor-pointer !mb-0"
+                        filled
+                    />
                 </button>
             </Transition>
         </div>

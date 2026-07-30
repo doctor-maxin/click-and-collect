@@ -23,7 +23,7 @@ const model = defineModel<string>();
   <SelectRoot v-model="model">
     <SelectTrigger
       class="inline-flex h-12 relative cursor-pointer placeholder:text-gray p-3 w-[20.5rem] items-center justify-between data-[state=closed]:rounded-b-lg rounded-b-0 border rounded-t-lg"
-      aria-label="Customise options"
+      :aria-label="label"
     >
       <span class="absolute left-2 -top-3 bg-white">{{ label }}</span>
       <SelectValue
@@ -31,7 +31,10 @@ const model = defineModel<string>();
         :placeholder="placeholder"
       />
       <SelectIcon as-child
-        ><SvgoChevron filled class="!mb-0 rotate-90 absolute right-3 text-2xl"
+        ><SvgoChevron
+          aria-hidden="true"
+          filled
+          class="!mb-0 rotate-90 absolute right-3 text-2xl"
       /></SelectIcon>
     </SelectTrigger>
 

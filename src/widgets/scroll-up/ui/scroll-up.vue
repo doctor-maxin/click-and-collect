@@ -28,7 +28,11 @@ function scrollToTop() {
             class="fixed size-12 cursor-pointer aspect-square rounded-full z-[21] bg-black text-white bottom-3 right-4 flex justify-center items-center"
             @click="scrollToTop"
         >
-            <SvgoArrowRight class="-rotate-90 text-[1.5rem] mb-0!" filled />
+            <SvgoArrowRight
+                aria-hidden="true"
+                class="-rotate-90 text-[1.5rem] mb-0!"
+                filled
+            />
         </button>
     </Transition>
 </template>

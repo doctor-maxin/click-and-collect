@@ -29,10 +29,12 @@ const acceptAction = () => {
         <UiButton class="min-w-[9.25rem]" @click="acceptAction">OK</UiButton>
       </div>
       <button
+        type="button"
+        aria-label="Закрыть уведомление о cookie"
         class="absolute text-base cursor-pointer right-3 top-3"
         @click="isOpen = false"
       >
-        <SvgoClose filled />
+        <SvgoClose aria-hidden="true" filled />
       </button>
     </div>
   </div>

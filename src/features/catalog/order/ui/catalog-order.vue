@@ -50,7 +50,7 @@ const sort = ref(null);
           placeholder="Сортировка"
         />
         <SelectIcon as-child>
-          <SvgoChevron filled class="text-2xl rotate-90"
+          <SvgoChevron aria-hidden="true" filled class="text-2xl rotate-90"
         /></SelectIcon>
       </SelectTrigger>
 

@@ -21,7 +21,7 @@ defineEmits<{
             aria-label="Закрыть информацию о магазине"
             @click.stop="$emit('close')"
         >
-            <SvgoClose filled class="mb-0! text-lg" />
+            <SvgoClose aria-hidden="true" filled class="mb-0! text-lg" />
         </button>
 
         <h4 class="pr-9 text-base font-semibold">

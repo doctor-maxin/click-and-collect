@@ -30,9 +30,10 @@ const filterCount = computed(() => {
   >
     <DialogTrigger as-child>
       <button
+        type="button"
         class="flex cursor-pointer gap-2 items-center text-[1.25rem] font-medium leading-6"
       >
-        <SvgoFilter filled class="!mb-0" /> Фильтры
+        <SvgoFilter aria-hidden="true" filled class="!mb-0" /> Фильтры
         <span
           class="bg-blue text-white flex items-center justify-center size-6 text-sm font-medium rounded-full"
           v-if="filterCount"
@@ -59,9 +60,10 @@ const filterCount = computed(() => {
         <FiltersForm />
 
         <DialogClose
+          aria-label="Закрыть фильтры"
           class="cursor-pointer absolute top-4 right-4 sm:top-3 sm:right-3"
         >
-          <SvgoClose filled class="text-2xl !mb-0" />
+          <SvgoClose aria-hidden="true" filled class="text-2xl !mb-0" />
         </DialogClose>
       </DialogContent>
     </DialogPortal>

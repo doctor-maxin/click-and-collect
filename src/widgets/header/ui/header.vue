@@ -87,8 +87,9 @@ await useAsyncData(
         >
             <FeatureMainMenu />
 
-            <NuxtLink to="/" class="mx-auto">
+            <NuxtLink to="/" class="mx-auto" aria-label="На главную">
                 <SvgoLogo
+                    aria-hidden="true"
                     class="h-12 lg:h-22.5 mx-auto"
                     :fontControlled="false"
                 />
