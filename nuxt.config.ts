@@ -31,10 +31,10 @@ export default defineNuxtConfig({
     },
     $production: {
         routeRules: {
-            // "/": { swr: 5 },
-            // "/product/**": { swr: 5 },
-            // "/catalog/**": { swr: 5 },
-            // "/pages/**": { swr: 300 },
+            "/": { swr: 5 },
+            "/product/**": { swr: 5 },
+            "/catalog/**": { swr: 5 },
+            "/pages/**": { swr: 300 },
         },
     },
     site: {
