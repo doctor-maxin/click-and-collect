@@ -24,6 +24,7 @@ export default defineNuxtConfig({
         "@vueuse/nuxt",
         "nuxt-anchorscroll",
     ],
+    plugins: ["~/app/plugins/ecommerce-analytics.client"],
     anchorscroll: {
         hooks: [],
     },
