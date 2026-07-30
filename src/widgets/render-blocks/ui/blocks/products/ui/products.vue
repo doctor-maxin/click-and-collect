@@ -4,6 +4,7 @@ import type { SwiperContainer } from "swiper/element";
 import type { SwiperOptions } from "swiper/types";
 import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
 import { normalizeProductWithDisplayTags } from "#shared/types/product-display-tag";
+import { useKeepAliveSwiper } from "~/shared/lib/use-keep-alive-swiper";
 import type {
     IProductCategoriesBlock,
     IProductsBlock,
@@ -214,41 +215,7 @@ const swiperOptions = {
     },
 } satisfies SwiperOptions;
 
-const swiper = useSwiper(containerRef, swiperOptions);
-
-let swiperInitFrame: number | null = null;
-let hasBeenActivated = false;
-
-onActivated(() => {
-    if (!hasBeenActivated) {
-        hasBeenActivated = true;
-        return;
-    }
-
-    if (swiperInitFrame !== null) cancelAnimationFrame(swiperInitFrame);
-
-    swiperInitFrame = requestAnimationFrame(() => {
-        swiperInitFrame = null;
-
-        const container = containerRef.value;
-        if (!container?.isConnected) return;
-
-        if (!container.swiper || container.swiper.destroyed) {
-            Object.assign(container, swiperOptions);
-            container.initialize();
-            swiper.instance.value = container.swiper;
-            return;
-        }
-
-        container.swiper.update();
-    });
-});
-
-onDeactivated(() => {
-    if (swiperInitFrame === null) return;
-    cancelAnimationFrame(swiperInitFrame);
-    swiperInitFrame = null;
-});
+const swiper = useKeepAliveSwiper(containerRef, swiperOptions);
 
 watch(
     [activeGroupId, activeProducts],

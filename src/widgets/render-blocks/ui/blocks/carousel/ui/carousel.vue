@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { ICarouselBlock } from "~/widgets/render-blocks";
+import type { SwiperContainer } from "swiper/element";
 import { FeatureRenderMedia } from "~/features/render-media";
 import { normalizeSiteLink } from "~/shared/lib/normalize-site-link";
+import { useKeepAliveSwiper } from "~/shared/lib/use-keep-alive-swiper";
 import { NuxtLink } from "#components";
 
 const { data } = defineProps<{
@@ -17,14 +19,14 @@ const getCarouselLink = (link?: string) =>
 const instanceId = `carousel-${data.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 const nextButtonClass = `${instanceId}-next`;
 const prevButtonClass = `${instanceId}-prev`;
-const containerRef = ref(null);
+const containerRef = ref<SwiperContainer | null>(null);
 const activeSlideIndex = ref(0);
 
 const updateActiveSlide = (swiper: { realIndex: number }) => {
     activeSlideIndex.value = swiper.realIndex;
 };
 
-const _swiper = useSwiper(containerRef, {
+useKeepAliveSwiper(containerRef, {
     effect: "slide",
     navigation: {
         enabled: data.slides.length > 1,

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { FeatureRenderMedia } from "~/features/render-media";
 import { normalizeSiteLink } from "~/shared/lib/normalize-site-link";
+import { useKeepAliveSwiper } from "~/shared/lib/use-keep-alive-swiper";
 import type { IDepartmentsBlocks } from "~/widgets/render-blocks";
+import type { SwiperContainer } from "swiper/element";
 
 const { data } = defineProps<{
     data: IDepartmentsBlocks;
@@ -18,7 +20,7 @@ const instanceId = computed(
 );
 const nextButtonClass = computed(() => `${instanceId.value}-next`);
 const prevButtonClass = computed(() => `${instanceId.value}-prev`);
-const containerRef = ref(null);
+const containerRef = ref<SwiperContainer | null>(null);
 
 const mobileVisibleCols = computed(() => data.mobileVisibleCols || 1);
 const visibleCols = computed(() => data.visibleCols || data.items?.length || 1);
@@ -27,7 +29,7 @@ const canSlide = computed(
 );
 const canAutoplay = computed(() => canSlide.value && !!data.autoplayDuration);
 
-const _swiper = useSwiper(containerRef, {
+useKeepAliveSwiper(containerRef, {
     effect: "slide",
     navigation: {
         enabled: canSlide.value,

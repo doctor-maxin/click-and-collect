@@ -34,7 +34,7 @@ const supportedContent = computed(() =>
     props.content.filter((block) => Boolean(getBlock(block.__typename))),
 );
 
-const visibleCount = ref(supportedContent.value.length > 0 ? 1 : 0);
+const visibleCount = ref(supportedContent.value.length > 0 ? 3 : 0);
 
 const visibleContent = computed(() =>
     supportedContent.value.slice(0, visibleCount.value),

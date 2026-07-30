@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { FeatureRenderMedia } from "~/features/render-media";
+import { useKeepAliveSwiper } from "~/shared/lib/use-keep-alive-swiper";
 import type { IThematicsBlocks } from "~/widgets/render-blocks";
+import type { SwiperContainer } from "swiper/element";
 
 const { data } = defineProps<{
     data: IThematicsBlocks;
@@ -9,7 +11,7 @@ const { data } = defineProps<{
 const instanceId = computed(
     () => `thematics-${String(data.id).replace(/[^a-zA-Z0-9_-]/g, "-")}`,
 );
-const containerRef = ref(null);
+const containerRef = ref<SwiperContainer | null>(null);
 
 const mobileVisibleCols = computed(() => data.mobileVisibleCols || 3);
 const visibleCols = computed(() => data.visibleCols || data.items?.length || 1);
@@ -18,7 +20,7 @@ const canSlide = computed(
 );
 const canAutoplay = computed(() => canSlide.value && !!data.autoplayDuration);
 
-const _swiper = useSwiper(containerRef, {
+useKeepAliveSwiper(containerRef, {
     effect: "slide",
     loop: canSlide.value,
     speed: data.autoplayDuration || undefined,
