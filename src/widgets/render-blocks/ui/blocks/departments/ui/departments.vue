@@ -62,7 +62,7 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
 <template>
     <section
         v-if="data?.items?.length && !data.isCarousel"
-        class="mx-auto my-9 px-4 gap-4 container hidden md:grid grid-cols-2 lg:grid-cols-[repeat(var(--departments-cols),minmax(0,1fr))]"
+        class="mx-auto my-9 px-4 gap-4 container grid grid-cols-2 lg:grid-cols-[repeat(var(--departments-cols),minmax(0,1fr))]"
         :style="{
             '--departments-cols': data.items.length,
         }"
