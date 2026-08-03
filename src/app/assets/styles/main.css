@@ -105,6 +105,28 @@ body {
     }
 }
 
+@keyframes rightSideDrawerIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0.7;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes rightSideDrawerOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0.7;
+    }
+}
+
 .dialog-overlay[data-state="open"],
 .dialog-content[data-state="open"],
 .navigation-menu-viewport[data-state="open"] {
@@ -140,6 +162,14 @@ body {
 
     .side-drawer-content[data-state="closed"] {
         animation: sideDrawerOut 180ms ease-in;
+    }
+
+    .right-side-drawer-content[data-state="open"] {
+        animation: rightSideDrawerIn 220ms ease-out;
+    }
+
+    .right-side-drawer-content[data-state="closed"] {
+        animation: rightSideDrawerOut 180ms ease-in;
     }
 }
 

@@ -5,7 +5,6 @@ import { PRODUCT_CHARACTERISTICS_MAP } from "../lib/product-characteristics-map"
 import { normalizeProductCharacteristicValue } from "../lib/product-characteristic-value";
 import ProductColorPicker from "./product-color-picker.vue";
 import ProductSizePicker from "./product-size-picker.vue";
-import ProductDescriptionDrawer from "./product-description-drawer.vue";
 import ProductCharacteristicsDrawer from "./product-characteristics-drawer.vue";
 import {
     ProductDisplayTagBadge,
@@ -49,7 +48,7 @@ const marketplaces = computed(
         }[],
 );
 
-const hasDescription = computed(() => {
+const description = computed(() => {
     const variantDescription = variant.value?.metadata?.description as
         | string
         | undefined;
@@ -58,10 +57,11 @@ const hasDescription = computed(() => {
         | string
         | undefined;
 
-    return Boolean(
+    return (
         variantDescription?.trim() ||
         productDescription?.trim() ||
-        metadataDescription?.trim(),
+        metadataDescription?.trim() ||
+        null
     );
 });
 
@@ -189,10 +189,20 @@ const isAvailableProduct = computed(() => {
             маркетплейсах</span
         >
         <div
-            v-if="hasDescription || hasCharacteristics"
+        v-if="description"
+        class="my-5">
+            <h2 class="text-xl mb-5">Описание:</h2>
+            <div
+                class="whitespace-pre-line text-base leading-6"
+            >
+                {{ description }}
+            </div>
+        </div>
+
+        <div
+            v-if="hasCharacteristics"
             class="my-6 flex flex-col gap-4"
         >
-            <ProductDescriptionDrawer v-if="hasDescription" />
             <ProductCharacteristicsDrawer v-if="hasCharacteristics" />
         </div>
         <div v-if="isAvailableProduct" class="my-6 gap-6 w-full flex flex-col">
