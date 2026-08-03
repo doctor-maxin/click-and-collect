@@ -12,6 +12,7 @@ import {
 } from "reka-ui";
 import { useProductStore } from "../lib/product-store";
 import { PRODUCT_CHARACTERISTICS_MAP } from "../lib/product-characteristics-map";
+import { normalizeProductCharacteristicValue } from "../lib/product-characteristic-value";
 
 type CharacteristicItem = {
     label: string;
@@ -34,18 +35,10 @@ const characteristics = computed<CharacteristicItem[]>(() => {
     const list: CharacteristicItem[] = [];
 
     for (const item of PRODUCT_CHARACTERISTICS_MAP) {
-        const rawValue = metadata.value[item.key];
-
-        if (
-            typeof rawValue !== "string" &&
-            typeof rawValue !== "number" &&
-            typeof rawValue !== "boolean"
-        ) {
-            continue;
-        }
-
-        const value = String(rawValue).trim();
-        if (!value || value === "N/A" || value.toLowerCase().trim() === 'не применим') continue;
+        const value = normalizeProductCharacteristicValue(
+            metadata.value[item.key],
+        );
+        if (!value) continue;
 
         list.push({
             label: item.label,

@@ -2,6 +2,7 @@
 import type { StoreProduct } from "@medusajs/types";
 import { useProductStore } from "../lib/product-store";
 import { PRODUCT_CHARACTERISTICS_MAP } from "../lib/product-characteristics-map";
+import { normalizeProductCharacteristicValue } from "../lib/product-characteristic-value";
 import ProductColorPicker from "./product-color-picker.vue";
 import ProductSizePicker from "./product-size-picker.vue";
 import ProductDescriptionDrawer from "./product-description-drawer.vue";
@@ -70,18 +71,9 @@ const hasCharacteristics = computed(() => {
         ...(variant.value?.metadata ?? {}),
     } as Record<string, unknown>;
 
-    return PRODUCT_CHARACTERISTICS_MAP.some(({ key }) => {
-        const value = metadata[key];
-        if (
-            typeof value !== "string" &&
-            typeof value !== "number" &&
-            typeof value !== "boolean"
-        ) {
-            return false;
-        }
-
-        return Boolean(String(value).trim());
-    });
+    return PRODUCT_CHARACTERISTICS_MAP.some(({ key }) =>
+        Boolean(normalizeProductCharacteristicValue(metadata[key])),
+    );
 });
 
 watch(
