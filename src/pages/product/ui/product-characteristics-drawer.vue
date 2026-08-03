@@ -57,7 +57,7 @@ const characteristics = computed<CharacteristicItem[]>(() => {
                 type="button"
                 class="flex w-full gap-3 items-center text-xl leading-5 cursor-pointer"
             >
-                <span>Характеристики</span>
+                <span class="font-medium">Характеристики</span>
                 <SvgoArrowDown
                     aria-hidden="true"
                     filled

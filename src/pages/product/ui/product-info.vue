@@ -191,7 +191,7 @@ const isAvailableProduct = computed(() => {
         <div
         v-if="description"
         class="my-5">
-            <h2 class="text-xl mb-5">Описание:</h2>
+            <h2 class="text-xl font-medium mb-5">Описание:</h2>
             <div
                 class="whitespace-pre-line text-base leading-6"
             >
