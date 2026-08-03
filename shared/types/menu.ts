@@ -1,9 +1,10 @@
+import type { NavigationItemType } from "#gql/default";
 import type { API } from "@strapi/client";
 
 export type NavigationItem = API.Document & {
   id: number;
   title: string;
-  type: "WRAPPER" | "EXTERNAL";
+  type: NavigationItemType
   path: string;
   externalPath: null;
   uiRouterKey: string;

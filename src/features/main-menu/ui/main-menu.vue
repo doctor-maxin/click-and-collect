@@ -67,7 +67,7 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
                     @close="isOpen = false"
                 />
 
-                <MainMenuFooter @close="isOpen = false" />
+                <!-- <MainMenuFooter @close="isOpen = false" /> -->
                 <DialogClose
                     aria-label="Закрыть меню"
                     class="hidden sm:block cursor-pointer absolute sm:top-3 sm:right-3"
