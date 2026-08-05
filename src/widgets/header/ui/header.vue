@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { FeatureMainMenu } from "~/features/main-menu";
 import { FeatureSearch } from "~/features/search";
+import { FeatureFavoriteCountBadge } from "~/features/favorites";
 
 const isHeaderVisible = ref(true);
 const lastScrollY = ref(0);
@@ -83,7 +84,7 @@ await useAsyncData(
         class="fixed ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center"
     >
         <div
-            class="ui-header-content container px-4 items-center text-black grid grid-cols-[1.5rem_auto_1.5rem]"
+            class="ui-header-content container px-4 items-center text-black grid grid-cols-[1fr_auto_1fr]"
         >
             <FeatureMainMenu />
 
@@ -94,7 +95,23 @@ await useAsyncData(
                     :fontControlled="false"
                 />
             </NuxtLink>
-            <FeatureSearch />
+            <div class="flex items-center justify-self-end gap-3">
+                <FeatureSearch />
+                <NuxtLink
+                    to="/favorites"
+                    class="relative flex size-6 items-center justify-center"
+                    aria-label="Избранное"
+                >
+                    <SvgoHeart
+                        aria-hidden="true"
+                        filled
+                        class="!mb-0 text-2xl"
+                    />
+                    <ClientOnly>
+                        <FeatureFavoriteCountBadge />
+                    </ClientOnly>
+                </NuxtLink>
+            </div>
         </div>
     </div>
 </template>

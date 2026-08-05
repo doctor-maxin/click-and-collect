@@ -81,7 +81,7 @@ useEventListener(import.meta.client ? window : undefined, "scroll", () => {
 </script>
 <template>
     <DialogRoot v-model:open="isOpen">
-        <div class="relative z-20">
+        <div class="relative flex z-20">
             <button
                 type="button"
                 class="cursor-pointer"

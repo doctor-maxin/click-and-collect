@@ -4,6 +4,7 @@ import type { SwiperContainer } from "swiper/element";
 import type { Swiper, SwiperOptions } from "swiper/types";
 import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
 import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
+import { FeatureFavoriteToggle } from "~/features/favorites";
 import {
     ProductCardOverlayTags,
     ProductPriceTags,
@@ -184,6 +185,7 @@ function trackProductClick(variant = smallestVariant.value) {
         products: [getAnalyticsProduct(variant)],
     });
 }
+
 </script>
 <template>
     <article
@@ -243,6 +245,25 @@ function trackProductClick(variant = smallestVariant.value) {
                     />
                 </div>
             </NuxtLink>
+
+            <ClientOnly>
+                <FeatureFavoriteToggle
+                    :product-id="product.id"
+                    class="absolute right-2 top-2 z-40 flex size-6 lg:size-10 cursor-pointer items-center justify-center rounded-full bg-white/90 text-black transition-colors hover:bg-white"
+                    icon-class="!mb-0 text-sm! lg:text-xl!"
+                />
+                <template #fallback>
+                    <span
+                        class="absolute right-2 top-2 z-40 flex size-6 lg:size-10 items-center justify-center rounded-full bg-white/90 text-black"
+                    >
+                        <SvgoHeart
+                            aria-hidden="true"
+                            filled
+                            class="!mb-0 text-sm! lg:text-xl!"
+                        />
+                    </span>
+                </template>
+            </ClientOnly>
 
             <ProductCardOverlayTags
                 :tags="product.product_display_tags"

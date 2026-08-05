@@ -61,7 +61,7 @@ const characteristics = computed<CharacteristicItem[]>(() => {
                 <SvgoArrowDown
                     aria-hidden="true"
                     filled
-                    class="text-2xl rotate-90 mb-0!"
+                    class="text-2xl rotate-180 md:rotate-90 mb-0!"
                 />
             </button>
         </DialogTrigger>

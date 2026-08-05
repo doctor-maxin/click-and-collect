@@ -25,7 +25,10 @@ export default defineNuxtConfig({
       "nuxt-anchorscroll",
       "nuxt-vitalizer",
     ],
-    plugins: ["~/app/plugins/ecommerce-analytics.client"],
+    plugins: [
+        "~/app/plugins/ecommerce-analytics.client",
+        "~/app/plugins/favorites-sync.client",
+    ],
     anchorscroll: {
         hooks: [],
     },

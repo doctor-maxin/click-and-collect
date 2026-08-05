@@ -15,6 +15,7 @@ import {
     normalizeProductDisplayTags,
 } from "#shared/types/product-display-tag";
 import { UiWbButton } from "#components";
+import { FeatureFavoriteToggle } from "~/features/favorites";
 
 const productStore = useProductStore();
 const { product, variant, price, oldPrice, discount } =
@@ -99,6 +100,7 @@ const isAvailableProduct = computed(() => {
         variant.value?.inventory_quantity > 0
     );
 });
+
 </script>
 <template>
     <div class="w-full">
@@ -122,11 +124,32 @@ const isAvailableProduct = computed(() => {
                 />
             </div>
         </div>
-        <h1
-            class="text-base md:text-[1.25rem] font-medium leading-5 lg:leading-6 uppercase mb-3 lg:mb-4"
-        >
-            {{ productTitle }}
-        </h1>
+        <div class="mb-3 flex items-center gap-4 lg:mb-4">
+            <h1
+                class="text-base md:text-[1.25rem] font-medium leading-5 lg:leading-6 uppercase"
+            >
+                {{ productTitle }}
+            </h1>
+            <ClientOnly>
+                <FeatureFavoriteToggle
+                    v-if="product"
+                    :product-id="product.id"
+                    class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-black transition-colors hover:bg-black hover:text-white"
+                    icon-class="mb-0! text-2xl"
+                />
+                <template #fallback>
+                    <span
+                        class="flex size-10 shrink-0 items-center justify-center rounded-full text-black"
+                    >
+                        <SvgoHeart
+                            aria-hidden="true"
+                            filled
+                            class="mb-0! text-2xl"
+                        />
+                    </span>
+                </template>
+            </ClientOnly>
+        </div>
         <span
             class="text-base block mb-3 md:mb-4 lg:mb-6 leading-5 text-[hsl(216,64%,15%)]/50"
             >Арт. {{ sku }}</span
