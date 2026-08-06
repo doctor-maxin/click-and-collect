@@ -289,6 +289,7 @@ function selectGroup(groupId: string) {
             <swiper-container ref="containerRef" :init="false" class="w-full">
                 <swiper-slide
                     v-for="(product, index) in activeProducts"
+                    class="h-auto"
                     :key="`${activeGroup?.id}-${product.id}`"
                 >
                     <ProductCard
@@ -303,6 +304,7 @@ function selectGroup(groupId: string) {
                 </swiper-slide>
                 <swiper-slide
                     v-if="activeGroup?.categoryLink"
+                    class="h-auto"
                     :key="`${activeGroup.id}-category-link`"
                 >
                     <NuxtLink

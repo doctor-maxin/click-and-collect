@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
     NavigationMenuContent,
-    NavigationMenuIndicator,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
@@ -44,6 +43,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
     (e: "close"): void;
+    (e: "submenu-change", isOpen: boolean): void;
 }>();
 
 type CategoryMenuItemSettings = {
@@ -309,11 +309,26 @@ const toSentenceCase = (value: string) => {
         </ul>
     </div>
 
-    <NavigationMenuRoot orientation="vertical" class="hidden lg:flex w-full">
-        <NavigationMenuList class="flex flex-col min-w-[9rem]">
+    <NavigationMenuRoot
+        orientation="vertical"
+        class="hidden lg:flex relative h-full w-[360px] items-stretch"
+        @update:model-value="emit('submenu-change', Boolean($event))"
+    >
+        <NuxtLink
+            to="/"
+            aria-label="На главную"
+            class="absolute top-8 right-8 z-10"
+            @click="closeMenu"
+        >
+            <SvgoLogo aria-hidden="true" class="w-auto! h-7! !mb-0" />
+        </NuxtLink>
+        <NavigationMenuList
+            class="desktop-main-menu-list flex h-full w-[360px] shrink-0 flex-col border-r border-black/20 px-8 py-[4.5rem] py-[4.75rem]"
+        >
             <NavigationMenuItem
                 v-for="category of categoriesTree"
                 :key="category.id"
+                :value="`category-${category.id}`"
                 class="group"
                 :class="
                     getMenuItemSpacingClass(
@@ -323,7 +338,7 @@ const toSentenceCase = (value: string) => {
             >
                 <NavigationMenuTrigger
                     v-if="category.category_children?.length"
-                    class="uppercase main-menu-bar-link relative py-2 text-left font-semibold text-xl leading-5 w-full"
+                    class="uppercase main-menu-bar-link relative flex w-full items-center justify-between gap-4 py-2 text-left text-xl leading-5 font-semibold"
                     :style="
                         getMenuItemStyle(getCategoryMenuItemSettings(category))
                     "
@@ -337,6 +352,11 @@ const toSentenceCase = (value: string) => {
                             {{ category.name }}
                         </NuxtLink>
                     </NavigationMenuLink>
+                    <SvgoArrowRight
+                        aria-hidden="true"
+                        filled
+                        class="!mb-0 shrink-0 text-xl"
+                    />
                 </NavigationMenuTrigger>
                 <NavigationMenuLink
                     as-child
@@ -355,7 +375,7 @@ const toSentenceCase = (value: string) => {
                 </NavigationMenuLink>
                 <NavigationMenuContent
                     v-if="category.category_children?.length"
-                    class="pl-28 navigation-menu-content"
+                    class="navigation-menu-content h-full w-full px-8 py-[4.5rem]"
                 >
                     <NavigationMenuSub>
                         <NavigationMenuList class="flex flex-col min-w-[15rem]">
@@ -397,11 +417,12 @@ const toSentenceCase = (value: string) => {
             <NavigationMenuItem
                 v-for="item of menu"
                 :key="item.uiRouterKey"
+                :value="`menu-${item.uiRouterKey}`"
                 class="group"
             >
                 <NavigationMenuTrigger
                     v-if="item.type === 'WRAPPER' && item.items?.length"
-                    class="uppercase py-2 text-left font-semibold text-xl leading-5 w-full"
+                    class="uppercase flex w-full items-center justify-between gap-4 py-2 text-left text-xl leading-5 font-semibold"
                 >
                     <NavigationMenuLink as-child>
                         <NuxtLink
@@ -416,6 +437,11 @@ const toSentenceCase = (value: string) => {
                             {{ item.title }}
                         </NuxtLink>
                     </NavigationMenuLink>
+                    <SvgoArrowRight
+                        aria-hidden="true"
+                        filled
+                        class="!mb-0 shrink-0 text-xl"
+                    />
                 </NavigationMenuTrigger>
                 <NavigationMenuLink
                     as-child
@@ -434,7 +460,7 @@ const toSentenceCase = (value: string) => {
                 </NavigationMenuLink>
                 <NavigationMenuContent
                     v-if="item.items?.length"
-                    class="pl-[6rem] navigation-menu-content"
+                    class="navigation-menu-content h-full w-full px-8 py-[4.5rem]"
                 >
                     <NavigationMenuSub>
                         <NavigationMenuList class="flex flex-col min-w-[9rem]">
@@ -464,23 +490,32 @@ const toSentenceCase = (value: string) => {
                 </NavigationMenuContent>
             </NavigationMenuItem>
 
-            <NavigationMenuIndicator
-                class="absolute pointer-events-none top-0 py-1.5 left-full pl-3 translate-y-[var(--reka-navigation-menu-indicator-position)]"
-                data-orientation="vertical"
-            >
-                <span class="text-2xl"
-                    ><SvgoArrowRight aria-hidden="true" filled class="!mb-0"
-                /></span>
-            </NavigationMenuIndicator>
         </NavigationMenuList>
 
-        <div class="perspective-[2000px]">
+        <div
+            class="perspective-[2000px] absolute top-0 left-full h-full w-[360px]"
+        >
             <NavigationMenuViewport
                 align="start"
-                class="navigation-menu-viewport"
+                class="navigation-menu-viewport !top-0 !h-full !w-full"
             />
         </div>
     </NavigationMenuRoot>
 </template>
 
-<style></style>
+<style scoped>
+@media (width >= 64rem) {
+    .desktop-main-menu-list > [data-menu-item] {
+        transition: opacity 150ms ease;
+    }
+
+    .desktop-main-menu-list:has(
+        [data-navigation-menu-trigger][data-state="open"]
+    )
+        > [data-menu-item]:not(
+            :has([data-navigation-menu-trigger][data-state="open"])
+        ) {
+        opacity: 0.4;
+    }
+}
+</style>

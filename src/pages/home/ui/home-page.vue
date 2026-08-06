@@ -8,6 +8,7 @@ import {
     extractPlainText,
     toAbsoluteSiteUrl,
 } from "#shared/lib";
+import AnnouncementBar from "~/widgets/render-blocks/ui/blocks/announcement-bar/ui/announcement-bar.vue";
 
 const { data: homePage, error } = await useAsyncData("home-page", () =>
     getHomePage(),

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { WidgetHeader } from "~/widgets/header";
 import { WidgetFooter } from "~/widgets/footer";
+import { WidgetTouchBar } from "~/widgets/touch-bar";
 import { WidgetScrollUp } from "~/widgets/scroll-up";
 import { WidgetCookieBanner } from "~/widgets/cookie-banner";
 import type { NuxtError } from "#app";
@@ -33,7 +34,7 @@ const errorName = computed(() => {
 });
 </script>
 <template>
-    <div class="flex flex-col min-h-screen w-full pb-12 lg:pb-0">
+    <div class="flex flex-col min-h-screen w-full pb-[calc(4.5rem_+_env(safe-area-inset-bottom,0px))] lg:pb-0">
         <WidgetHeader class="static" />
         <div
             class="flex py-8 lg:py-20 bg-[url(/error-page.jpg)] bg-cover bg-center flex-col text-white flex-1 justify-center items-center"
@@ -49,6 +50,7 @@ const errorName = computed(() => {
             >
         </div>
         <WidgetFooter />
+        <WidgetTouchBar />
         <WidgetScrollUp />
         <WidgetCookieBanner />
     </div>

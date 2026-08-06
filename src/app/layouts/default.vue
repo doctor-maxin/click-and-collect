@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { WidgetHeader } from "~/widgets/header";
 import { WidgetFooter } from "~/widgets/footer";
+import { WidgetTouchBar } from "~/widgets/touch-bar";
 import { WidgetScrollUp } from "~/widgets/scroll-up";
 import { WidgetCookieBanner } from "~/widgets/cookie-banner";
+import { FeatureCartDrawer } from "~/features/cart";
 import { useAsyncData } from "#app";
 import euclidRegularUrl from "~/app/assets/fonts/euclid-woff2/Euclid Circular B Regular.woff2?url";
 import euclidSemiBoldUrl from "~/app/assets/fonts/euclid-woff2/Euclid Circular B SemiBold.woff2?url";
+import AnnouncementBar from "~/widgets/render-blocks/ui/blocks/announcement-bar/ui/announcement-bar.vue";
 
 useHead({
   link: [
@@ -59,7 +62,8 @@ await useAsyncData("categories", () =>
 </script>
 
 <template>
-  <div class="flex layout flex-col min-h-screen w-full pb-12 lg:pb-0">
+  <div class="flex layout flex-col min-h-screen w-full pb-[calc(4.5rem_+_env(safe-area-inset-bottom,0px))] lg:pb-0">
+      <AnnouncementBar class="hidden! lg:block lg:py-2!" :data="{text: 'Большая распродажа школьной коллекции до -70%', textColor: '#ffffff', isRunning: true, bgColor: '#ffa32d'}" />
     <KeepAlive>
       <WidgetHeader />
     </KeepAlive>
@@ -75,6 +79,8 @@ await useAsyncData("categories", () =>
       <WidgetFooter />
     </KeepAlive>
 
+    <WidgetTouchBar />
+    <FeatureCartDrawer />
     <WidgetScrollUp />
     <WidgetCookieBanner />
   </div>

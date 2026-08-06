@@ -132,9 +132,9 @@ const isAvailable = computed(() => {
     if (!variant.value) return false;
 
     return Boolean(
-        variant.value.manage_inventory &&
-        !variant.value.allow_backorder &&
-        variant.value.inventory_quantity > 0,
+        !variant.value.manage_inventory ||
+            variant.value.allow_backorder ||
+            (variant.value.inventory_quantity ?? 0) > 0,
     );
 });
 
@@ -317,12 +317,12 @@ watch(
 );
 </script>
 <template>
-    <div v-if="product" class="mt-16 lg:mt-32.5">
-        <div class="container px-4 mx-auto">
+    <div v-if="product" class="">
+        <div class="container  mx-auto">
             <ProductBreadCrumbs :product="product" />
             <div class="grid gap-4 md:gap-8 grid-cols-1 lg:grid-cols-2">
                 <ProductMedia class="" :product="product" />
-                <ProductInfo class="lg:max-w-106" :product="product" />
+                <ProductInfo class="px-4 lg:px-0 lg:max-w-106" :product="product" />
             </div>
             <ClientOnly>
                 <WidgetRecentlyViewed :current-product-id="product.id" />

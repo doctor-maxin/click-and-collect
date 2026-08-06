@@ -74,10 +74,31 @@ function showNextBlock(index: number) {
         v-for="(block, index) in visibleContent"
         :key="block.id + block.__typename"
     >
-        <component
-            :is="getBlock(block.__typename)"
-            :data="block"
-            @vue:mounted="showNextBlock(index)"
-        />
+        <Transition :name="index >= 3 ? 'deferred-block' : 'no-transition'">
+            <component
+                :is="getBlock(block.__typename)"
+                :data="block"
+                @vue:mounted="showNextBlock(index)"
+            />
+        </Transition>
     </template>
 </template>
+
+<style scoped>
+.deferred-block-enter-active {
+    transition:
+        opacity 260ms ease-out,
+        transform 260ms ease-out;
+}
+
+.deferred-block-enter-from {
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .deferred-block-enter-active {
+        transition: none;
+    }
+}
+</style>

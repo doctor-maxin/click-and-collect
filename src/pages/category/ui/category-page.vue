@@ -521,7 +521,7 @@ const getProductsCountLabel = (value: number) => {
 </script>
 
 <template>
-    <div class="mt-16 lg:mt-32.5">
+    <div class="">
         <div v-if="category" class="px-4 container mx-auto">
             <CategoryBreadCrumbs :category="category" />
             <div class="flex items-center gap-4 mt-6 mb-4 lg:my-9">

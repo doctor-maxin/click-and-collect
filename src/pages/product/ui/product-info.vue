@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { StoreProduct } from "@medusajs/types";
 import { useProductStore } from "../lib/product-store";
 import { PRODUCT_CHARACTERISTICS_MAP } from "../lib/product-characteristics-map";
 import { normalizeProductCharacteristicValue } from "../lib/product-characteristic-value";
@@ -14,8 +13,8 @@ import {
     getDefaultProductDisplayTags,
     normalizeProductDisplayTags,
 } from "#shared/types/product-display-tag";
-import { UiWbButton } from "#components";
 import { FeatureFavoriteToggle } from "~/features/favorites";
+import { FeatureAddToCart } from "~/features/cart";
 
 const productStore = useProductStore();
 const { product, variant, price, oldPrice, discount } =
@@ -93,12 +92,20 @@ watch(
 );
 
 const isAvailableProduct = computed(() => {
-    if (!marketplaces.value?.length) return false;
-    return (
-        variant.value?.manage_inventory &&
-        !variant.value?.allow_backorder &&
-        variant.value?.inventory_quantity > 0
+    const selectedVariant = variant.value;
+    if (!selectedVariant) return false;
+
+    return Boolean(
+        !selectedVariant.manage_inventory ||
+            selectedVariant.allow_backorder ||
+            (selectedVariant.inventory_quantity ?? 0) > 0,
     );
+});
+
+const availabilityMessage = computed(() => {
+    if (!variant.value) return "Выберите вариант товара";
+
+    return "Товара нет в наличии";
 });
 
 </script>
@@ -202,10 +209,17 @@ const isAvailableProduct = computed(() => {
         </div>
         <ProductColorPicker />
         <ProductSizePicker />
+        <FeatureAddToCart
+            v-if="isAvailableProduct && product"
+            :product="product"
+            :variant="variant"
+            quantity-controls-only-in-cart
+            class="my-6 w-full"
+        />
         <span
             v-if="!isAvailableProduct"
             class="text-base leading-5 leading-6 my-3 block"
-            >Товар доступен только в розничных магазинах</span
+            >{{ availabilityMessage }}</span
         >
         <span class="text-gray block text-base leading-5"
             >Данная цена может отличаться от цены в магазинах и на
@@ -228,7 +242,10 @@ const isAvailableProduct = computed(() => {
         >
             <ProductCharacteristicsDrawer v-if="hasCharacteristics" />
         </div>
-        <div v-if="isAvailableProduct" class="my-6 gap-6 w-full flex flex-col">
+        <div
+            v-if="marketplaces?.length"
+            class="my-6 gap-6 w-full flex flex-col"
+        >
             <template v-for="item of marketplaces" :key="item.provider">
                 <UiButton
                     is-link

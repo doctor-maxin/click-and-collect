@@ -319,20 +319,6 @@ body {
     background-color: transparent;
 }
 
-.layout:has(.home-page > section.carousel:first-of-type) .ui-header {
-    color: white;
-    background-image: linear-gradient(
-        0deg,
-        rgba(194, 195, 197, 0),
-        rgba(0, 0, 0, 0.7) 100%
-    );
-
-    a,
-    button {
-        color: white;
-    }
-}
-
 .wb {
     background: linear-gradient(
         30.88deg,
@@ -419,5 +405,29 @@ body:has(.search-dialog[data-state="open"]) .ui-header {
     a,
     button {
         color: black !important;
+    }
+}
+
+.page-enter-active,
+.page-leave-active {
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease;
+}
+
+.page-enter-from {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+.page-leave-to {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-enter-active,
+    .page-leave-active {
+        transition: none;
     }
 }

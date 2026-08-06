@@ -42,9 +42,9 @@ const filterCount = computed(() => {
       </button>
     </DialogTrigger>
     <DialogPortal>
-      <DialogOverlay class="fixed dialog-overlay z-10 inset-0 bg-black/30" />
+      <DialogOverlay class="fixed dialog-overlay z-60 inset-0 bg-black/30" />
       <DialogContent
-        class="bg-white transition-all dialog-content top-0 left-0 fixed z-40 h-screen w-full max-w-full overflow-y-auto p-4 sm:w-[25rem] sm:overflow-visible sm:py-[3.875rem] sm:px-[3.5rem]"
+        class="bg-white transition-all dialog-content top-0 left-0 fixed z-70 h-screen w-full max-w-full overflow-y-auto p-4 sm:w-[25rem] sm:overflow-visible sm:py-[3.875rem] sm:px-[3.5rem]"
       >
         <VisuallyHidden as-child>
           <DialogTitle>Filters</DialogTitle>

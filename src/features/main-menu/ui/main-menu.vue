@@ -1,84 +1,89 @@
 <script setup lang="ts">
 import {
-    DialogClose,
-    DialogContent,
-    VisuallyHidden,
-    DialogOverlay,
-    DialogDescription,
-    DialogPortal,
-    DialogRoot,
-    DialogTitle,
-    DialogTrigger,
-} from "reka-ui";
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerHandle,
+    DrawerOverlay,
+    DrawerPortal,
+    DrawerRoot,
+    DrawerTitle,
+    DrawerTrigger,
+} from "vaul-vue";
+import { VisuallyHidden } from "reka-ui";
 import MainMenuBar from "./main-menu-bar.vue";
-import MainMenuFooter from "./main-menu-footer.vue";
 
 const isOpen = ref(false);
-const isExpanded = ref();
+const isDesktopSubmenuOpen = ref(false);
+const isMobile = useMediaQuery("(max-width: 639px)");
+const drawerDirection = computed(() =>
+    isMobile.value ? "bottom" : "left",
+);
 
 const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
+
+watch(isOpen, (isMenuOpen) => {
+    if (!isMenuOpen) {
+        isDesktopSubmenuOpen.value = false;
+    }
+});
 </script>
 
 <template>
-    <DialogRoot v-model:open="isOpen" class="relative z-20">
-        <DialogTrigger aria-label="Открыть меню" class="cursor-pointer">
+    <DrawerRoot
+        v-model:open="isOpen"
+        :direction="drawerDirection"
+        :close-threshold="0.15"
+        handle-only
+        class="relative z-20"
+    >
+        <DrawerTrigger aria-label="Открыть меню" class="cursor-pointer">
             <SvgoBurger aria-hidden="true" filled class="text-2xl" />
-        </DialogTrigger>
-        <DialogPortal>
-            <DialogOverlay
-                class="fixed dialog-overlay z-10 inset-0 bg-black/30"
+        </DrawerTrigger>
+        <DrawerPortal>
+            <DrawerOverlay
+                class="fixed z-60 inset-0 bg-black/30"
             />
-            <DialogContent
-                class="bg-white flex flex-col transition-all dialog-content top-0 left-0 fixed z-40 h-screen w-full overflow-y-auto p-4 sm:w-auto sm:overflow-visible sm:p-[4.5rem] sm:min-w-[25rem]"
-                :class="{
-                    'sm:min-w-[40rem]': isExpanded,
-                }"
+            <DrawerContent
+                class="mobile-menu-sheet fixed bottom-[calc(4.5rem_+_env(safe-area-inset-bottom,0px))] left-0 z-70 flex max-h-[calc(100dvh_-_4.5rem_-_env(safe-area-inset-bottom,0px))] w-full flex-col overflow-y-auto rounded-t-2xl bg-white p-4 sm:top-0 sm:bottom-auto sm:h-screen sm:max-h-none sm:w-auto sm:overflow-visible sm:rounded-none sm:border-r sm:border-black/20 sm:p-[4.5rem] sm:min-w-[25rem] lg:min-w-0 lg:max-w-none lg:p-0"
+                :class="
+                    [
+                        isDesktopSubmenuOpen ? 'lg:w-[720px]' : 'lg:w-[360px]',
+                    ]
+                "
             >
                 <div
-                    class="sm:hidden -mt-2 grid grid-cols-[1.5rem_auto_1.5rem] items-center mb-4"
+                    class="flex h-11 w-full shrink-0 items-center justify-center sm:hidden"
                 >
-                    <span class="text-2xl leading-none">
-                        <SvgoBurger aria-hidden="true" filled />
-                    </span>
-                    <NuxtLink to="/" class="mx-auto" aria-label="На главную">
-                        <SvgoLogo
-                            aria-hidden="true"
-                            class="h-12 mx-auto"
-                            :fontControlled="false"
-                        />
-                    </NuxtLink>
-                    <DialogClose
-                        aria-label="Закрыть меню"
-                        class="cursor-pointer justify-self-end text-2xl leading-none"
-                    >
-                        <SvgoClose aria-hidden="true" filled class="!mb-0" />
-                    </DialogClose>
+                    <DrawerHandle />
                 </div>
                 <VisuallyHidden as-child>
-                    <DialogTitle>Main Menu</DialogTitle>
+                    <DrawerTitle>Главное меню</DrawerTitle>
                 </VisuallyHidden>
                 <VisuallyHidden as-child>
-                    <DialogDescription>Main Menu</DialogDescription>
+                    <DrawerDescription>Навигация по сайту</DrawerDescription>
                 </VisuallyHidden>
-                <MainMenuBar
-                    v-model="isExpanded"
-                    v-if="mainMenu"
-                    :menu="mainMenu"
-                    @close="isOpen = false"
-                />
+                <div class="sm:flex-1 sm:min-h-0">
+                    <MainMenuBar
+                        v-if="mainMenu"
+                        :menu="mainMenu"
+                        @close="isOpen = false"
+                        @submenu-change="isDesktopSubmenuOpen = $event"
+                    />
+                </div>
 
                 <!-- <MainMenuFooter @close="isOpen = false" /> -->
-                <DialogClose
+                <DrawerClose
                     aria-label="Закрыть меню"
-                    class="hidden sm:block cursor-pointer absolute sm:top-3 sm:right-3"
+                    class="hidden sm:block cursor-pointer absolute sm:top-3 sm:right-3 lg:top-8 lg:right-auto lg:left-8"
                 >
                     <SvgoClose
                         aria-hidden="true"
                         filled
                         class="text-2xl mb-0!"
                     />
-                </DialogClose>
-            </DialogContent>
-        </DialogPortal>
-    </DialogRoot>
+                </DrawerClose>
+            </DrawerContent>
+        </DrawerPortal>
+    </DrawerRoot>
 </template>

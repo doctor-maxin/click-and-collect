@@ -53,7 +53,7 @@ const description = computed(() => {
                 class="fixed inset-0 z-40 bg-black/30 side-drawer-overlay"
             />
             <DialogContent
-                class="fixed inset-x-0 bottom-0 top-auto z-50 w-full max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white px-7 pb-7 pt-10 outline-none side-drawer-content sm:left-0 sm:right-auto sm:top-0 sm:bottom-auto sm:h-screen sm:max-h-none sm:w-100 sm:rounded-none sm:py-30 sm:px-7"
+                class="fixed inset-x-0 bottom-0 top-auto z-70 w-full max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white px-7 pb-7 pt-10 outline-none side-drawer-content sm:left-0 sm:right-auto sm:top-0 sm:bottom-auto sm:h-screen sm:max-h-none sm:w-100 sm:rounded-none sm:py-30 sm:px-7"
             >
                 <div class="mb-6 flex items-center justify-between gap-5">
                     <h2 class="text-xl font-medium">Описание:</h2>

@@ -210,7 +210,7 @@ watch(
                     </swiper-slide>
                     <div slot="container-end">
                         <div
-                            class="product-media-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
+                            class="product-media-pagination mix-blend-difference z-10 absolute w-full gap-1 bottom-2 px-2 flex"
                         ></div>
                     </div>
                 </swiper-container>

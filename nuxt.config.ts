@@ -28,6 +28,7 @@ export default defineNuxtConfig({
     plugins: [
         "~/app/plugins/ecommerce-analytics.client",
         "~/app/plugins/favorites-sync.client",
+        "~/app/plugins/cart-sync.client",
     ],
     anchorscroll: {
         hooks: [],
@@ -98,6 +99,10 @@ export default defineNuxtConfig({
         dirs: ["shared/lib"],
     },
     app: {
+        pageTransition: {
+            name: "page",
+            mode: "out-in",
+        },
         head: {
             // update Nuxt defaults
             charset: "utf-16",
@@ -174,6 +179,10 @@ export default defineNuxtConfig({
             strapiToken: process.env.STRAPI_TOKEN,
             medusaUrl: process.env.NUXT_MEDUSA_URL,
             medusaToken: process.env.NUXT_MEDUSA_TOKEN,
+            pickupShippingOptionId:
+                process.env.NUXT_PUBLIC_PICKUP_SHIPPING_OPTION_ID,
+            pickupPaymentProviderId:
+                process.env.NUXT_PUBLIC_PICKUP_PAYMENT_PROVIDER_ID,
             searchApiKey: process.env.NUXT_SEARCH_API_KEY,
             searchUrl: process.env.NUXT_SEARCH_URL,
             cdnDomain:
@@ -191,6 +200,10 @@ export default defineNuxtConfig({
     },
     vite: {
         plugins: [tailwindcss()],
+        resolve: {
+            // vaul-vue ships Vue and Reka as dependencies; keep a single app runtime.
+            dedupe: ["vue", "reka-ui"],
+        },
         build: {
             chunkSizeWarningLimit: 650,
             rollupOptions: {
@@ -221,6 +234,10 @@ export default defineNuxtConfig({
     },
     nitro: {
         preset: "bun",
+        externals: {
+            // Bundle the Drawer against the deduplicated client dependencies.
+            inline: ["vaul-vue"],
+        },
         prerender: {
             routes: ["/_ipx/_/not_found.png"],
         },

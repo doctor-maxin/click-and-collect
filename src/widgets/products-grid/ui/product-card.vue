@@ -4,6 +4,7 @@ import type { SwiperContainer } from "swiper/element";
 import type { Swiper, SwiperOptions } from "swiper/types";
 import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
 import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
+import { FeatureAddToCart } from "~/features/cart";
 import { FeatureFavoriteToggle } from "~/features/favorites";
 import {
     ProductCardOverlayTags,
@@ -158,6 +159,20 @@ const smallestVariant = computed(() => {
 const link = computed(
     () => `/products/${product.handle}?variant=${smallestVariant?.value?.id}`,
 );
+const isSmallestVariantAvailable = computed(() => {
+    const variant = smallestVariant.value;
+    if (!variant) return false;
+
+    if ("in_stock" in variant && typeof variant.in_stock === "boolean") {
+        return variant.in_stock;
+    }
+
+    return Boolean(
+        !variant.manage_inventory ||
+            variant.allow_backorder ||
+            (variant.inventory_quantity ?? 0) > 0,
+    );
+});
 
 function getAnalyticsProduct(variant = smallestVariant.value) {
     return createEcommerceProduct(product, {
@@ -190,7 +205,7 @@ function trackProductClick(variant = smallestVariant.value) {
 <template>
     <article
         ref="cardRef"
-        class="product-card flex group flex-col gap-2 lg:gap-4 w-full"
+        class="product-card h-full flex group flex-col gap-2 lg:gap-4 w-full"
         :data-id="product.id"
     >
         <div class="relative" @mousemove="onMouseOver">
@@ -277,16 +292,26 @@ function trackProductClick(variant = smallestVariant.value) {
                 @mousemove.stop
             /> -->
         </div>
-        <div class="flex flex-col gap-2">
+        <div class="flex h-full flex-col gap-2">
             <div
                 class="text-xs lg:text-base leading-4 lg:leading-6 uppercase font-medium"
             >
                 {{ product.title }}
             </div>
-            <ProductCardPrice
-                v-if="product.variants?.[0]?.calculated_price"
-                :calculated_price="product.variants?.[0]?.calculated_price"
-            />
+            <div class="flex mt-auto items-start gap-2">
+                <ProductCardPrice
+                    v-if="product.variants?.[0]?.calculated_price"
+                    :calculated_price="product.variants?.[0]?.calculated_price"
+                />
+                <FeatureAddToCart
+                    v-if="isSmallestVariantAvailable"
+                    :product="product"
+                    :variant="smallestVariant"
+                    icon-only
+                    class="ml-auto shrink-0"
+                    @click.stop
+                />
+            </div>
             <ProductPriceTags :tags="product.product_display_tags" />
         </div>
     </article>

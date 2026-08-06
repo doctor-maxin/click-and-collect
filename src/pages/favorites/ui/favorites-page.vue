@@ -114,7 +114,7 @@ useSeoMeta({
 </script>
 
 <template>
-    <main class="mt-16 min-h-screen lg:mt-32.5">
+    <main class=" min-h-screen ">
         <div class="container mx-auto px-4 pb-12 lg:pb-18">
             <div class="my-9 hidden lg:block">
                 <UiBreadcrumbs :items="breadcrumbs" />

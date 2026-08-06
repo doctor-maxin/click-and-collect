@@ -14,7 +14,7 @@ const acceptAction = () => {
 <template>
   <div
     v-if="config?.config?.cookieBanner && isOpen"
-    class="fixed z-20 bottom-0 left-0 w-full bg-white/90"
+    class="fixed z-80 bottom-0 left-0 w-full bg-white/90"
   >
     <div
       class="container flex-col lg:flex-row w-full flex items-start justify-between mx-auto p-4 lg:p-8 gap-3 lg:gap-6"

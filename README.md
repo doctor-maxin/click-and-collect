@@ -60,6 +60,8 @@ bun run generate  # статическая генерация (не исполь
 | `STRAPI_TOKEN` | Bearer token Strapi REST и GraphQL |
 | `NUXT_MEDUSA_URL` | URL Medusa backend |
 | `NUXT_MEDUSA_TOKEN` | Publishable API key Medusa |
+| `NUXT_PUBLIC_PICKUP_SHIPPING_OPTION_ID` | ID варианта самовывоза в Medusa; при наличии имеет приоритет над поиском по названию |
+| `NUXT_PUBLIC_PICKUP_PAYMENT_PROVIDER_ID` | Необязательный ID провайдера оплаты для самовывоза; без него выбирается включенный системный `pp_system*` |
 | `NUXT_SEARCH_URL` | URL Meilisearch |
 | `NUXT_SEARCH_API_KEY` | Search-only API key Meilisearch |
 | `NUXT_PUBLIC_CDN_DOMAIN` | Hostname CDN без протокола для custom S3 image provider |

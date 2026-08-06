@@ -2,73 +2,14 @@
 import { FeatureMainMenu } from "~/features/main-menu";
 import { FeatureSearch } from "~/features/search";
 import { FeatureFavoriteCountBadge } from "~/features/favorites";
+import { FeatureCartTrigger } from "~/features/cart";
 
-const isHeaderVisible = ref(true);
-const lastScrollY = ref(0);
-const route = useRoute();
-
-const TOP_OFFSET = 40;
-const TOGGLE_THRESHOLD = 12;
-
-const headerTranslateY = computed(() =>
-    isHeaderVisible.value ? "0%" : "-100%",
-);
-const headerOpacity = computed(() => (isHeaderVisible.value ? "1" : "0"));
-const headerPointerEvents = computed(() =>
-    isHeaderVisible.value ? "auto" : "none",
-);
-
-const getScrollY = () => {
-    if (import.meta.client) {
-        return Math.max(window.scrollY, 0);
-    }
-
-    return 0;
-};
-
-const syncHeaderState = () => {
-    const currentScrollY = getScrollY();
-
-    lastScrollY.value = currentScrollY;
-    isHeaderVisible.value = currentScrollY <= TOP_OFFSET;
-};
-
-const onScroll = () => {
-    const currentScrollY = getScrollY();
-    const delta = currentScrollY - lastScrollY.value;
-
-    if (currentScrollY <= TOP_OFFSET) {
-        isHeaderVisible.value = true;
-        lastScrollY.value = currentScrollY;
-        return;
-    }
-
-    if (delta > TOGGLE_THRESHOLD) {
-        isHeaderVisible.value = false;
-    } else if (delta < -TOGGLE_THRESHOLD) {
-        isHeaderVisible.value = true;
-    }
-
-    lastScrollY.value = currentScrollY;
-};
-
-onMounted(() => {
-    syncHeaderState();
-});
-
-useEventListener(import.meta.client ? window : undefined, "scroll", onScroll, {
-    passive: true,
-});
-
-watch(
-    () => route.fullPath,
-    () => {
-        syncHeaderState();
-    },
-    {
-        immediate: true,
-    },
-);
+const headerMenuItems = [
+    { title: "Мужское", path: "/catalog/for-man" },
+    { title: "Женское", path: "/catalog/for-women" },
+    { title: "Мальчикам", path: "/catalog/for-boys" },
+    { title: "Девочкам", path: "/catalog/for-girls" },
+];
 
 const client = useStrapiClient();
 await useAsyncData(
@@ -81,22 +22,50 @@ await useAsyncData(
 </script>
 <template>
     <div
-        class="fixed ui-header left-0 top-0 z-30 bg-transparent w-full flex justify-center"
+        class="sticky ui-header left-0 top-0 z-50 hidden w-full justify-center bg-white lg:flex"
     >
         <div
             class="ui-header-content container px-4 items-center text-black grid grid-cols-[1fr_auto_1fr]"
         >
-            <FeatureMainMenu />
+            <div class="flex items-center gap-6">
+                <FeatureMainMenu />
+                <nav
+                    aria-label="Основная навигация"
+                    class="hidden lg:flex items-center gap-4"
+                >
+                    <NuxtLink
+                        v-for="item in headerMenuItems"
+                        :key="item.title"
+                        :to="item.path"
+                        class="text-sm uppercase transition-opacity hover:opacity-60"
+                    >
+                        {{ item.title }}
+                    </NuxtLink>
+                </nav>
+            </div>
 
             <NuxtLink to="/" class="mx-auto" aria-label="На главную">
                 <SvgoLogo
                     aria-hidden="true"
-                    class="h-12 lg:h-22.5 mx-auto"
+                    class="h-8 lg:h-12 mx-auto"
                     :fontControlled="false"
                 />
             </NuxtLink>
             <div class="flex items-center justify-self-end gap-3">
                 <FeatureSearch />
+                <span
+                    role="img"
+                    aria-label="Личный кабинет"
+                    class="flex size-6 items-center justify-center"
+                >
+                    <SvgoAccount
+                        aria-hidden="true" filled
+                        class="!mb-0 text-2xl"
+                    />
+                </span>
+                <FeatureCartTrigger
+                    class="flex size-6 cursor-pointer items-center justify-center"
+                />
                 <NuxtLink
                     to="/favorites"
                     class="relative flex size-6 items-center justify-center"
@@ -105,7 +74,7 @@ await useAsyncData(
                     <SvgoHeart
                         aria-hidden="true"
                         filled
-                        class="!mb-0 text-2xl"
+                        class="mb-0! text-2xl"
                     />
                     <ClientOnly>
                         <FeatureFavoriteCountBadge />
@@ -118,7 +87,8 @@ await useAsyncData(
 
 <style scoped>
 .ui-header {
-    position: absolute;
+    position: sticky;
+    color: black;
 }
 
 .ui-header-content {
@@ -131,17 +101,6 @@ await useAsyncData(
         padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
         padding-bottom: 1.25rem;
     }
-}
-
-.ui-header-shell {
-    transform: translate3d(0, v-bind(headerTranslateY), 0);
-    opacity: v-bind(headerOpacity);
-    pointer-events: v-bind(headerPointerEvents);
-    transition:
-        background-color 200ms ease,
-        transform 200ms ease,
-        opacity 200ms ease;
-    will-change: transform, opacity;
 }
 
 body:has(.search-dialog[data-state="open"]) .ui-header {
