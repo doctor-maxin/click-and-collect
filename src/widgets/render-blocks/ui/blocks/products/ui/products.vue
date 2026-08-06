@@ -322,44 +322,15 @@ function selectGroup(groupId: string) {
                     </NuxtLink>
                 </swiper-slide>
             </swiper-container>
-
-            <div
-                class="product-carousel-controls mb-20 pointer-events-none absolute inset-y-0 left-0 z-20 flex w-full items-center justify-between"
-                :class="{
-                    'max-lg:hidden': activeSlidesCount <= 4,
-                    'lg:hidden': activeSlidesCount <= 4,
-                }"
-            >
-                <button
-                    :class="[
-                        'pointer-events-auto size-10 lg:size-12 cursor-pointer rounded-full bg-white flex justify-center items-center -translate-x-[calc(100%-2.5rem)] lg:-translate-x-[calc(100%-4rem)]',
-                        prevButtonClass,
-                    ]"
-                    type="button"
-                    aria-label="Предыдущие товары"
-                >
-                    <SvgoChevron
-                        aria-hidden="true"
-                        filled
-                        class="!mb-0 mr-1 rotate-180 text-3xl lg:text-4xl text-black"
-                    />
-                </button>
-                <button
-                    :class="[
-                        'pointer-events-auto size-10 lg:size-12 cursor-pointer rounded-full bg-white flex justify-center items-center translate-x-[calc(100%-2.5rem)] lg:translate-x-[calc(100%-4rem)]',
-                        nextButtonClass,
-                    ]"
-                    type="button"
-                    aria-label="Следующие товары"
-                >
-                    <SvgoChevron
-                        aria-hidden="true"
-                        filled
-                        class="!mb-0 ml-1 text-3xl text-black lg:text-4xl"
-                    />
-                </button>
-            </div>
         </div>
+        <NuxtLink
+            v-if="activeGroup?.categoryLink"
+            :to="activeGroup.categoryLink"
+            class="flex lg:hidden gap-2 items-center"
+        >
+            <span class="text-sm flex font-medium"> Смотреть все </span>
+            <SvgoChevron filled class="mb-0! text-2xl" />
+        </NuxtLink>
     </section>
 </template>
 
