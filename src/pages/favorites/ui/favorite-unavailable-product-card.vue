@@ -17,7 +17,8 @@ const formatPrice = (price: number) =>
 </script>
 
 <template>
-    <article class="flex w-full flex-col gap-2 lg:gap-4">
+    <article class="flex relative w-full flex-col gap-2 lg:gap-4">
+        <div class="absolute inset-0 bg-white/50 size-full"></div>
         <div class="relative aspect-15/18 overflow-hidden bg-gray/10">
             <ProductImage
                 class="size-full object-cover object-center opacity-55"

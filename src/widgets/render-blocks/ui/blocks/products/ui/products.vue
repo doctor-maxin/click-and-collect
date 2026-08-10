@@ -5,6 +5,7 @@ import type { SwiperOptions } from "swiper/types";
 import type { ProductWithDisplayTags } from "#shared/types/product-display-tag";
 import { normalizeProductWithDisplayTags } from "#shared/types/product-display-tag";
 import { useKeepAliveSwiper } from "~/shared/lib/use-keep-alive-swiper";
+import { FeatureCarouselNavigation } from "~/features/carousel-navigation";
 import type {
     IProductCategoriesBlock,
     IProductsBlock,
@@ -43,8 +44,6 @@ function normalizeProductIds(
 const blockId = computed(
     () => `products-${String(data.id).replace(/[^a-zA-Z0-9_-]/g, "-")}`,
 );
-const nextButtonClass = computed(() => `${blockId.value}-next`);
-const prevButtonClass = computed(() => `${blockId.value}-prev`);
 const containerRef = ref<SwiperContainer | null>(null);
 const activeGroupId = ref("");
 const { data: productCategories } =
@@ -199,6 +198,16 @@ const analyticsList = computed(
 const shouldRenderBlock = computed(
     () => status.value === "pending" || activeProducts.value.length > 0,
 );
+const isSwiperAtBeginning = ref(true);
+const isSwiperAtEnd = ref(false);
+
+function syncSwiperNavigationState(instance?: {
+    isBeginning: boolean;
+    isEnd: boolean;
+}) {
+    isSwiperAtBeginning.value = instance?.isBeginning ?? true;
+    isSwiperAtEnd.value = instance?.isEnd ?? false;
+}
 
 const swiperOptions = {
     effect: "slide",
@@ -210,10 +219,10 @@ const swiperOptions = {
         fill: "row",
     },
     watchOverflow: true,
-    navigation: {
-        enabled: true,
-        nextEl: `.${nextButtonClass.value}`,
-        prevEl: `.${prevButtonClass.value}`,
+    on: {
+        afterInit: syncSwiperNavigationState,
+        slideChange: syncSwiperNavigationState,
+        update: syncSwiperNavigationState,
     },
     breakpoints: {
         1024: {
@@ -235,6 +244,7 @@ watch(
         await nextTick();
         swiper.instance.value?.slideTo(0, 0);
         swiper.instance.value?.update();
+        syncSwiperNavigationState(swiper.instance.value);
     },
     { flush: "post" },
 );
@@ -322,6 +332,18 @@ function selectGroup(groupId: string) {
                     </NuxtLink>
                 </swiper-slide>
             </swiper-container>
+            <FeatureCarouselNavigation
+                :visible="activeSlidesCount > 1"
+                color-scheme="light"
+                horizontal-offset="inside"
+                previous-label="Предыдущие товары"
+                next-label="Следующие товары"
+                :previous-disabled="isSwiperAtBeginning"
+                :next-disabled="isSwiperAtEnd"
+                class="left-0 w-full -translate-y-10 px-3"
+                @previous="swiper.prev"
+                @next="swiper.next"
+            />
         </div>
         <NuxtLink
             v-if="activeGroup?.categoryLink"
@@ -333,11 +355,3 @@ function selectGroup(groupId: string) {
         </NuxtLink>
     </section>
 </template>
-
-<style lang="css">
-.product-carousel-controls .swiper-button-disabled,
-.product-carousel-controls .swiper-button-lock {
-    opacity: 0;
-    pointer-events: none;
-}
-</style>
