@@ -74,17 +74,15 @@ export const SITEMAP_HOME_PAGE_QUERY = `
                 }
             }
         }
-        storesPage {
+        contactPage {
             publishedAt
-            map {
-                defaultMedia {
-                    url
-                    mime
-                }
-                defaultMobileMedia {
-                    url
-                    mime
-                }
+            media {
+                url
+                mime
+            }
+            mobileMedia {
+                url
+                mime
             }
         }
     }

@@ -3,7 +3,7 @@ import { type BlocksContent } from "vue-strapi-blocks-renderer";
 export interface IGlobalConfig {
   config: {
     id: number;
-    documentId: string;
+    documentId: string; 
     address: string;
     email: string;
     phone: string;

@@ -56,13 +56,14 @@ type StrapiPagesResponse = {
     errors?: Array<{ message?: string }>;
 };
 
-type StrapiHomePageResponse = {
+type StrapiSiteContentResponse = {
     homePage?: {
         content?: unknown;
     } | null;
-    storesPage?: {
+    contactPage?: {
         publishedAt?: string | null;
-        map?: unknown;
+        media?: unknown;
+        mobileMedia?: unknown;
     } | null;
 };
 
@@ -230,10 +231,10 @@ export default defineSitemapEventHandler(async () => {
             lastmod: toIsoDate(category.updated_at),
         }));
 
-    let homePageResponse: StrapiHomePageResponse;
+    let siteContentResponse: StrapiSiteContentResponse;
 
     try {
-        homePageResponse = await strapiClient.request<StrapiHomePageResponse>(
+        siteContentResponse = await strapiClient.request<StrapiSiteContentResponse>(
             SITEMAP_HOME_PAGE_QUERY,
         );
     } catch (error) {
@@ -245,10 +246,11 @@ export default defineSitemapEventHandler(async () => {
     }
 
     const homeImages = [
-        ...collectImageUrls(homePageResponse.homePage?.content),
+        ...collectImageUrls(siteContentResponse.homePage?.content),
     ].map((loc) => ({ loc }));
-    const storesImages = [
-        ...collectImageUrls(homePageResponse.storesPage?.map),
+    const contactImages = [
+        ...collectImageUrls(siteContentResponse.contactPage?.media),
+        ...collectImageUrls(siteContentResponse.contactPage?.mobileMedia),
     ].map((loc) => ({ loc }));
 
     const pages: SitemapEntry[] = [];
@@ -313,14 +315,14 @@ export default defineSitemapEventHandler(async () => {
             loc: "/",
             images: homeImages,
         },
-        ...(homePageResponse.storesPage
+        ...(siteContentResponse.contactPage
             ? [
                   {
                       loc: "/stores",
                       lastmod: toIsoDate(
-                          homePageResponse.storesPage.publishedAt,
+                          siteContentResponse.contactPage.publishedAt,
                       ),
-                      images: storesImages,
+                      images: contactImages,
                   },
               ]
             : []),
