@@ -26,10 +26,10 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
         </DialogTrigger>
         <DialogPortal>
             <DialogOverlay
-                class="fixed dialog-overlay z-10 inset-0 bg-black/30"
+                class="fixed dialog-overlay z-43 inset-0 bg-black/30"
             />
             <DialogContent
-                class="bg-white flex flex-col transition-all dialog-content top-0 left-0 fixed z-40 h-screen w-full overflow-y-auto p-4 sm:w-auto sm:overflow-visible sm:p-[4.5rem] sm:min-w-[25rem]"
+                class="bg-white flex flex-col transition-all dialog-content top-0 left-0 fixed z-45 h-screen w-full overflow-y-auto p-4 sm:w-auto sm:overflow-visible sm:p-[4.5rem] sm:min-w-[25rem]"
                 :class="{
                     'sm:min-w-[40rem]': isExpanded,
                 }"

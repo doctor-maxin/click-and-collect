@@ -55,7 +55,7 @@ const sort = ref(null);
       </SelectTrigger>
 
       <SelectContent
-        class="absolute -translate-x-full w-max z-30 rounded-lg shadow-[0_4px_10px_0_rgba(74,74,74,0.12)] bg-white"
+        class="absolute -translate-x-full w-max z-41 rounded-lg shadow-[0_4px_10px_0_rgba(74,74,74,0.12)] bg-white"
         position-strategy="absolute"
         align="end"
         side="bottom"
