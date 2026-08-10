@@ -15,7 +15,11 @@ import {
     normalizeProductDisplayTags,
 } from "#shared/types/product-display-tag";
 import { UiWbButton } from "#components";
-import { FeatureFavoriteToggle } from "~/features/favorites";
+import {
+    type FavoriteProductSnapshot,
+    FeatureFavoriteToggle,
+    resolveFavoriteProductImage,
+} from "~/features/favorites";
 
 const productStore = useProductStore();
 const { product, variant, price, oldPrice, discount } =
@@ -31,6 +35,26 @@ const sku = computed(() => {
 const productTitle = computed(
     () => variant.value?.metadata?.name ?? product.value?.title,
 );
+const favoriteProduct = computed<FavoriteProductSnapshot | null>(() => {
+    const currentProduct = product.value;
+    if (!currentProduct) return null;
+
+    return {
+        id: currentProduct.id,
+        image: resolveFavoriteProductImage(
+            currentProduct.images,
+            currentProduct.thumbnail,
+            variant.value?.metadata?.color,
+        ),
+        title:
+            typeof productTitle.value === "string"
+                ? productTitle.value
+                : currentProduct.title ?? null,
+        sku: sku.value ?? null,
+        price: typeof price.value === "number" ? price.value : null,
+        link: `/products/${currentProduct.handle}?variant=${variant.value?.id}`,
+    };
+});
 const displayTags = computed(() => [
     ...normalizeProductDisplayTags(product.value?.product_display_tags),
     ...getDefaultProductDisplayTags(
@@ -132,8 +156,8 @@ const isAvailableProduct = computed(() => {
             </h1>
             <ClientOnly>
                 <FeatureFavoriteToggle
-                    v-if="product"
-                    :product-id="product.id"
+                    v-if="favoriteProduct"
+                    :product="favoriteProduct"
                     class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-black transition-colors hover:bg-black hover:text-white"
                     icon-class="mb-0! text-2xl"
                 />

@@ -4,7 +4,11 @@ import type { SwiperContainer } from "swiper/element";
 import type { Swiper, SwiperOptions } from "swiper/types";
 import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
 import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
-import { FeatureFavoriteToggle } from "~/features/favorites";
+import {
+    type FavoriteProductSnapshot,
+    FeatureFavoriteToggle,
+    resolveFavoriteProductImage,
+} from "~/features/favorites";
 import {
     ProductCardOverlayTags,
     ProductPriceTags,
@@ -158,6 +162,22 @@ const smallestVariant = computed(() => {
 const link = computed(
     () => `/products/${product.handle}?variant=${smallestVariant?.value?.id}`,
 );
+const favoriteProduct = computed<FavoriteProductSnapshot>(() => {
+    const price = smallestVariant.value?.calculated_price?.calculated_amount;
+
+    return {
+        id: product.id,
+        image: resolveFavoriteProductImage(
+            product.images,
+            product.thumbnail,
+            smallestVariant.value?.metadata?.color,
+        ),
+        title: product.title ?? null,
+        sku: smallestVariant.value?.sku ?? null,
+        price: typeof price === "number" ? price : null,
+        link: link.value,
+    };
+});
 
 function getAnalyticsProduct(variant = smallestVariant.value) {
     return createEcommerceProduct(product, {
@@ -248,7 +268,7 @@ function trackProductClick(variant = smallestVariant.value) {
 
             <ClientOnly>
                 <FeatureFavoriteToggle
-                    :product-id="product.id"
+                    :product="favoriteProduct"
                     class="absolute right-2 top-2 z-40 flex size-6 lg:size-10 cursor-pointer items-center justify-center rounded-full bg-white/90 text-black transition-colors hover:bg-white"
                     icon-class="!mb-0 text-sm! lg:text-xl!"
                 />

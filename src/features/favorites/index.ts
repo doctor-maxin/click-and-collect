@@ -1,5 +1,7 @@
 export {
     FAVORITES_STORAGE_KEY,
+    type FavoriteProductSnapshot,
+    resolveFavoriteProductImage,
     useFavoritesStore,
 } from "./lib/favorites.store";
 export { default as FeatureFavoriteCountBadge } from "./ui/favorite-count-badge.vue";

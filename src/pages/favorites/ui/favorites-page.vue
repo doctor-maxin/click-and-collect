@@ -4,12 +4,14 @@ import { normalizeProductWithDisplayTags } from "#shared/types/product-display-t
 import { NOINDEX_FOLLOW_ROBOTS } from "#shared/lib/seo";
 import { useFavoritesStore } from "~/features/favorites";
 import { ProductCard, ProductSkeleton } from "~/widgets/products-grid";
+import FavoriteUnavailableProductCard from "./favorite-unavailable-product-card.vue";
 
 const PRODUCT_FIELDS =
     "title,handle,description,variants.*,thumbnail,images.url,images.metadata,external_id,categories.*,metadata,options.*,options.values.*,variants.options.*,+variants.inventory_quantity,+variants.calculated_price,+product_display_tags.*";
 
 const favoritesStore = useFavoritesStore();
 const client = useMedusaClient();
+const favoriteSnapshots = computed(() => favoritesStore.products);
 const favoriteProductIds = computed(() => favoritesStore.productIds);
 const favoriteProductIdsKey = computed(() =>
     favoriteProductIds.value.join(","),
@@ -75,14 +77,15 @@ watch(
     { immediate: true },
 );
 
-const favoriteProducts = computed(() => {
+const favoriteItems = computed(() => {
     const productsById = new Map<string, ProductWithDisplayTags>(
         displayedProducts.value.map((product) => [product.id, product]),
     );
 
-    return favoriteProductIds.value
-        .map((id) => productsById.get(id))
-        .filter((product): product is ProductWithDisplayTags => Boolean(product));
+    return favoriteSnapshots.value.map((snapshot) => ({
+        snapshot,
+        product: productsById.get(snapshot.id) ?? null,
+    }));
 });
 const isInitialLoading = computed(
     () =>
@@ -125,9 +128,9 @@ useSeoMeta({
                 >
                     Избранное
                 </h1>
-                <span v-if="favoriteProducts.length" class="text-gray">
-                    {{ favoriteProducts.length }}
-                    {{ getProductsCountLabel(favoriteProducts.length) }}
+                <span v-if="favoriteItems.length" class="text-gray">
+                    {{ favoriteItems.length }}
+                    {{ getProductsCountLabel(favoriteItems.length) }}
                 </span>
             </div>
 
@@ -140,7 +143,7 @@ useSeoMeta({
                 </template>
             </div>
             <div
-                v-else-if="error && !favoriteProducts.length"
+                v-else-if="error && !displayedProducts.length"
                 class="py-24 font-medium lg:text-2xl text-center"
             >
                 <p>Не удалось загрузить избранное.</p>
@@ -149,16 +152,21 @@ useSeoMeta({
                 </UiButton>
             </div>
             <div
-                v-else-if="favoriteProducts.length"
+                v-else-if="favoriteItems.length"
                 class="grid grid-cols-2 gap-4 lg:grid-cols-4"
             >
-                <ProductCard
-                    v-for="(product, index) in favoriteProducts"
-                    :key="product.id"
-                    :product="product"
-                    analytics-list="Избранное"
-                    :analytics-position="index + 1"
-                />
+                <template v-for="(item, index) in favoriteItems" :key="item.snapshot.id">
+                    <ProductCard
+                        v-if="item.product"
+                        :product="item.product"
+                        analytics-list="Избранное"
+                        :analytics-position="index + 1"
+                    />
+                    <FavoriteUnavailableProductCard
+                        v-else-if="status === 'success'"
+                        :product="item.snapshot"
+                    />
+                </template>
             </div>
             <div v-else class="py-24 font-medium lg:text-2xl text-center">
                 В избранном пока нет товаров.
