@@ -47,7 +47,7 @@ const emit = defineEmits<{
             <SvgoChevron
                 aria-hidden="true"
                 filled
-                class="!mb-0 "
+                class="mb-0!"
                 :class="{
                     'text-4xl': colorScheme === 'dark',
                     'text-3xl': colorScheme === 'light',
@@ -72,7 +72,7 @@ const emit = defineEmits<{
             <SvgoChevron
                 aria-hidden="true"
                 filled
-                class="!mb-0"
+                class="mb-0!"
                 :class="{
                     'text-4xl': colorScheme === 'dark',
                     'text-3xl': colorScheme === 'light',

@@ -31,7 +31,7 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
             <DialogContent
                 class="bg-white flex flex-col transition-all dialog-content top-0 left-0 fixed z-45 h-screen w-full overflow-y-auto p-4 sm:w-auto sm:overflow-visible sm:p-[4.5rem] sm:min-w-[25rem]"
                 :class="{
-                    'sm:min-w-[40rem]': isExpanded,
+                    'sm:min-w-160': isExpanded,
                 }"
             >
                 <div
@@ -51,7 +51,7 @@ const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
                         aria-label="Закрыть меню"
                         class="cursor-pointer justify-self-end text-2xl leading-none"
                     >
-                        <SvgoClose aria-hidden="true" filled class="!mb-0" />
+                        <SvgoClose aria-hidden="true" filled class="mb-0!" />
                     </DialogClose>
                 </div>
                 <VisuallyHidden as-child>

@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
     devtools: { enabled: true },
     routeRules: {
+        //@ts-ignore
         "/search": { robots: false },
     },
     modules: [

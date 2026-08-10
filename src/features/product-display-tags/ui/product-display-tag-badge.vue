@@ -10,7 +10,7 @@ const { tag } = defineProps<{
     <span
         role="listitem"
         :aria-label="`Тег товара: ${tag.name}`"
-        class="block max-w-full overflow-hidden rounded  text-xs leading-3 [overflow-wrap:anywhere] lg:text-base lg:leading-4"
+        class="block max-w-full overflow-hidden rounded  text-xs leading-3 wrap-anywhere lg:text-base lg:leading-4"
         :style="{
             color: tag.text_color,
             backgroundColor: tag.placement !== 'under_price' ?  tag.background_color : 'unset',
