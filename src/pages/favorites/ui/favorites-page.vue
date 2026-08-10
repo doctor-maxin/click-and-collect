@@ -161,6 +161,7 @@ useSeoMeta({
                         :product="item.product"
                         analytics-list="Избранное"
                         :analytics-position="index + 1"
+                        show-sku
                     />
                     <FavoriteUnavailableProductCard
                         v-else-if="status === 'success'"

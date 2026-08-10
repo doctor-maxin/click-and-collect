@@ -33,6 +33,7 @@ const {
     firstImageFetchPriority?: "auto" | "high" | "low";
     analyticsList?: string;
     analyticsPosition?: number;
+    showSku?: boolean
 }>();
 const ecommerceAnalytics = useEcommerceAnalytics();
 const siteConfig = useSiteConfig();
@@ -303,6 +304,7 @@ function trackProductClick(variant = smallestVariant.value) {
             >
                 {{ product.title }}
             </div>
+            <span v-if="showSku" class="text-gray -mt-1 block">Арт. {{product.metadata?.model}}-{{product.metadata?.color_code}}</span>
             <ProductCardPrice
                 v-if="product.variants?.[0]?.calculated_price"
                 :calculated_price="product.variants?.[0]?.calculated_price"
