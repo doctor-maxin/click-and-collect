@@ -1,0 +1,39 @@
+query GetContactPage {
+    contactPage {
+        title
+        bgColor
+        showDiscount
+        header
+        promocode
+        promocodeColor
+        promocodeFooter
+        footer
+        media {
+            alternativeText
+            url
+        }
+        mobileMedia {
+            alternativeText
+            url
+        }
+        seo {
+            metaTitle
+            metaDescription
+            canonicalURL
+            keywords
+            metaRobots
+            metaImage {
+                url
+            }
+            openGraph {
+                ogTitle
+                ogDescription
+                ogUrl
+                ogType
+                ogImage {
+                    url
+                }
+            }
+        }
+    }
+}
