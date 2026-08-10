@@ -11,7 +11,11 @@ import {
   SelectViewport,
 } from "reka-ui";
 
-const OrderValues = markRaw([
+const OrderValues = markRaw<{
+    label: string
+    value: string
+    disabled?: boolean
+    }[]>([
   {
     label: "По популярности",
     value: "created_at:desc",
@@ -43,7 +47,7 @@ const sort = ref(null);
       @update:modelValue="filtersStore.setSort($event)"
     >
       <SelectTrigger
-        class="flex w-full justify-between lg:justify-end outline-0 cursor-pointer items-center gap-2 lg:min-w-[15.625rem]"
+        class="flex w-full justify-between lg:justify-end outline-0 cursor-pointer items-center gap-2 lg:min-w-62.5"
       >
         <SelectValue
           class="text-[1.25rem] font-medium leading-6"
@@ -55,14 +59,14 @@ const sort = ref(null);
       </SelectTrigger>
 
       <SelectContent
-        class="absolute -translate-x-full w-max z-30 rounded-lg shadow-[0_4px_10px_0_rgba(74,74,74,0.12)] bg-white"
+        class="absolute -translate-x-full w-max z-41 rounded-lg shadow-[0_4px_10px_0_rgba(74,74,74,0.12)] bg-white"
         position-strategy="absolute"
         align="end"
         side="bottom"
         position="popper"
       >
         <SelectViewport
-          class="max-h-[20rem] w-max overflow-y-auto flex flex-col"
+          class="max-h-80 w-max overflow-y-auto flex flex-col"
         >
           <SelectItem
             v-for="option of OrderValues"

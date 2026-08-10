@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FeatureRenderMedia } from "~/features/render-media";
+import { FeatureCarouselNavigation } from "~/features/carousel-navigation";
 import { normalizeSiteLink } from "~/shared/lib/normalize-site-link";
 import { useKeepAliveSwiper } from "~/shared/lib/use-keep-alive-swiper";
 import type { IDepartmentsBlocks } from "~/widgets/render-blocks";
@@ -18,8 +19,6 @@ const getDepartmentLink = (link: string) =>
 const instanceId = computed(
     () => `departments-${String(data.id).replace(/[^a-zA-Z0-9_-]/g, "-")}`,
 );
-const nextButtonClass = computed(() => `${instanceId.value}-next`);
-const prevButtonClass = computed(() => `${instanceId.value}-prev`);
 const containerRef = ref<SwiperContainer | null>(null);
 
 const mobileVisibleCols = computed(() => data.mobileVisibleCols || 1);
@@ -29,13 +28,8 @@ const canSlide = computed(
 );
 const canAutoplay = computed(() => canSlide.value && !!data.autoplayDuration);
 
-useKeepAliveSwiper(containerRef, {
+const swiper = useKeepAliveSwiper(containerRef, {
     effect: "slide",
-    navigation: {
-        enabled: canSlide.value,
-        nextEl: `.${nextButtonClass.value}`,
-        prevEl: `.${prevButtonClass.value}`,
-    },
     loop: canSlide.value,
     speed: data.autoplayDuration || undefined,
     slidesPerView: mobileVisibleCols.value,
@@ -134,38 +128,13 @@ const duplicatedItems = computed(() => [...data.items, ...data.items]);
                 </NuxtLink>
             </swiper-slide>
         </swiper-container>
-        <div
-            v-if="canSlide"
-            class="z-20 pointer-events-none hidden lg:flex items-center justify-between h-full absolute left-0 top-0 w-full"
-        >
-            <button
-                type="button"
-                aria-label="Предыдущий департамент"
-                :class="[
-                    'bg-black/25 3xl:-translate-x-[calc(100%+16px)] rotate-180 pointer-events-auto cursor-pointer rounded-full',
-                    prevButtonClass,
-                ]"
-            >
-                <SvgoChevron
-                    aria-hidden="true"
-                    filled
-                    class="text-5xl text-white !mb-0"
-                />
-            </button>
-            <button
-                type="button"
-                aria-label="Следующий департамент"
-                :class="[
-                    'bg-black/25 3xl:translate-x-[calc(100%+16px)] cursor-pointer pointer-events-auto rounded-full',
-                    nextButtonClass,
-                ]"
-            >
-                <SvgoChevron
-                    aria-hidden="true"
-                    filled
-                    class="text-5xl text-white !mb-0"
-                />
-            </button>
-        </div>
+        <FeatureCarouselNavigation
+            :visible="canSlide"
+            previous-label="Предыдущий департамент"
+            next-label="Следующий департамент"
+            class="left-0 w-full"
+            @previous="swiper.prev"
+            @next="swiper.next"
+        />
     </section>
 </template>

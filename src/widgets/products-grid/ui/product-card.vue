@@ -5,7 +5,11 @@ import type { Swiper, SwiperOptions } from "swiper/types";
 import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
 import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
 import { FeatureAddToCart } from "~/features/cart";
-import { FeatureFavoriteToggle } from "~/features/favorites";
+import {
+    type FavoriteProductSnapshot,
+    FeatureFavoriteToggle,
+    resolveFavoriteProductImage,
+} from "~/features/favorites";
 import {
     ProductCardOverlayTags,
     ProductPriceTags,
@@ -30,6 +34,7 @@ const {
     firstImageFetchPriority?: "auto" | "high" | "low";
     analyticsList?: string;
     analyticsPosition?: number;
+    showSku?: boolean;
 }>();
 const ecommerceAnalytics = useEcommerceAnalytics();
 const siteConfig = useSiteConfig();
@@ -159,6 +164,22 @@ const smallestVariant = computed(() => {
 const link = computed(
     () => `/products/${product.handle}?variant=${smallestVariant?.value?.id}`,
 );
+const favoriteProduct = computed<FavoriteProductSnapshot>(() => {
+    const price = smallestVariant.value?.calculated_price?.calculated_amount;
+
+    return {
+        id: product.id,
+        image: resolveFavoriteProductImage(
+            product.images,
+            product.thumbnail,
+            smallestVariant.value?.metadata?.color,
+        ),
+        title: product.title ?? null,
+        sku: smallestVariant.value?.sku ?? null,
+        price: typeof price === "number" ? price : null,
+        link: link.value,
+    };
+});
 const isSmallestVariantAvailable = computed(() => {
     const variant = smallestVariant.value;
     if (!variant) return false;
@@ -263,7 +284,7 @@ function trackProductClick(variant = smallestVariant.value) {
 
             <ClientOnly>
                 <FeatureFavoriteToggle
-                    :product-id="product.id"
+                    :product="favoriteProduct"
                     class="absolute right-2 top-2 z-40 flex size-6 lg:size-10 cursor-pointer items-center justify-center rounded-full bg-white/90 text-black transition-colors hover:bg-white"
                     icon-class="!mb-0 text-sm! lg:text-xl!"
                 />
@@ -298,6 +319,9 @@ function trackProductClick(variant = smallestVariant.value) {
             >
                 {{ product.title }}
             </div>
+            <span v-if="showSku" class="-mt-1 block text-gray">
+                Арт. {{ product.metadata?.model }}-{{ product.metadata?.color_code }}
+            </span>
             <div class="flex mt-auto items-start gap-2">
                 <ProductCardPrice
                     v-if="product.variants?.[0]?.calculated_price"

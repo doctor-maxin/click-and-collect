@@ -13,7 +13,11 @@ import {
     getDefaultProductDisplayTags,
     normalizeProductDisplayTags,
 } from "#shared/types/product-display-tag";
-import { FeatureFavoriteToggle } from "~/features/favorites";
+import {
+    type FavoriteProductSnapshot,
+    FeatureFavoriteToggle,
+    resolveFavoriteProductImage,
+} from "~/features/favorites";
 import { FeatureAddToCart } from "~/features/cart";
 
 const productStore = useProductStore();
@@ -30,6 +34,26 @@ const sku = computed(() => {
 const productTitle = computed(
     () => variant.value?.metadata?.name ?? product.value?.title,
 );
+const favoriteProduct = computed<FavoriteProductSnapshot | null>(() => {
+    const currentProduct = product.value;
+    if (!currentProduct) return null;
+
+    return {
+        id: currentProduct.id,
+        image: resolveFavoriteProductImage(
+            currentProduct.images,
+            currentProduct.thumbnail,
+            variant.value?.metadata?.color,
+        ),
+        title:
+            typeof productTitle.value === "string"
+                ? productTitle.value
+                : currentProduct.title ?? null,
+        sku: sku.value ?? null,
+        price: typeof price.value === "number" ? price.value : null,
+        link: `/products/${currentProduct.handle}?variant=${variant.value?.id}`,
+    };
+});
 const displayTags = computed(() => [
     ...normalizeProductDisplayTags(product.value?.product_display_tags),
     ...getDefaultProductDisplayTags(
@@ -139,8 +163,8 @@ const availabilityMessage = computed(() => {
             </h1>
             <ClientOnly>
                 <FeatureFavoriteToggle
-                    v-if="product"
-                    :product-id="product.id"
+                    v-if="favoriteProduct"
+                    :product="favoriteProduct"
                     class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-black transition-colors hover:bg-black hover:text-white"
                     icon-class="mb-0! text-2xl"
                 />
@@ -225,9 +249,7 @@ const availabilityMessage = computed(() => {
             >Данная цена может отличаться от цены в магазинах и на
             маркетплейсах</span
         >
-        <div
-        v-if="description"
-        class="my-5">
+        <div v-if="description" class="my-5">
             <h2 class="text-xl font-medium mb-5">Описание:</h2>
             <div
                 class="whitespace-pre-line text-base leading-6"

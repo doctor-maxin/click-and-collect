@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import { useFavoritesStore } from "../lib/favorites.store";
+import {
+    type FavoriteProductSnapshot,
+    useFavoritesStore,
+} from "../lib/favorites.store";
 
 defineOptions({
     inheritAttrs: false,
 });
 
-const { productId, iconClass } = defineProps<{
-    productId: string;
+const { product, iconClass } = defineProps<{
+    product: FavoriteProductSnapshot;
     iconClass?: string;
 }>();
 
 const favoritesStore = useFavoritesStore();
-const isFavorite = computed(() => favoritesStore.hasProduct(productId));
+const isFavorite = computed(() => favoritesStore.hasProduct(product.id));
 
 function toggleFavorite() {
-    favoritesStore.toggleProduct(productId);
+    favoritesStore.toggleProduct(product);
 }
 </script>
 

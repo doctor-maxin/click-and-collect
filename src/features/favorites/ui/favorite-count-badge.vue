@@ -2,21 +2,14 @@
 import { useFavoritesStore } from "../lib/favorites.store";
 
 const favoritesStore = useFavoritesStore();
-const count = ref(favoritesStore.productIds.length);
+const {productIds  } = storeToRefs(favoritesStore)
 
-favoritesStore.$subscribe(
-    (_mutation, state) => {
-        count.value = state.productIds.length;
-    },
-    { flush: "sync" },
-);
-
-const label = computed(() => (count.value > 99 ? "99+" : String(count.value)));
+const label = computed(() => (productIds.value.length > 99 ? "99+" : String(productIds.value.length)));
 </script>
 
 <template>
     <span
-        v-if="count"
+        v-if="productIds.length"
         aria-hidden="true"
         class="absolute -right-2 -top-2 flex size-4 text-center items-center justify-center rounded-full bg-current text-[0.625rem] leading-none"
     >

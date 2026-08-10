@@ -91,7 +91,7 @@ function resolveMediaUrl(media: IMedia, modifiers?: ImageModifiers) {
     }
 
     return image(media.url, modifiers, {
-        provider: props.imageProvider,
+        provider: props.imageProvider as 'ipx',
     });
 }
 
