@@ -180,6 +180,8 @@ export default defineNuxtConfig({
             strapiToken: process.env.STRAPI_TOKEN,
             medusaUrl: process.env.NUXT_MEDUSA_URL,
             medusaToken: process.env.NUXT_MEDUSA_TOKEN,
+            yandexAuthProvider:
+                process.env.NUXT_YANDEX_AUTH_PROVIDER ?? "yandex",
             pickupShippingOptionId:
                 process.env.NUXT_PUBLIC_PICKUP_SHIPPING_OPTION_ID,
             pickupPaymentProviderId:
@@ -201,10 +203,6 @@ export default defineNuxtConfig({
     },
     vite: {
         plugins: [tailwindcss()],
-        resolve: {
-            // vaul-vue ships Vue and Reka as dependencies; keep a single app runtime.
-            dedupe: ["vue", "reka-ui"],
-        },
         build: {
             chunkSizeWarningLimit: 650,
             rollupOptions: {
@@ -235,10 +233,6 @@ export default defineNuxtConfig({
     },
     nitro: {
         preset: "bun",
-        externals: {
-            // Bundle the Drawer against the deduplicated client dependencies.
-            inline: ["vaul-vue"],
-        },
         prerender: {
             routes: ["/_ipx/_/not_found.png"],
         },

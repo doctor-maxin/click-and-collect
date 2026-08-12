@@ -3,12 +3,13 @@ import { FeatureMainMenu } from "~/features/main-menu";
 import { FeatureSearch } from "~/features/search";
 import { FeatureFavoriteCountBadge } from "~/features/favorites";
 import { FeatureCartTrigger } from "~/features/cart";
+import { FeatureAuthTrigger } from "~/features/auth";
 </script>
 
 <template>
     <nav
         aria-label="Быстрая навигация"
-        class="touch-bar fixed inset-x-0 bottom-0 z-80 grid h-[4.5rem] grid-cols-5 border-t border-black/10 bg-white px-2 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] lg:hidden"
+        class="touch-bar fixed inset-x-0 bottom-0 z-80 grid h-[4.5rem] grid-cols-6 border-t border-black/10 bg-white px-2 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] lg:hidden"
     >
         <div class="touch-bar-item touch-bar-control">
             <FeatureMainMenu />
@@ -42,6 +43,11 @@ import { FeatureCartTrigger } from "~/features/cart";
             </span>
             <span class="sr-only">Избранное</span>
         </NuxtLink>
+
+        <div class="touch-bar-item touch-bar-control">
+            <FeatureAuthTrigger />
+            <span class="sr-only">Личный кабинет</span>
+        </div>
 
         <FeatureCartTrigger class="touch-bar-item" />
     </nav>

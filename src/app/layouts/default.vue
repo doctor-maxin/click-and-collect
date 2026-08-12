@@ -5,6 +5,7 @@ import { WidgetTouchBar } from "~/widgets/touch-bar";
 import { WidgetScrollUp } from "~/widgets/scroll-up";
 import { WidgetCookieBanner } from "~/widgets/cookie-banner";
 import { FeatureCartDrawer } from "~/features/cart";
+import { FeatureAuthDrawer } from "~/features/auth";
 import { useAsyncData } from "#app";
 import { toAbsoluteSiteUrl } from "#shared/lib/site-url";
 import euclidRegularUrl from "~/app/assets/fonts/euclid-woff2/Euclid Circular B Regular.woff2?url";
@@ -128,6 +129,7 @@ await useAsyncData("categories", () =>
 
     <WidgetTouchBar />
     <FeatureCartDrawer />
+    <FeatureAuthDrawer />
     <WidgetScrollUp />
     <WidgetCookieBanner />
   </div>

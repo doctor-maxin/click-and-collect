@@ -1,24 +1,19 @@
 <script setup lang="ts">
 import {
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerHandle,
-    DrawerOverlay,
-    DrawerPortal,
-    DrawerRoot,
-    DrawerTitle,
-    DrawerTrigger,
-} from "vaul-vue";
-import { VisuallyHidden } from "reka-ui";
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogOverlay,
+    DialogPortal,
+    DialogRoot,
+    DialogTitle,
+    DialogTrigger,
+    VisuallyHidden,
+} from "reka-ui";
 import MainMenuBar from "./main-menu-bar.vue";
 
 const isOpen = ref(false);
 const isDesktopSubmenuOpen = ref(false);
-const isMobile = useMediaQuery("(max-width: 639px)");
-const drawerDirection = computed(() =>
-    isMobile.value ? "bottom" : "left",
-);
 
 const { data: mainMenu } = useNuxtData<NavigationMenu>("main-menu");
 
@@ -30,21 +25,18 @@ watch(isOpen, (isMenuOpen) => {
 </script>
 
 <template>
-    <DrawerRoot
+    <DialogRoot
         v-model:open="isOpen"
-        :direction="drawerDirection"
-        :close-threshold="0.15"
-        handle-only
         class="relative z-20"
     >
-        <DrawerTrigger aria-label="Открыть меню" class="cursor-pointer">
+        <DialogTrigger aria-label="Открыть меню" class="cursor-pointer">
             <SvgoBurger aria-hidden="true" filled class="text-2xl" />
-        </DrawerTrigger>
-        <DrawerPortal>
-            <DrawerOverlay
-                class="fixed z-60 inset-0 bg-black/30"
+        </DialogTrigger>
+        <DialogPortal>
+            <DialogOverlay
+                class="dialog-overlay fixed z-60 inset-0 bg-black/30"
             />
-            <DrawerContent
+            <DialogContent
                 class="mobile-menu-sheet fixed bottom-[calc(4.5rem_+_env(safe-area-inset-bottom,0px))] left-0 z-70 flex max-h-[calc(100dvh_-_4.5rem_-_env(safe-area-inset-bottom,0px))] w-full flex-col overflow-y-auto rounded-t-2xl bg-white p-4 sm:top-0 sm:bottom-auto sm:h-screen sm:max-h-none sm:w-auto sm:overflow-visible sm:rounded-none sm:border-r sm:border-black/20 sm:p-[4.5rem] sm:min-w-[25rem] lg:min-w-0 lg:max-w-none lg:p-0"
                 :class="
                     [
@@ -55,13 +47,13 @@ watch(isOpen, (isMenuOpen) => {
                 <div
                     class="flex h-11 w-full shrink-0 items-center justify-center sm:hidden"
                 >
-                    <DrawerHandle />
+                    <span aria-hidden="true" class="h-1 w-10 rounded-full bg-black/15" />
                 </div>
                 <VisuallyHidden as-child>
-                    <DrawerTitle>Главное меню</DrawerTitle>
+                    <DialogTitle>Главное меню</DialogTitle>
                 </VisuallyHidden>
                 <VisuallyHidden as-child>
-                    <DrawerDescription>Навигация по сайту</DrawerDescription>
+                    <DialogDescription>Навигация по сайту</DialogDescription>
                 </VisuallyHidden>
                 <div class="sm:flex-1 sm:min-h-0">
                     <MainMenuBar
@@ -73,7 +65,7 @@ watch(isOpen, (isMenuOpen) => {
                 </div>
 
                 <!-- <MainMenuFooter @close="isOpen = false" /> -->
-                <DrawerClose
+                <DialogClose
                     aria-label="Закрыть меню"
                     class="hidden sm:block cursor-pointer absolute sm:top-3 sm:right-3 lg:top-8 lg:right-auto lg:left-8"
                 >
@@ -82,8 +74,8 @@ watch(isOpen, (isMenuOpen) => {
                         filled
                         class="text-2xl mb-0!"
                     />
-                </DrawerClose>
-            </DrawerContent>
-        </DrawerPortal>
-    </DrawerRoot>
+                </DialogClose>
+            </DialogContent>
+        </DialogPortal>
+    </DialogRoot>
 </template>

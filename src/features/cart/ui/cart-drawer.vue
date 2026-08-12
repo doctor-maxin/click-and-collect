@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import type { StoreCartLineItem } from "@medusajs/types";
 import {
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerHandle,
-    DrawerOverlay,
-    DrawerPortal,
-    DrawerRoot,
-    DrawerTitle,
-} from "vaul-vue";
-import { VisuallyHidden } from "reka-ui";
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogOverlay,
+    DialogPortal,
+    DialogRoot,
+    DialogTitle,
+    VisuallyHidden,
+} from "reka-ui";
 import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
 import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
 import { useCartStore } from "../lib/cart.store";
@@ -20,10 +19,6 @@ import CartLineItem from "./cart-line-item.vue";
 const cartStore = useCartStore();
 const ecommerceAnalytics = useEcommerceAnalytics();
 const siteConfig = useSiteConfig();
-const isDesktop = useMediaQuery("(min-width: 64rem)");
-const drawerDirection = computed(() =>
-    isDesktop.value ? "right" : "bottom",
-);
 
 const currencyCode = computed(
     () => cartStore.cart?.currency_code?.toUpperCase() || "RUB",
@@ -110,33 +105,30 @@ async function removeItem(item: StoreCartLineItem) {
 </script>
 
 <template>
-    <DrawerRoot
+    <DialogRoot
         :open="cartStore.isOpen"
-        :direction="drawerDirection"
-        :close-threshold="0.15"
-        handle-only
         @update:open="setOpen"
     >
-        <DrawerPortal>
-            <DrawerOverlay
-                class="cart-drawer-overlay fixed inset-0 z-[85] bg-black/35"
+        <DialogPortal>
+            <DialogOverlay
+                class="cart-drawer-overlay dialog-overlay fixed inset-0 z-[85] bg-black/35"
             />
-            <DrawerContent
+            <DialogContent
                 class="cart-drawer-content fixed inset-x-0 bottom-0 z-[90] flex h-[calc(100dvh-0.75rem)] max-h-[44rem] flex-col overflow-hidden rounded-t-2xl bg-white outline-none lg:inset-y-0 lg:left-auto lg:h-screen lg:max-h-none lg:w-[28rem] lg:max-w-[calc(100vw-1rem)] lg:rounded-none"
             >
                 <div
                     class="flex h-11 w-full shrink-0 items-center justify-center lg:hidden"
                 >
-                    <DrawerHandle />
+                    <span aria-hidden="true" class="h-1 w-10 rounded-full bg-black/15" />
                 </div>
 
                 <VisuallyHidden as-child>
-                    <DrawerTitle>Корзина</DrawerTitle>
+                    <DialogTitle>Корзина</DialogTitle>
                 </VisuallyHidden>
                 <VisuallyHidden as-child>
-                    <DrawerDescription>
+                    <DialogDescription>
                         Товары, добавленные в корзину
-                    </DrawerDescription>
+                    </DialogDescription>
                 </VisuallyHidden>
 
                 <header class="flex items-center justify-between border-b border-black/10 px-4 py-4 lg:px-6">
@@ -146,7 +138,7 @@ async function removeItem(item: StoreCartLineItem) {
                             {{ itemCountLabel }}
                         </span>
                     </div>
-                    <DrawerClose
+                    <DialogClose
                         type="button"
                         class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-black/5"
                         aria-label="Закрыть корзину"
@@ -156,7 +148,7 @@ async function removeItem(item: StoreCartLineItem) {
                             filled
                             class="!mb-0 text-xl"
                         />
-                    </DrawerClose>
+                    </DialogClose>
                 </header>
 
                 <div
@@ -233,7 +225,27 @@ async function removeItem(item: StoreCartLineItem) {
                         Продолжить покупки
                     </button>
                 </footer>
-            </DrawerContent>
-        </DrawerPortal>
-    </DrawerRoot>
+            </DialogContent>
+        </DialogPortal>
+    </DialogRoot>
 </template>
+
+<style scoped>
+.cart-drawer-content[data-state="open"] {
+    animation: bottomSheetIn 220ms ease-out;
+}
+
+.cart-drawer-content[data-state="closed"] {
+    animation: bottomSheetOut 180ms ease-in;
+}
+
+@media (min-width: 64rem) {
+    .cart-drawer-content[data-state="open"] {
+        animation: rightSideDrawerIn 220ms ease-out;
+    }
+
+    .cart-drawer-content[data-state="closed"] {
+        animation: rightSideDrawerOut 180ms ease-in;
+    }
+}
+</style>

@@ -3,6 +3,7 @@ import { FeatureMainMenu } from "~/features/main-menu";
 import { FeatureSearch } from "~/features/search";
 import { FeatureFavoriteCountBadge } from "~/features/favorites";
 import { FeatureCartTrigger } from "~/features/cart";
+import { FeatureAuthTrigger } from "~/features/auth";
 
 const headerMenuItems = [
     { title: "Мужское", path: "/catalog/for-man" },
@@ -53,16 +54,7 @@ await useAsyncData(
             </NuxtLink>
             <div class="flex items-center justify-self-end gap-3">
                 <FeatureSearch />
-                <span
-                    role="img"
-                    aria-label="Личный кабинет"
-                    class="flex size-6 items-center justify-center"
-                >
-                    <SvgoAccount
-                        aria-hidden="true" filled
-                        class="!mb-0 text-2xl"
-                    />
-                </span>
+                <FeatureAuthTrigger class="size-6" />
                 <FeatureCartTrigger
                     class="flex size-6 cursor-pointer items-center justify-center"
                 />
