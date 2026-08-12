@@ -14,11 +14,14 @@ const columnsCount = computed(() =>
 
 <template>
     <section
-        class="grid md:max-w-158 lg:max-w-none mx-auto px-4 my-4 lg:my-0 lg:px-0 grid-cols-1 lg:grid-cols-(--banners-count)"
+        class="grid md:max-w-158 lg:max-w-none  grid-cols-1 lg:grid-cols-(--banners-count)"
         :style="{
             '--banners-count': `repeat(${columnsCount}, minmax(0, 1fr))`,
         }"
         role="navigation"
+        :class="{
+            'px-4 lg:my-0 lg:px-0 mx-auto my-4': data.items.length > 0
+        }"
     >
         <BannerItem v-for="item of data.items" :key="item.id" :data="item" />
         <BannerDetailedItem
