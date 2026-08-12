@@ -2,7 +2,7 @@
 import type { StoreProduct, StoreProductVariant } from "@medusajs/types";
 import { createEcommerceProduct } from "#shared/lib/ecommerce-product";
 import { useEcommerceAnalytics } from "~/features/ecommerce-analytics";
-import { useCartStore } from "../lib/cart.store";
+import { MAX_VARIANT_QUANTITY, useCartStore } from "../lib/cart.store";
 
 defineOptions({
     inheritAttrs: false,
@@ -41,6 +41,12 @@ const shouldShowQuantityControls = computed(
 const canDecrease = computed(
     () => !isUnavailable.value && !isBusy.value && quantity.value > 1,
 );
+const canIncrease = computed(
+    () =>
+        !isUnavailable.value &&
+        !isBusy.value &&
+        quantity.value < MAX_VARIANT_QUANTITY,
+);
 
 watch(
     () => props.variant?.id,
@@ -67,7 +73,7 @@ function trackCartChange(
 }
 
 function increaseQuantity() {
-    if (isUnavailable.value || isBusy.value) return;
+    if (!canIncrease.value) return;
 
     if (!isInCart.value) {
         selectedQuantity.value += 1;
@@ -186,7 +192,7 @@ async function handlePrimaryAction() {
                 <button
                     type="button"
                     class="flex size-11 cursor-pointer items-center justify-center text-xl leading-none disabled:cursor-not-allowed disabled:opacity-35"
-                    :disabled="isUnavailable || isBusy"
+                    :disabled="!canIncrease"
                     :aria-label="`Увеличить количество до ${quantity + 1}`"
                     @click="increaseQuantity"
                 >

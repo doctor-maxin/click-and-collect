@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { StoreCartLineItem } from "@medusajs/types";
 import { formatCartPrice } from "../lib/format-cart-price";
+import { MAX_VARIANT_QUANTITY } from "../lib/cart.store";
 
 const props = defineProps<{
     item: StoreCartLineItem;
@@ -118,7 +119,7 @@ const itemTotal = computed(
                     <button
                         type="button"
                         class="flex size-8 cursor-pointer items-center justify-center text-lg leading-none disabled:cursor-not-allowed disabled:opacity-35"
-                        :disabled="isUpdating"
+                        :disabled="isUpdating || item.quantity >= MAX_VARIANT_QUANTITY"
                         :aria-label="`Увеличить количество ${title}`"
                         @click="$emit('increase')"
                     >

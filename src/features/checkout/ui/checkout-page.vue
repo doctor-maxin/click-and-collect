@@ -117,16 +117,24 @@ async function submitCheckout() {
     }
 
     try {
-        const order = await cartStore.completePickupCheckout(recipient, pickupStore);
+        const completedCheckout = await cartStore.completePickupCheckout(
+            recipient,
+            pickupStore,
+        );
 
-        checkoutStore.setLastOrder(createCheckoutLastOrder(order, pickupStore));
+        checkoutStore.setLastOrder(
+            createCheckoutLastOrder(
+                completedCheckout.order,
+                pickupStore,
+                completedCheckout.items,
+            ),
+        );
 
-        await navigateTo("/checkout/thanks");
-
-        // Keep the completed cart visible until the thank-you page has mounted.
-        // Otherwise the checkout can render its empty state during navigation.
         cartStore.clearCart();
         cartStore.closeCart();
+        await nextTick();
+
+        await navigateTo("/checkout/thanks");
     } catch {
         // The Store API error is retained in cartStore.errorMessage for the user.
     }

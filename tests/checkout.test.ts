@@ -118,3 +118,39 @@ test("caches the completed order response for the thank-you page", () => {
         createdAt: "2026-08-06T12:00:00.000Z",
     });
 });
+
+test("uses the cart snapshot when Medusa completes an order without items", () => {
+    const order = createCheckoutLastOrder(
+        {
+            id: "order_01JQX10",
+            email: "irina@example.ru",
+            currency_code: "rub",
+            total: 2500,
+            created_at: "2026-08-06T12:00:00.000Z",
+            items: [],
+        },
+        pickupStore,
+        [
+            {
+                id: "item_01JQX10",
+                title: "Свитшот",
+                product_title: "Свитшот SIN",
+                quantity: 1,
+                thumbnail: null,
+                total: 2500,
+            },
+        ],
+    );
+
+    assert.deepEqual(order.items, [
+        {
+            id: "item_01JQX10",
+            title: "Свитшот SIN",
+            productHandle: null,
+            variantTitle: null,
+            thumbnail: null,
+            quantity: 1,
+            total: 2500,
+        },
+    ]);
+});

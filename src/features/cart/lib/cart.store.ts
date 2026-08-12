@@ -1,9 +1,14 @@
 import { defineStore } from "pinia";
 import type { StoreCart, StoreRegion } from "@medusajs/types";
-import type { CheckoutRecipient, PickupStore } from "#shared/types/checkout";
+import type {
+    CheckoutCompletedOrderItem,
+    CheckoutRecipient,
+    PickupStore,
+} from "#shared/types/checkout";
 import { getPickupStoreMetadata } from "#shared/types/checkout";
 
 export const CART_STORAGE_KEY = "storefront-cart";
+export const MAX_VARIANT_QUANTITY = 5;
 
 const CART_QUERY = {
     fields: "*items,*region,*shipping_methods,*payment_collection,*items.product,*items.variant,+items.total",
@@ -13,15 +18,39 @@ const PICKUP_OPTION_PATTERN = /самовывоз|pickup|click[\s-]?and[\s-]?col
 const SYSTEM_PAYMENT_PROVIDER_PATTERN = /^pp_system(?:_|$)/;
 
 function getErrorMessage(error: unknown) {
-    if (error instanceof Error && error.message) return error.message;
+    const message =
+        error instanceof Error
+            ? error.message
+            : typeof error === "object" &&
+                error !== null &&
+                "message" in error &&
+                typeof error.message === "string"
+              ? error.message
+              : "";
+
+    // Keep intentional, customer-facing errors thrown in this store.
+    if (/[А-Яа-яЁё]/.test(message)) return message;
+
+    const normalizedMessage = message.toLowerCase();
 
     if (
-        typeof error === "object" &&
-        error !== null &&
-        "message" in error &&
-        typeof error.message === "string"
+        /inventory|insufficient|out of stock|not enough|stock.*available|quantity.*available/.test(
+            normalizedMessage,
+        )
     ) {
-        return error.message;
+        return "Недостаточно товара в наличии. Проверьте количество в корзине.";
+    }
+
+    if (/shipping|fulfillment|delivery/.test(normalizedMessage)) {
+        return "Не удалось выбрать способ получения. Попробуйте выбрать магазин ещё раз.";
+    }
+
+    if (/payment|payment session/.test(normalizedMessage)) {
+        return "Не удалось подготовить оплату заказа. Попробуйте ещё раз.";
+    }
+
+    if (/cart.*complete|already.*complete/.test(normalizedMessage)) {
+        return "Этот заказ уже был оформлен. Проверьте страницу подтверждения.";
     }
 
     return "Не удалось обновить корзину. Повторите попытку.";
@@ -31,6 +60,29 @@ function normalizeQuantity(quantity: number) {
     if (!Number.isFinite(quantity)) return 1;
 
     return Math.max(1, Math.floor(quantity));
+}
+
+function assertVariantQuantity(quantity: number) {
+    if (quantity > MAX_VARIANT_QUANTITY) {
+        throw new Error(
+            `Для одного варианта товара доступно не более ${MAX_VARIANT_QUANTITY} шт. в корзине.`,
+        );
+    }
+}
+
+function createOrderItemsSnapshot(
+    cart: StoreCart,
+): CheckoutCompletedOrderItem[] {
+    return (cart.items ?? []).map((item) => ({
+        id: item.id,
+        title: item.title || "Товар",
+        product_title: item.product_title,
+        product_handle: item.product_handle,
+        variant_title: item.variant_title,
+        thumbnail: item.thumbnail,
+        quantity: item.quantity,
+        total: item.total ?? item.unit_price * item.quantity,
+    }));
 }
 
 function normalizeCartId(value: unknown) {
@@ -213,6 +265,9 @@ export const useCartStore = defineStore("cart", {
                 const existingItem = cart.items?.find(
                     (item) => item.variant_id === normalizedVariantId,
                 );
+                assertVariantQuantity(
+                    (existingItem?.quantity ?? 0) + nextQuantity,
+                );
                 const client = useMedusaClient();
                 const response = existingItem
                     ? await client.store.cart.updateLineItem(
@@ -255,6 +310,7 @@ export const useCartStore = defineStore("cart", {
             this.isUpdating = true;
 
             try {
+                assertVariantQuantity(normalizeQuantity(quantity));
                 const client = useMedusaClient();
                 const { cart } = await client.store.cart.updateLineItem(
                     this.cart.id,
@@ -321,6 +377,16 @@ export const useCartStore = defineStore("cart", {
             try {
                 const cart = await this.ensureCart();
                 const client = useMedusaClient();
+                const { cart: freshCart } = await client.store.cart.retrieve(
+                    cart.id,
+                    CART_QUERY,
+                );
+                this.setCart(freshCart);
+
+                if (!freshCart.items?.length) {
+                    throw new Error("Корзина пуста. Добавьте товары перед оформлением заказа.");
+                }
+
                 const pickupMetadata = getPickupStoreMetadata(pickupStore);
                 const address = {
                     first_name: recipient.firstName,
@@ -335,13 +401,13 @@ export const useCartStore = defineStore("cart", {
                 };
 
                 const { cart: updatedCart } = await client.store.cart.update(
-                    cart.id,
+                    freshCart.id,
                     {
                         email: recipient.email,
                         shipping_address: address,
                         billing_address: address,
                         metadata: {
-                            ...normalizeMetadata(cart.metadata),
+                            ...normalizeMetadata(freshCart.metadata),
                             pickup_store: pickupMetadata,
                         },
                     },
@@ -366,17 +432,23 @@ export const useCartStore = defineStore("cart", {
                     );
                 }
 
-                const { cart: cartWithPickup } =
-                    await client.store.cart.addShippingMethod(
-                        updatedCart.id,
-                        {
-                            option_id: pickupShippingOptionId,
-                            data: {
-                                pickup_store: pickupMetadata,
-                            },
-                        },
-                        CART_QUERY,
+                const hasPickupShippingMethod = updatedCart.shipping_methods?.some(
+                    (method) => method.shipping_option_id === pickupShippingOptionId,
                 );
+                const cartWithPickup = hasPickupShippingMethod
+                    ? updatedCart
+                    : (
+                          await client.store.cart.addShippingMethod(
+                              updatedCart.id,
+                              {
+                                  option_id: pickupShippingOptionId,
+                                  data: {
+                                      pickup_store: pickupMetadata,
+                                  },
+                              },
+                              CART_QUERY,
+                          )
+                      ).cart;
                 this.setCart(cartWithPickup);
 
                 let cartToComplete = cartWithPickup;
@@ -429,7 +501,10 @@ export const useCartStore = defineStore("cart", {
                     throw new Error(result.error.message);
                 }
 
-                return result.order;
+                return {
+                    order: result.order,
+                    items: createOrderItemsSnapshot(cartToComplete),
+                };
             } catch (error) {
                 this.errorMessage = getErrorMessage(error);
                 throw error;

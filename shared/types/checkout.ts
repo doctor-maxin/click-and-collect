@@ -165,7 +165,10 @@ export function getPickupStoreMetadata(store: PickupStore) {
 export function createCheckoutLastOrder(
     order: CheckoutCompletedOrder,
     pickupStore: PickupStore,
+    fallbackItems: CheckoutCompletedOrderItem[] = [],
 ): CheckoutLastOrder {
+    const items = order.items?.length ? order.items : fallbackItems;
+
     return {
         id: order.id,
         displayId:
@@ -174,7 +177,7 @@ export function createCheckoutLastOrder(
         email: order.email,
         currencyCode: order.currency_code,
         total: order.total,
-        items: (order.items ?? []).map((item) => ({
+        items: items.map((item) => ({
             id: item.id,
             title: item.product_title?.trim() || item.title,
             productHandle: item.product_handle?.trim() || null,

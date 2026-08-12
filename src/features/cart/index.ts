@@ -1,5 +1,6 @@
 export {
     CART_STORAGE_KEY,
+    MAX_VARIANT_QUANTITY,
     useCartStore,
 } from "./lib/cart.store";
 export { formatCartPrice } from "./lib/format-cart-price";
