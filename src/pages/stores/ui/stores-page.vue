@@ -110,7 +110,11 @@ useSeoMeta({
             <p :style="{ color: contactPage.promocodeColor || undefined }">
                 {{ contactPage.promocode }}
             </p>
-            <p v-if="contactPage.promocodeFooter" class="mt-2 text-gray">
+            <p
+                v-if="contactPage.promocodeFooter"
+                class="mt-2 text-gray"
+                :style="{ color: contactPage.promocodeFooterColor || undefined }"
+            >
                 {{ contactPage.promocodeFooter }}
             </p>
         </section>
