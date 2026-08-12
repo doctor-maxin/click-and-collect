@@ -250,6 +250,24 @@ export const useCartStore = defineStore("cart", {
             this.isHydrated = true;
             return cart;
         },
+        async transferCartToCustomer() {
+            const cart = await this.restoreCart();
+
+            if (!cart || cart.customer_id) return cart;
+
+            try {
+                const { cart: updatedCart } =
+                    await useMedusaClient().store.cart.transferCart(
+                        cart.id,
+                        CART_QUERY,
+                    );
+                this.setCart(updatedCart);
+                return updatedCart;
+            } catch {
+                // The session stays valid even when an anonymous cart cannot be transferred.
+                return cart;
+            }
+        },
         async addVariant(variantId: string, quantity = 1) {
             const normalizedVariantId = variantId.trim();
             if (!normalizedVariantId) {

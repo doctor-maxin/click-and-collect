@@ -4,7 +4,18 @@ import { useAuthStore } from "../lib/auth.store";
 const authStore = useAuthStore();
 
 function openAuth() {
-    void authStore.open();
+    void openAccountOrAuth();
+}
+
+async function openAccountOrAuth() {
+    const customer = await authStore.restoreSession();
+
+    if (customer) {
+        await navigateTo("/account");
+        return;
+    }
+
+    authStore.isOpen = true;
 }
 </script>
 

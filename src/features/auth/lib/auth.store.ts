@@ -1,5 +1,6 @@
 import type { StoreCustomer } from "@medusajs/types";
 import { defineStore } from "pinia";
+import { useCartStore } from "~/features/cart";
 import { useCheckoutStore } from "~/features/checkout";
 
 export type LoginCredentials = {
@@ -47,6 +48,7 @@ export const useAuthStore = defineStore("auth", {
             try {
                 const { customer } = await useMedusaClient().store.customer.retrieve();
                 this.setCustomer(customer);
+                await useCartStore().transferCartToCustomer();
                 return customer;
             } catch {
                 // A missing or expired token is an unauthenticated state, not an app error.
