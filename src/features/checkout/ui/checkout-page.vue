@@ -10,12 +10,14 @@ import {
 } from "#shared/types/checkout";
 import { NOINDEX_FOLLOW_ROBOTS } from "#shared/lib/seo";
 import { formatCartPrice, useCartStore } from "~/features/cart";
+import { useAuthStore } from "~/features/auth/lib/auth.store";
 import { useCheckoutStore } from "../lib/checkout.store";
 import { formatPickupPhone } from "../lib/pickup-store";
 import PickupStorePicker from "./pickup-store-picker.vue";
 
 const cartStore = useCartStore();
 const checkoutStore = useCheckoutStore();
+const authStore = useAuthStore();
 const isReady = ref(false);
 const isStorePickerOpen = ref(false);
 const recipientErrors = ref<
@@ -56,6 +58,16 @@ useSeoMeta({
 
 onMounted(async () => {
     await cartStore.restoreCart();
+
+    const customer = await authStore.restoreSession();
+    if (customer) {
+        try {
+            await checkoutStore.restorePreferredPickupStore();
+        } catch {
+            // The checkout remains usable when the saved pickup point is unavailable.
+        }
+    }
+
     isReady.value = true;
 });
 
@@ -79,9 +91,18 @@ function openStorePicker(event: MouseEvent) {
     isStorePickerOpen.value = true;
 }
 
-function selectPickupStore(store: PickupStore) {
+async function selectPickupStore(store: PickupStore) {
     checkoutStore.setPickupStore(store);
     pickupStoreError.value = null;
+
+    if (!authStore.customer) return;
+
+    try {
+        const customer = await checkoutStore.savePreferredPickupStore(store);
+        authStore.setCustomer(customer);
+    } catch (error) {
+        console.error("Failed to save preferred pickup store", error);
+    }
 }
 
 function getItemTitle(item: StoreCartLineItem) {
@@ -117,6 +138,10 @@ async function submitCheckout() {
     }
 
     try {
+        if (authStore.customer) {
+            await cartStore.transferCartToCustomer({ required: true });
+        }
+
         const completedCheckout = await cartStore.completePickupCheckout(
             recipient,
             pickupStore,
@@ -130,12 +155,25 @@ async function submitCheckout() {
             ),
         );
 
+        if (authStore.customer) {
+            try {
+                const customer = await checkoutStore.saveCustomerCheckoutProfile(
+                    recipient,
+                    pickupStore,
+                );
+                authStore.setCustomer(customer);
+            } catch (error) {
+                console.error("Failed to save customer checkout profile", error);
+            }
+        }
+
         cartStore.clearCart();
         cartStore.closeCart();
         await nextTick();
 
         await navigateTo("/checkout/thanks");
-    } catch {
+    } catch (err) {
+        console.error('error')
         // The Store API error is retained in cartStore.errorMessage for the user.
     }
 }

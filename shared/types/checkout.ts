@@ -155,6 +155,7 @@ export function getPickupStoreMetadata(store: PickupStore) {
         city: store.city,
         working_time: store.workingTime,
         phone: store.phone,
+        phone_extension: store.phoneExtension,
         coordinates: {
             longitude: store.coordinates[0],
             latitude: store.coordinates[1],

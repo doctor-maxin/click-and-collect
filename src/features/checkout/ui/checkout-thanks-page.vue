@@ -5,7 +5,7 @@ import { useCheckoutStore } from "../lib/checkout.store";
 import { formatPickupPhone } from "../lib/pickup-store";
 
 const checkoutStore = useCheckoutStore();
-const lastOrder = computed(() => checkoutStore.lastOrder);
+const {lastOrder} = storeToRefs(checkoutStore);
 const orderNumber = computed(() => lastOrder.value?.displayId ?? null);
 const pickupStore = computed(() => lastOrder.value?.pickupStore ?? null);
 const orderItems = computed(() => lastOrder.value?.items ?? []);
@@ -16,7 +16,7 @@ const orderTotal = computed(() =>
 );
 
 useSeoMeta({
-    title: "Спасибо за заказ",
+    title: "Заказ принят",
     robots: NOINDEX_FOLLOW_ROBOTS,
 });
 </script>
@@ -32,11 +32,11 @@ useSeoMeta({
             >
                 ✓
             </div>
-            <p class="mt-6 text-xs uppercase tracking-[0.14em] text-black/45">
-                Заказ оформлен
+            <p class="mt-6 text-sm text-black/50">
+                Самовывоз из магазина
             </p>
-            <h1 class="mt-2 font-serif text-3xl font-medium uppercase lg:text-5xl">
-                Спасибо за заказ
+            <h1 class="mt-2 font-serif text-3xl font-medium lg:text-5xl">
+                Заказ принят
             </h1>
             <p v-if="orderNumber" class="mt-4 text-base text-black/65">
                 Номер заказа: <span class="font-medium text-black">{{ orderNumber }}</span>
@@ -45,8 +45,8 @@ useSeoMeta({
                 Сумма заказа: {{ orderTotal }}
             </p>
             <p class="mt-3 max-w-lg text-sm leading-6 text-black/60">
-                Подтверждение придет на указанный email. Мы сообщим отдельно,
-                когда заказ будет готов к выдаче.
+                Мы проверим и соберем заказ. Подтверждение придет на указанный
+                email, а о готовности к выдаче сообщим отдельно.
             </p>
 
             <div
@@ -117,7 +117,7 @@ useSeoMeta({
             </div>
 
             <NuxtLink
-                to="/catalog"
+                to="/"
                 class="mt-8 inline-flex h-12 items-center justify-center rounded-lg bg-blue px-6 text-sm font-medium text-white transition-opacity hover:opacity-80"
             >
                 Продолжить покупки

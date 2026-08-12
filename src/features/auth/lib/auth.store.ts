@@ -1,6 +1,6 @@
 import type { StoreCustomer } from "@medusajs/types";
 import { defineStore } from "pinia";
-import { useCartStore } from "~/features/cart";
+import { useCartStore } from "~/features/cart/lib/cart.store";
 import { useCheckoutStore } from "~/features/checkout";
 
 export type LoginCredentials = {
@@ -13,7 +13,13 @@ export type RegistrationCredentials = LoginCredentials & {
 };
 
 function getErrorMessage(error: unknown) {
-    if (error instanceof Error && error.message) return error.message;
+    const message = error instanceof Error ? error.message : "";
+
+    if (/customer with this email already has an account/i.test(message)) {
+        return "Пользователь с таким email уже зарегистрирован. Войдите в аккаунт.";
+    }
+
+    if (message) return message;
 
     return "Не удалось выполнить запрос. Попробуйте ещё раз.";
 }
@@ -34,7 +40,7 @@ export const useAuthStore = defineStore("auth", {
             this.customer = customer;
 
             if (customer) {
-                useCheckoutStore().prefillRecipient({
+                useCheckoutStore().setRecipientFromCustomer({
                     email: customer.email,
                     firstName: customer.first_name ?? "",
                     lastName: customer.last_name ?? "",

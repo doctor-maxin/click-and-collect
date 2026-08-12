@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { StoreCustomerAddress } from "@medusajs/types";
 import {
     EMPTY_CHECKOUT_RECIPIENT,
     normalizeCheckoutRecipient,
@@ -8,6 +9,7 @@ import {
     type CheckoutRecipientField,
     type PickupStore,
 } from "#shared/types/checkout";
+import { getPickupStoreMetadata } from "#shared/types/checkout";
 
 export const CHECKOUT_STORAGE_KEY = "storefront-checkout";
 
@@ -124,6 +126,88 @@ function normalizeLastOrderItem(value: unknown): CheckoutLastOrderItem | null {
     };
 }
 
+function getPreferredPickupStore(addresses: StoreCustomerAddress[]) {
+    const pickupAddresses = addresses
+        .map((address) => ({
+            address,
+            store: getPickupStoreFromMetadata(address.metadata),
+        }))
+        .filter(
+            (
+                value,
+            ): value is { address: StoreCustomerAddress; store: PickupStore } =>
+                Boolean(value.store),
+        );
+
+    return (
+        pickupAddresses.find(({ address }) => address.is_default_shipping)
+            ?.store ?? pickupAddresses[0]?.store ?? null
+    );
+}
+
+function getPreferredPickupAddress(addresses: StoreCustomerAddress[]) {
+    const pickupAddresses = addresses.filter((address) =>
+        Boolean(getPickupStoreFromMetadata(address.metadata)),
+    );
+
+    return (
+        pickupAddresses.find((address) => address.is_default_shipping) ??
+        pickupAddresses[0] ??
+        null
+    );
+}
+
+function getPickupStoreFromMetadata(metadata: unknown): PickupStore | null {
+    if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+        return null;
+    }
+
+    const pickupStore = (metadata as Record<string, unknown>).pickup_store;
+    if (
+        !pickupStore ||
+        typeof pickupStore !== "object" ||
+        Array.isArray(pickupStore)
+    ) {
+        return null;
+    }
+
+    const value = pickupStore as Record<string, unknown>;
+    const coordinates = value.coordinates;
+    if (
+        typeof value.id !== "string" ||
+        typeof value.name !== "string" ||
+        typeof value.address !== "string" ||
+        typeof value.city !== "string" ||
+        typeof value.working_time !== "string" ||
+        !coordinates ||
+        typeof coordinates !== "object" ||
+        Array.isArray(coordinates)
+    ) {
+        return null;
+    }
+
+    const coordinateValue = coordinates as Record<string, unknown>;
+    const longitude = Number(coordinateValue.longitude);
+    const latitude = Number(coordinateValue.latitude);
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+        return null;
+    }
+
+    return {
+        id: value.id,
+        name: value.name,
+        address: value.address,
+        city: value.city,
+        workingTime: value.working_time,
+        phone: typeof value.phone === "string" ? value.phone : null,
+        phoneExtension:
+            typeof value.phone_extension === "string"
+                ? value.phone_extension
+                : null,
+        coordinates: [longitude, latitude],
+    };
+}
+
 export const useCheckoutStore = defineStore("checkout", {
     state: () => ({
         recipient: { ...EMPTY_CHECKOUT_RECIPIENT } as CheckoutRecipient,
@@ -143,6 +227,9 @@ export const useCheckoutStore = defineStore("checkout", {
                 ...recipient,
             });
         },
+        setRecipientFromCustomer(recipient: Partial<CheckoutRecipient>) {
+            this.recipient = normalizeCheckoutRecipient(recipient);
+        },
         // Authentication integrations can call this after Yandex ID returns a profile.
         prefillRecipient(recipient: Partial<CheckoutRecipient>) {
             const nextRecipient = normalizeCheckoutRecipient(recipient);
@@ -156,6 +243,70 @@ export const useCheckoutStore = defineStore("checkout", {
         },
         setPickupStore(store: PickupStore) {
             this.pickupStore = normalizePickupStore(store);
+        },
+        async restorePreferredPickupStore() {
+            const { addresses } =
+                await useMedusaClient().store.customer.listAddress({
+                    limit: 100,
+                });
+            const pickupStore = getPreferredPickupStore(addresses);
+
+            if (pickupStore) this.setPickupStore(pickupStore);
+        },
+        async saveCustomerCheckoutProfile(
+            recipient: CheckoutRecipient,
+            pickupStore: PickupStore,
+        ) {
+            const client = useMedusaClient();
+            const { customer: updatedCustomer } =
+                await client.store.customer.update({
+                    first_name: recipient.firstName,
+                    last_name: recipient.lastName,
+                    phone: recipient.phone,
+                });
+            const customer = await this.savePreferredPickupStore(
+                pickupStore,
+                recipient,
+            );
+
+            return customer ?? updatedCustomer;
+        },
+        async savePreferredPickupStore(
+            pickupStore: PickupStore,
+            recipient?: Partial<CheckoutRecipient>,
+        ) {
+            const client = useMedusaClient();
+            const { addresses } = await client.store.customer.listAddress({
+                limit: 100,
+            });
+            const preferredAddress = getPreferredPickupAddress(addresses);
+            const address = {
+                ...(recipient?.firstName
+                    ? { first_name: recipient.firstName }
+                    : {}),
+                ...(recipient?.lastName
+                    ? { last_name: recipient.lastName }
+                    : {}),
+                ...(recipient?.phone ? { phone: recipient.phone } : {}),
+                address_name: `Самовывоз: ${pickupStore.name}`,
+                address_1: pickupStore.address,
+                city: pickupStore.city,
+                country_code: "ru",
+                is_default_shipping: true,
+                metadata: {
+                    ...(preferredAddress?.metadata ?? {}),
+                    pickup_store: getPickupStoreMetadata(pickupStore),
+                },
+            };
+
+            const { customer } = preferredAddress
+                ? await client.store.customer.updateAddress(
+                      preferredAddress.id,
+                      address,
+                  )
+                : await client.store.customer.createAddress(address);
+
+            return customer;
         },
         setLastOrder(order: CheckoutLastOrder) {
             this.lastOrder = normalizeLastOrder(order);

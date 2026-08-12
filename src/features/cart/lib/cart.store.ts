@@ -250,22 +250,42 @@ export const useCartStore = defineStore("cart", {
             this.isHydrated = true;
             return cart;
         },
-        async transferCartToCustomer() {
-            const cart = await this.restoreCart();
+        async transferCartToCustomer(options?: { required?: boolean }) {
+            const cartId = this.cart?.id ?? this.cartId;
 
-            if (!cart || cart.customer_id) return cart;
+            if (!cartId) return null;
+
+            const client = useMedusaClient();
 
             try {
+                const cart =
+                    this.cart ??
+                    (
+                        await client.store.cart.retrieve(cartId, CART_QUERY)
+                    ).cart;
+
+                if (cart.customer_id) {
+                    this.setCart(cart);
+                    return cart;
+                }
+
                 const { cart: updatedCart } =
-                    await useMedusaClient().store.cart.transferCart(
-                        cart.id,
+                    await client.store.cart.transferCart(
+                        cartId,
                         CART_QUERY,
                     );
                 this.setCart(updatedCart);
                 return updatedCart;
-            } catch {
+            } catch (error) {
+                if (options?.required) {
+                    throw new Error(
+                        "Не удалось привязать корзину к вашему аккаунту. Обновите страницу и попробуйте ещё раз.",
+                        { cause: error },
+                    );
+                }
+
                 // The session stays valid even when an anonymous cart cannot be transferred.
-                return cart;
+                return this.cart;
             }
         },
         async addVariant(variantId: string, quantity = 1) {

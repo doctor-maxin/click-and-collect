@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from "~/features/auth";
+import { useAuthStore } from "~/features/auth/lib/auth.store";
 
 definePageMeta({ layout: false });
 
