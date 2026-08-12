@@ -116,7 +116,7 @@ useEventListener(import.meta.client ? window : undefined, "scroll", () => {
 
         <DialogPortal>
             <DialogOverlay
-                class="search-dialog-overlay fixed inset-0 z-60 bg-white"
+                class="search-dialog-overlay fixed inset-0 z-30 bg-white"
             />
             <DialogContent
                 class="search-dialog mobile-search-sheet fixed inset-x-0 bottom-[calc(4.5rem_+_env(safe-area-inset-bottom,0px))] z-70 box-border flex h-[calc(100dvh_-_4.5rem_-_env(safe-area-inset-bottom,0px))] flex-col overflow-hidden rounded-t-2xl bg-white py-4 outline-none sm:bottom-0 sm:block sm:h-auto sm:max-h-none sm:overflow-y-auto sm:rounded-none sm:py-6 lg:py-9"

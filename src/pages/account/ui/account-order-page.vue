@@ -38,15 +38,30 @@ const orderStatusLabels: Record<string, string> = {
 const fulfillmentStatusLabels: Record<string, string> = {
     not_fulfilled: "Ожидает подтверждения",
     partially_fulfilled: "Частично собран",
-    fulfilled: "Собран",
+    fulfilled: "Готов к выдаче",
     partially_shipped: "Частично отправлен",
     shipped: "Отправлен",
-    delivered: "Доставлен",
+    delivered: "Завершен",
     canceled: "Отменен",
-    requires_action: "Требуется действие",
+    requires_action: "Требуется подтверждение",
 };
 
-const pickupStore = computed(() => getPickupStore(order.value?.metadata));
+const pickupStore = computed(() => {
+    const currentOrder = order.value;
+    if (!currentOrder) return null;
+
+    const metadataSources = [
+        currentOrder.metadata,
+        currentOrder.shipping_address?.metadata,
+        ...(currentOrder.shipping_methods ?? []).map((method) => method.data),
+    ];
+
+    return (
+        metadataSources
+            .map(getPickupStore)
+            .find((store): store is PickupStore => Boolean(store)) ?? null
+    );
+});
 const recipient = computed(
     () => order.value?.shipping_address ?? order.value?.billing_address,
 );
@@ -150,25 +165,14 @@ useSeoMeta({
 </script>
 
 <template>
-    <main class="min-h-screen bg-[#fcfbf9]">
-        <div class="container mx-auto px-4 pb-14 pt-6 lg:pb-24 lg:pt-0">
-            <div class="my-9 hidden lg:block">
-                <UiBreadcrumbs
-                    :items="[
-                        { path: '/', label: 'Главная' },
-                        { path: '/account', label: 'Личный кабинет' },
-                        { path: route.path, label: 'Заказ' },
-                    ]"
-                />
-            </div>
-
-            <NuxtLink
-                to="/account"
-                class="inline-flex items-center gap-2 text-sm text-black/60 transition-colors hover:text-black"
-            >
-                <SvgoChevron aria-hidden="true" filled class="!mb-0 rotate-180 text-xl" />
-                Все заказы
-            </NuxtLink>
+    <section class="min-w-0 rounded-2xl bg-white px-6 py-4">
+        <NuxtLink
+            to="/account"
+            class="inline-flex items-center gap-2 text-sm text-black/60 transition-colors hover:text-black"
+        >
+            <SvgoChevron aria-hidden="true" filled class="!mb-0 rotate-180 text-xl" />
+            Все заказы
+        </NuxtLink>
 
             <div v-if="!isSessionReady || status === 'pending'" class="mt-7 space-y-4">
                 <div class="h-12 w-2/5 animate-pulse bg-black/5" />
@@ -288,6 +292,5 @@ useSeoMeta({
                     </aside>
                 </div>
             </section>
-        </div>
-    </main>
+    </section>
 </template>

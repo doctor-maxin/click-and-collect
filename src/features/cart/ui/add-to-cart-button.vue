@@ -20,6 +20,7 @@ const cartStore = useCartStore();
 const ecommerceAnalytics = useEcommerceAnalytics();
 const siteConfig = useSiteConfig();
 const isAdding = ref(false);
+const isUpdatingQuantity = ref(false);
 const selectedQuantity = ref(1);
 const cartItem = computed(() => {
     if (!props.variant?.id) return null;
@@ -33,7 +34,7 @@ const quantity = computed(
     () => cartItem.value?.quantity ?? selectedQuantity.value,
 );
 const isUnavailable = computed(() => props.disabled || !props.variant?.id);
-const isBusy = computed(() => isAdding.value || cartStore.isUpdating);
+const isBusy = computed(() => isAdding.value || isUpdatingQuantity.value);
 const isIconOnly = computed(() => props.iconOnly ?? false);
 const shouldShowQuantityControls = computed(
     () => !props.quantityControlsOnlyInCart || isInCart.value,
@@ -114,6 +115,7 @@ async function updateCartQuantity(nextQuantity: number) {
     if (!item || isBusy.value || nextQuantity < 1) return;
 
     const previousQuantity = item.quantity;
+    isUpdatingQuantity.value = true;
 
     try {
         await cartStore.updateLineItemQuantity(item.id, nextQuantity);
@@ -128,6 +130,8 @@ async function updateCartQuantity(nextQuantity: number) {
         }
     } catch {
         await cartStore.openCart();
+    } finally {
+        isUpdatingQuantity.value = false;
     }
 }
 

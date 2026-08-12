@@ -270,7 +270,7 @@ function trackProductClick(variant = smallestVariant.value) {
                         </swiper-slide>
                     </swiper-container>
                     <div
-                        class="product-card-pagination z-10 absolute w-full gap-1 bottom-2 px-2 flex"
+                        class="product-card-pagination mix-blend-difference z-10 absolute w-full gap-1 bottom-2 px-2 flex"
                     ></div>
                 </template>
                 <div v-else class="aspect-15/18">

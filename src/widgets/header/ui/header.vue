@@ -23,7 +23,7 @@ await useAsyncData(
 </script>
 <template>
     <div
-        class="sticky ui-header left-0 top-0 z-50 hidden w-full justify-center bg-white lg:flex"
+        class="sticky shadow ui-header left-0 top-0 z-50 hidden w-full justify-center bg-white lg:flex"
     >
         <div
             class="ui-header-content container px-4 items-center text-black grid grid-cols-[1fr_auto_1fr]"

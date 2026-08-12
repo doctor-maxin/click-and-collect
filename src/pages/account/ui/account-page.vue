@@ -4,9 +4,11 @@ import { useAuthStore } from "~/features/auth/lib/auth.store";
 import { formatCartPrice } from "~/features/cart";
 
 const authStore = useAuthStore();
+const route = useRoute();
 const client = useMedusaClient();
 const isSessionReady = ref(false);
 const isGuest = ref(false);
+const isOrdersListRoute = computed(() => route.name === "account");
 
 const { data: ordersResponse, status, error, refresh } = await useAsyncData(
     "account-orders",
@@ -53,12 +55,12 @@ const orderStatusLabels: Record<string, string> = {
 const fulfillmentStatusLabels: Record<string, string> = {
     not_fulfilled: "Ожидает подтверждения",
     partially_fulfilled: "Частично собран",
-    fulfilled: "Собран",
+    fulfilled: "Готов к выдаче",
     partially_shipped: "Частично отправлен",
     shipped: "Отправлен",
-    delivered: "Доставлен",
+    delivered: "Завершен",
     canceled: "Отменен",
-    requires_action: "Требуется действие",
+    requires_action: "Требуется подтверждение",
 };
 
 function formatOrderDate(value: string | Date) {
@@ -185,7 +187,10 @@ useSeoMeta({
                     </button>
                 </aside>
 
-                <section class="bg-white  rounded-2xl px-6 py-4 min-w-0">
+                <section
+                    v-if="isOrdersListRoute"
+                    class="min-w-0 rounded-2xl bg-white px-6 py-4"
+                >
                     <div class="mb-6 flex items-end justify-between gap-4 lg:mb-8">
                         <div>
                             <p class="text-sm text-black/45">Личный кабинет</p>
@@ -278,6 +283,8 @@ useSeoMeta({
                         </NuxtLink>
                     </div>
                 </section>
+
+                <NuxtPage v-else />
             </div>
         </div>
     </main>
