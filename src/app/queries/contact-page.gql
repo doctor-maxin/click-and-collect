@@ -11,10 +11,20 @@ query GetContactPage {
         footer
         media {
             alternativeText
+            caption
+            ext
+            mime
+            name
+            provider
             url
         }
         mobileMedia {
             alternativeText
+            caption
+            ext
+            mime
+            name
+            provider
             url
         }
         seo {

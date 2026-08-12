@@ -140,21 +140,6 @@ watch(viewMode, (mode) => {
 </script>
 <template>
     <section id="stores" class="">
-        <div class="relative h-[248px] overflow-hidden">
-            <FeatureRenderMedia
-                :media="data.defaultMedia"
-                :mobile-media="data.defaultMobileMedia"
-                loading="lazy"
-                class="h-full"
-            />
-            <div class="absolute inset-0 bg-black/25" aria-hidden="true" />
-            <h2
-                class="absolute inset-0 z-1 flex items-center justify-center px-4 text-center text-2xl font-bold text-white lg:text-[2.5rem] lg:leading-tight"
-            >
-                {{ data.header }}
-            </h2>
-        </div>
-
         <header
             class="container mx-auto flex flex-col gap-3 px-4 py-6 lg:flex-row lg:items-center lg:justify-end lg:py-9"
         >

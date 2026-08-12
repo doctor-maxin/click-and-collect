@@ -11,7 +11,7 @@ type ImageModifiers = {
 const props = withDefaults(
     defineProps<{
         media: IMedia;
-        mobileMedia: IMedia;
+        mobileMedia?: IMedia;
         imageProvider?: "strapi" | "customS3";
         desktopImageModifiers?: ImageModifiers;
         mobileImageModifiers?: ImageModifiers;
@@ -39,25 +39,26 @@ const image = useImage();
 const {
     public: { cdnDomain, mediaStorageUrl },
 } = useRuntimeConfig();
-const isImage = computed(() => props.media.mime.startsWith("image"));
-const isImageMobile = computed(() => props.mobileMedia.mime.startsWith("image"));
+
+const isImage = computed(() => props.media?.mime?.startsWith("image"));
+const isImageMobile = computed(() => props.mobileMedia?.mime?.startsWith("image"));
 const imageLoaded = ref(false);
 const imageRef = ref<HTMLImageElement | null>(null);
 const desktopVideoRef = ref<HTMLVideoElement | null>(null);
 const mobileVideoRef = ref<HTMLVideoElement | null>(null);
 const isDesktopViewport = useMediaQuery("(min-width: 1024px)");
 
-function isGif(media: IMedia) {
-    return media.mime.toLowerCase() === "image/gif";
+function isGif(media: IMedia | undefined) {
+    return media?.mime?.toLowerCase() === "image/gif";
 }
 
 function resolveGifUrl(media: IMedia) {
     if (!isGif(media) || !cdnDomain || !mediaStorageUrl) {
-        return media.url;
+        return media?.url;
     }
 
     try {
-        const sourceUrl = new URL(media.url);
+        const sourceUrl = new URL(media?.url);
         const normalizedCdnUrl = new URL(
             String(cdnDomain).includes("://")
                 ? String(cdnDomain)
@@ -65,7 +66,7 @@ function resolveGifUrl(media: IMedia) {
         );
 
         if (sourceUrl.hostname !== normalizedCdnUrl.hostname) {
-            return media.url;
+            return media?.url;
         }
 
         const originalPath = sourceUrl.pathname.replace(
@@ -77,7 +78,7 @@ function resolveGifUrl(media: IMedia) {
             String(mediaStorageUrl),
         ).toString();
     } catch {
-        return media.url;
+        return media?.url;
     }
 }
 
@@ -86,11 +87,11 @@ function resolveMediaUrl(media: IMedia, modifiers?: ImageModifiers) {
         return resolveGifUrl(media);
     }
 
-    if (!media.mime.startsWith("image")) {
-        return media.url;
+    if (!media?.mime.startsWith("image")) {
+        return media?.url;
     }
 
-    return image(media.url, modifiers, {
+    return image(media?.url, modifiers, {
         provider: props.imageProvider as 'ipx',
     });
 }
@@ -99,7 +100,7 @@ const desktopMediaUrl = computed(() =>
     resolveMediaUrl(props.media, props.desktopImageModifiers),
 );
 const mobileMediaUrl = computed(() =>
-    resolveMediaUrl(props.mobileMedia, props.mobileImageModifiers),
+    resolveMediaUrl(props.mobileMedia ?? props.media, props.mobileImageModifiers),
 );
 
 function pauseVideo(video: HTMLVideoElement | null, reset = true) {
@@ -152,7 +153,7 @@ async function syncLoadedState(
 }
 
 watch(
-    () => [props.media.url, props.mobileMedia.url],
+    () => [props.media?.url, props.mobileMedia?.url],
     async () => {
         imageLoaded.value = false;
         await syncLoadedState(imageRef, imageLoaded);
@@ -203,7 +204,7 @@ useHead(() => {
         fetchpriority,
     };
 
-    if (props.media.url === props.mobileMedia.url) {
+    if (props.media?.url === props.mobileMedia?.url) {
         return {
             link: [
                 {
@@ -246,7 +247,7 @@ useHead(() => {
                     ref="imageRef"
                     :src="mobileMediaUrl"
                     :alt="
-                        props.mobileMedia.alternativeText ??
+                        props.mobileMedia?.alternativeText ??
                         props.media.alternativeText ??
                         ''
                     "
@@ -302,7 +303,7 @@ useHead(() => {
                 <img
                     ref="imageRef"
                     :src="mobileMediaUrl"
-                    :alt="props.mobileMedia.alternativeText ?? ''"
+                    :alt="props.mobileMedia?.alternativeText ?? ''"
                     :loading="props.loading"
                     :fetchpriority="props.fetchPriority"
                     decoding="async"
